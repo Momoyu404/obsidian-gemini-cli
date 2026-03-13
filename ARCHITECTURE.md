@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Geminian - An Obsidian plugin that embeds Gemini CLI as a sidebar chat interface. The vault directory becomes Gemini's working directory, giving it full agentic capabilities: file read/write, bash commands, and multi-step workflows.
+obsidian-gemini-cli — An Obsidian plugin that embeds Gemini CLI as a sidebar chat interface. The vault directory becomes Gemini's working directory, giving it full agentic capabilities: file read/write, bash commands, and multi-step workflows.
 
 ## Commands
 

@@ -1,7 +1,7 @@
 {
   "name": "obsidian-gemini-cli",
   "version": "0.6.1",
-  "description": "Geminian - Gemini CLI embedded in Obsidian sidebar",
+  "description": "obsidian-gemini-cli - Gemini CLI embedded in Obsidian sidebar",
   "main": "main.js",
   "scripts": {
     "postinstall": "node scripts/postinstall.mjs",
