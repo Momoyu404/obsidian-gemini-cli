@@ -225,11 +225,10 @@ export class QueryOptionsBuilder {
   }
 
   private static applyApprovalMode(args: string[], permissionMode: PermissionMode): void {
-    if (permissionMode === 'yolo') {
-      args.push('--approval-mode', 'yolo');
-    } else if (permissionMode === 'plan') {
+    if (permissionMode === 'plan') {
       args.push('--approval-mode', 'plan');
     } else {
+      // 'build' and 'normal' both map to auto_edit
       args.push('--approval-mode', 'auto_edit');
     }
   }

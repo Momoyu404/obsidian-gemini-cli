@@ -45,7 +45,7 @@ function createMockSettings(overrides: Partial<GeminianSettings> = {}): Geminian
       unix: ['rm -rf'],
       windows: ['Remove-Item -Recurse -Force'],
     },
-    permissionMode: 'yolo',
+    permissionMode: 'build',
     allowedExportPaths: [],
     loadUserGeminiSettings: false,
     mediaFolder: '',
@@ -73,7 +73,7 @@ function createMockPersistentQueryConfig(
   return {
     model: 'auto',
     thinkingTokens: null,
-    permissionMode: 'yolo',
+    permissionMode: 'build',
     systemPromptKey: 'key1',
     disallowedToolsKey: '',
     mcpServersKey: '',
@@ -186,7 +186,7 @@ describe('QueryOptionsBuilder', () => {
 
       expect(config.model).toBe('auto');
       expect(config.thinkingTokens).toBeNull();
-      expect(config.permissionMode).toBe('yolo');
+      expect(config.permissionMode).toBe('build');
       expect(config.settingSources).toBe('project');
       expect(config.geminiCliPath).toBe('/mock/claude');
     });
@@ -211,7 +211,7 @@ describe('QueryOptionsBuilder', () => {
   });
 
   describe('buildPersistentCliArgs', () => {
-    it('sets yolo mode approval arg correctly', () => {
+    it('sets build mode approval arg correctly', () => {
       const ctx = {
         ...createMockContext(),
         abortController: new AbortController(),
@@ -220,13 +220,13 @@ describe('QueryOptionsBuilder', () => {
       const result: GeminiCliArgs = QueryOptionsBuilder.buildPersistentCliArgs(ctx);
 
       expect(result.args).toContain('--approval-mode');
-      expect(result.args[result.args.indexOf('--approval-mode') + 1]).toBe('yolo');
+      expect(result.args[result.args.indexOf('--approval-mode') + 1]).toBe('auto_edit');
     });
 
-    it('sets normal mode approval arg correctly', () => {
+    it('sets normal mode approval arg correctly (same as build)', () => {
       const ctx = {
         ...createMockContext({
-          settings: createMockSettings({ permissionMode: 'normal' }),
+          settings: createMockSettings({ permissionMode: 'normal' as any }),
         }),
         abortController: new AbortController(),
         hooks: {},
