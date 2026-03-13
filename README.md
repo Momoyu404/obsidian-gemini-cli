@@ -44,10 +44,10 @@ Follow the prompts to sign in with your Google account.
 
 ### Install the Plugin
 
-1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/Momoyu404/obsidian-gemini/releases/latest)
-2. Create a folder called `obsidian-gemini` in your vault's plugins folder:
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/Momoyu404/obsidian-gemini-cli/releases/latest)
+2. Create a folder called `obsidian-gemini-cli` in your vault's plugins folder:
    ```
-   /path/to/vault/.obsidian/plugins/obsidian-gemini/
+   /path/to/vault/.obsidian/plugins/obsidian-gemini-cli/
    ```
 3. Copy the downloaded files into the folder
 4. Enable the plugin in Obsidian Settings → Community plugins

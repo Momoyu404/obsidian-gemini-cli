@@ -1,5 +1,5 @@
 {
-  "name": "obsidian-gemini",
+  "name": "obsidian-gemini-cli",
   "version": "0.5.14",
   "description": "Geminian - Gemini CLI embedded in Obsidian sidebar",
   "main": "main.js",
