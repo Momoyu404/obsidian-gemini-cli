@@ -16,7 +16,7 @@ obsidian-gemini is an Obsidian plugin that embeds [Gemini CLI](https://github.co
 - **MCP Support**: Connect external tools and data sources via Model Context Protocol servers (stdio, SSE, HTTP).
 - **Model Selection**: Choose between Auto, Pro, Flash, and Flash Lite. The actual model (Gemini 2.5 or 3.x) depends on your [Gemini CLI](https://github.com/google-gemini/gemini-cli) version.
 - **Plan Mode**: Toggle plan mode via Shift+Tab — Gemini explores and designs before implementing.
-- **Security**: Permission modes — **Build** (执行工具并编辑文件)、**Plan**（只读规划）；加上安全黑名单和 vault 限定。
+- **Security**: Permission modes — **Build** (execute tools and edit files) and **Plan** (read-only planning), plus command blocklist and vault-scoped access.
 - **10 Languages**: English, Chinese (Simplified/Traditional), Japanese, Korean, Spanish, German, French, Portuguese, Russian.
 
 ## Requirements
@@ -69,7 +69,7 @@ npm run lint    # Lint code
 
 Use it like Gemini CLI — read, write, edit, search files in your vault.
 
-**Check you're connected:** If you get a reply in the chat, you're connected. You can ask e.g. “What model are you?” to confirm. The **model** (Auto / Pro / Flash / Flash Lite) is shown in the input toolbar next to “Thinking”; click it to change. Permission mode is now **Plan / Build**: Plan 为只读规划，Build 允许执行工具和编辑文件。
+**Check you're connected:** If you get a reply in the chat, you're connected. You can ask e.g. “What model are you?” to confirm. The **model** (Auto / Pro / Flash / Flash Lite) is shown in the input toolbar next to “Thinking”; click it to change. Permission mode (**Plan / Build**): Plan is read-only planning, Build allows tool execution and file editing.
 
 ### Context
 
@@ -115,9 +115,8 @@ Use it like Gemini CLI — read, write, edit, search files in your vault.
 | **Export paths** | Write-only (e.g., `~/Desktop`, `~/Downloads`) |
 | **External contexts** | Full read/write (session-only) |
 
-- **Build mode**: 默认模式，可以执行工具和编辑文件（遵守安全拦截和审批）
-- **Safe mode**: Approval prompt per tool call
-- **Plan mode**: Explores and designs a plan before implementing
+- **Build mode**: Default mode — execute tools and edit files (with safety interception and approval)
+- **Plan mode**: Read-only — explores and designs a plan before implementing
 
 ## Privacy & Data Use
 
@@ -164,35 +163,7 @@ Gemini CLI → Google Account (no API key)
 
 The plugin spawns the Gemini CLI as a subprocess for each query, passing `--output-format stream-json` to get structured JSONL output. Session continuity is maintained via `--resume`.
 
-```
-src/
-├── main.ts                      # Plugin entry point
-├── core/                        # Core infrastructure
-│   ├── agent/                   # Gemini CLI wrapper (GeminianService)
-│   ├── agents/                  # Custom agent management
-│   ├── commands/                # Slash command management
-│   ├── hooks/                   # PreToolUse hooks
-│   ├── mcp/                     # MCP server config and management
-│   ├── prompts/                 # System prompts
-│   ├── sdk/                     # Gemini JSONL event transformation
-│   ├── security/                # Approval, blocklist, path validation
-│   ├── storage/                 # Settings and session storage
-│   └── types/                   # Type definitions
-├── features/                    # Feature modules
-│   ├── chat/                    # Main chat view + UI
-│   ├── inline-edit/             # Inline edit service + UI
-│   └── settings/                # Settings tab UI
-├── shared/                      # Shared UI components
-├── i18n/                        # Internationalization (10 locales)
-├── utils/                       # Utility functions
-└── style/                       # CSS styles
-```
-
-## Credits
-
-- Based on [Claudian](https://github.com/YishenTu/claudian) by Yishen Tu
-- [Obsidian](https://obsidian.md) for the plugin API
-- [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) for the agentic CLI
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed source structure and development notes.
 
 ## License
 
