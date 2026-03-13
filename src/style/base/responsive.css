@@ -1,0 +1,88 @@
+/* Responsive rules for narrow sidebar widths using container queries */
+
+/* ============================================
+ * Narrow sidebar (< 320px): compact toolbar
+ * Hide text labels, keep icons + essential controls
+ * ============================================ */
+@container gemini-sidebar (max-width: 320px) {
+  /* Hide "Thinking:" text label */
+  .obsidian-gemini-thinking-label-text {
+    display: none;
+  }
+
+  /* Hide resolved model name "(pro)" */
+  .obsidian-gemini-model-resolved {
+    display: none;
+  }
+
+  /* Reduce model button padding */
+  .obsidian-gemini-model-btn {
+    padding: 4px 4px;
+  }
+
+  /* Reduce thinking selector margin */
+  .obsidian-gemini-thinking-selector {
+    margin-left: 4px;
+  }
+
+  /* Reduce permission toggle padding */
+  .obsidian-gemini-permission-toggle {
+    padding-left: 4px;
+    padding-right: 2px;
+    gap: 3px;
+  }
+
+  /* Smaller font for permission label */
+  .obsidian-gemini-permission-label {
+    font-size: 10px;
+    min-width: 24px;
+  }
+
+  /* Reduce external context margin */
+  .obsidian-gemini-external-context-selector {
+    margin-left: 2px;
+  }
+
+  /* Reduce MCP selector margin */
+  .obsidian-gemini-mcp-selector {
+    margin-left: 2px;
+  }
+}
+
+/* ============================================
+ * Very narrow sidebar (< 240px): minimal toolbar
+ * Only show model, thinking value, icons, permission
+ * ============================================ */
+@container gemini-sidebar (max-width: 240px) {
+  /* Shrink model selector further */
+  .obsidian-gemini-model-btn {
+    padding: 2px 3px;
+    font-size: 11px;
+  }
+
+  /* Shrink thinking budget */
+  .obsidian-gemini-thinking-current {
+    padding: 2px 4px;
+    font-size: 10px;
+  }
+
+  /* Hide context usage percentage text, keep gauge */
+  .obsidian-gemini-context-meter-percent {
+    display: none;
+  }
+
+  /* Hide toggle switch in very narrow, just show label */
+  .obsidian-gemini-toggle-switch {
+    width: 26px;
+    height: 15px;
+  }
+
+  .obsidian-gemini-toggle-switch::after {
+    width: 11px;
+    height: 11px;
+  }
+
+  .obsidian-gemini-toggle-switch.active::after {
+    transform: translateX(11px);
+  }
+}

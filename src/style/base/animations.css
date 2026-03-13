@@ -1,0 +1,44 @@
+@keyframes thinking-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes external-context-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 2px rgba(var(--obsidian-gemini-brand-rgb), 0.4));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 6px rgba(var(--obsidian-gemini-brand-rgb), 0.8));
+  }
+}
+
+@keyframes mcp-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 2px rgba(124, 58, 237, 0.4));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.9));
+  }
+}
+
+@keyframes obsidian-gemini-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

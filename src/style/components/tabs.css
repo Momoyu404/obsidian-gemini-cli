@@ -1,0 +1,66 @@
+.obsidian-gemini-tab-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.obsidian-gemini-tab-badges {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.obsidian-gemini-tab-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 2px solid var(--background-modifier-border);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: var(--background-primary);
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.obsidian-gemini-tab-badge:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-tab-badge-active {
+  border-color: var(--interactive-accent);
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-tab-badge-streaming {
+  border-color: var(--obsidian-gemini-brand, #da7756);
+}
+
+.obsidian-gemini-tab-badge-attention {
+  border-color: var(--text-error);
+}
+
+.obsidian-gemini-tab-badge-idle {
+  border-color: var(--background-modifier-border);
+}
+
+.obsidian-gemini-tab-content-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.obsidian-gemini-tab-content {
+  position: relative; /* For scroll-to-bottom button positioning */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}

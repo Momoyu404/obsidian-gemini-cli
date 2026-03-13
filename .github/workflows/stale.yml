@@ -1,0 +1,21 @@
+name: Close stale issues
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          days-before-stale: 7
+          days-before-close: 7
+          stale-issue-message: 'This issue has been inactive for 7 days and will be closed in 7 days if no further activity occurs.'
+          close-issue-message: 'Closed due to 14 days of inactivity.'
+          stale-issue-label: 'stale'
+          exempt-issue-labels: 'pinned,security,bug'

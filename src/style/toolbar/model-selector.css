@@ -1,0 +1,101 @@
+/* Model selector */
+.obsidian-gemini-model-selector {
+  position: relative;
+  min-width: 0;
+}
+
+.obsidian-gemini-model-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 12px;
+  transition: color 0.2s ease;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.obsidian-gemini-model-btn.ready {
+  color: var(--obsidian-gemini-brand);
+}
+
+.obsidian-gemini-model-label {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.obsidian-gemini-model-resolved {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.obsidian-gemini-model-option-resolved {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+.obsidian-gemini-model-chevron {
+  display: flex;
+  align-items: center;
+}
+
+.obsidian-gemini-model-chevron svg {
+  width: 12px;
+  height: 12px;
+}
+
+.obsidian-gemini-model-dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  width: max-content;
+  padding: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.obsidian-gemini-model-selector:hover .obsidian-gemini-model-dropdown {
+  opacity: 1;
+  visibility: visible;
+}
+
+.obsidian-gemini-model-option {
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-radius: 3px;
+  transition: background 0.1s ease, color 0.1s ease;
+  white-space: nowrap;
+}
+
+.obsidian-gemini-model-option:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-model-option.selected {
+  background: rgba(var(--obsidian-gemini-brand-rgb), 0.15);
+  color: var(--obsidian-gemini-brand);
+  font-weight: 500;
+}

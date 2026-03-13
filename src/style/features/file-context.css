@@ -1,0 +1,184 @@
+/* @ Mention dropdown */
+.obsidian-gemini-mention-dropdown {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 4px;
+  background: var(--background-secondary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.obsidian-gemini-mention-dropdown.visible {
+  display: block;
+}
+
+/* Fixed positioning for inline editor */
+.obsidian-gemini-mention-dropdown-fixed {
+  position: fixed;
+  z-index: 10001;
+}
+
+.obsidian-gemini-mention-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.obsidian-gemini-mention-item:hover,
+.obsidian-gemini-mention-item.selected {
+  background: var(--background-modifier-hover);
+}
+
+.obsidian-gemini-mention-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-mention-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.obsidian-gemini-mention-path {
+  font-size: 13px;
+  color: var(--text-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.obsidian-gemini-mention-empty {
+  padding: 12px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* Scrollbar for mention dropdown */
+.obsidian-gemini-mention-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.obsidian-gemini-mention-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.obsidian-gemini-mention-dropdown::-webkit-scrollbar-thumb {
+  background: var(--background-modifier-border);
+  border-radius: 3px;
+}
+
+/* MCP items in @-mention dropdown */
+.obsidian-gemini-mention-item.mcp-server .obsidian-gemini-mention-icon {
+  color: var(--interactive-accent);
+}
+
+.obsidian-gemini-mention-item.vault-folder .obsidian-gemini-mention-icon {
+  color: var(--text-muted);
+}
+
+.obsidian-gemini-mention-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.obsidian-gemini-mention-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--interactive-accent);
+}
+
+.obsidian-gemini-mention-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Context file items in @-mention dropdown */
+.obsidian-gemini-mention-item.context-file .obsidian-gemini-mention-icon {
+  color: var(--obsidian-gemini-brand);
+}
+
+.obsidian-gemini-mention-item.context-file .obsidian-gemini-mention-text {
+  flex-direction: row;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.obsidian-gemini-mention-item.context-file .obsidian-gemini-mention-name-context {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* Context folder filter items in @-mention dropdown */
+.obsidian-gemini-mention-item.context-folder .obsidian-gemini-mention-icon {
+  color: var(--text-muted);
+}
+
+.obsidian-gemini-mention-name-folder {
+  color: var(--text-normal);
+  font-weight: 500;
+}
+
+.obsidian-gemini-mention-name-context {
+  color: var(--text-normal);
+}
+
+/* Agent folder items in @-mention dropdown */
+.obsidian-gemini-mention-item.agent-folder .obsidian-gemini-mention-icon {
+  color: var(--link-color);
+}
+
+.obsidian-gemini-mention-name-agent-folder {
+  color: var(--link-color);
+  font-weight: 600;
+}
+
+/* Agent items in @-mention dropdown (inside @Agents/) */
+.obsidian-gemini-mention-item.agent .obsidian-gemini-mention-icon {
+  color: var(--link-color);
+}
+
+.obsidian-gemini-mention-item.agent .obsidian-gemini-mention-text {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.obsidian-gemini-mention-item.agent .obsidian-gemini-mention-name-agent {
+  color: var(--text-normal);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-mention-item.agent .obsidian-gemini-mention-agent-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}

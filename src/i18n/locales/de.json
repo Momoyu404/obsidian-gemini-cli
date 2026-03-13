@@ -1,0 +1,272 @@
+{
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "clear": "Löschen",
+    "clearAll": "Alle löschen",
+    "loading": "Lädt",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "warning": "Warnung",
+    "confirm": "Bestätigen",
+    "settings": "Einstellungen",
+    "advanced": "Erweitert",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "platform": "Plattform",
+    "refresh": "Aktualisieren"
+  },
+  "chat": {
+    "fork": {
+      "ariaLabel": "Konversation verzweigen",
+      "chooseTarget": "Konversation verzweigen",
+      "targetNewTab": "Neuer Tab",
+      "targetCurrentTab": "Aktueller Tab",
+      "maxTabsReached": "Verzweigung nicht möglich: maximal {count} Tabs erreicht",
+      "notice": "In neuem Tab verzweigt",
+      "noticeCurrentTab": "Im aktuellen Tab verzweigt",
+      "failed": "Verzweigung fehlgeschlagen: {error}",
+      "unavailableStreaming": "Verzweigung während des Streamings nicht möglich",
+      "unavailableNoUuid": "Verzweigung nicht möglich: Nachrichtenkennungen fehlen",
+      "unavailableNoResponse": "Verzweigung nicht möglich: keine Antwort zum Verzweigen vorhanden",
+      "errorMessageNotFound": "Nachricht nicht gefunden",
+      "errorNoSession": "Keine Sitzungs-ID verfügbar",
+      "errorNoActiveTab": "Kein aktiver Tab",
+      "commandNoMessages": "Verzweigung nicht möglich: keine Nachrichten in der Konversation",
+      "commandNoAssistantUuid": "Verzweigung nicht möglich: keine Assistentenantwort mit Kennungen"
+    },
+    "bangBash": {
+      "placeholder": "> Einen Bash-Befehl ausführen...",
+      "commandPanel": "Befehlspanel",
+      "copyAriaLabel": "Neueste Befehlsausgabe kopieren",
+      "clearAriaLabel": "Bash-Ausgabe löschen",
+      "commandLabel": "{command}",
+      "statusLabel": "Status des Befehls: {status}",
+      "collapseOutput": "Befehlsausgabe einklappen",
+      "expandOutput": "Befehlsausgabe ausklappen",
+      "running": "Wird ausgeführt...",
+      "copyFailed": "Kopieren in die Zwischenablage fehlgeschlagen"
+    }
+  },
+  "settings": {
+    "title": "Geminian Einstellungen",
+    "customization": "Anpassung",
+    "userName": {
+      "name": "Wie soll Geminian dich nennen?",
+      "desc": "Dein Name für personalisierte Begrüßungen (leer lassen für allgemeine Begrüßungen)"
+    },
+    "excludedTags": {
+      "name": "Ausgeschlossene Tags",
+      "desc": "Notizen mit diesen Tags werden nicht automatisch als Kontext geladen (einer pro Zeile, ohne #)"
+    },
+    "mediaFolder": {
+      "name": "Medienordner",
+      "desc": "Ordner mit Anhängen/Bildern. Wenn Notizen ![[image.jpg]] verwenden, sucht Gemini hier. Leer lassen für Vault-Stammverzeichnis."
+    },
+    "systemPrompt": {
+      "name": "Benutzerdefinierter System-Prompt",
+      "desc": "Zusätzliche Anweisungen, die an den Standard-System-Prompt angehängt werden"
+    },
+    "autoTitle": {
+      "name": "Konversationstitel automatisch generieren",
+      "desc": "Generiert automatisch Konversationstitel nach der ersten Nutzernachricht."
+    },
+    "titleModel": {
+      "name": "Titel-Generierungsmodell",
+      "desc": "Modell zur automatischen Generierung von Konversationstiteln.",
+      "auto": "Automatisch (Haiku)"
+    },
+    "navMappings": {
+      "name": "Vim-Style Navigationszuordnungen",
+      "desc": "Eine Zuordnung pro Zeile. Format: \"map <Taste> <Aktion>\" (Aktionen: scrollUp, scrollDown, focusInput)."
+    },
+    "hotkeys": "Tastenkürzel",
+    "inlineEditHotkey": {
+      "name": "Inline-Bearbeitung",
+      "descWithKey": "Aktuelles Tastenkürzel: {hotkey}",
+      "descNoKey": "Kein Tastenkürzel festgelegt",
+      "btnChange": "Ändern",
+      "btnSet": "Festlegen"
+    },
+    "openChatHotkey": {
+      "name": "Chat öffnen",
+      "descWithKey": "Aktuelles Tastenkürzel: {hotkey}",
+      "descNoKey": "Kein Tastenkürzel festgelegt",
+      "btnChange": "Ändern",
+      "btnSet": "Festlegen"
+    },
+    "newSessionHotkey": {
+      "name": "Neue Sitzung",
+      "descWithKey": "Aktuelles Tastenkürzel: {hotkey}",
+      "descNoKey": "Kein Tastenkürzel festgelegt",
+      "btnChange": "Ändern",
+      "btnSet": "Festlegen"
+    },
+    "newTabHotkey": {
+      "name": "Neuer Tab",
+      "descWithKey": "Aktuelles Tastenkürzel: {hotkey}",
+      "descNoKey": "Kein Tastenkürzel festgelegt",
+      "btnChange": "Ändern",
+      "btnSet": "Festlegen"
+    },
+    "closeTabHotkey": {
+      "name": "Tab schließen",
+      "descWithKey": "Aktuelles Tastenkürzel: {hotkey}",
+      "descNoKey": "Kein Tastenkürzel festgelegt",
+      "btnChange": "Ändern",
+      "btnSet": "Festlegen"
+    },
+    "slashCommands": {
+      "name": "Befehle und Fähigkeiten",
+      "desc": "Definiere benutzerdefinierte Befehle und Fähigkeiten, die durch /Name ausgelöst werden."
+    },
+    "hiddenSlashCommands": {
+      "name": "Ausgeblendete Befehle",
+      "desc": "Bestimmte Schrägstrich-Befehle aus dem Dropdown ausblenden. Nützlich, um Gemini CLI-Befehle auszublenden, die für Geminian nicht relevant sind. Gib Befehlsnamen ohne führenden Schrägstrich ein, einen pro Zeile.",
+      "placeholder": "commit\nbuild\ntest"
+    },
+    "mcpServers": {
+      "name": "MCP-Server",
+      "desc": "Konfiguriere Model Context Protocol Server, um Gemini mit externen Tools und Datenquellen zu erweitern. Server mit Kontext-Speichermodus benötigen @mention zur Aktivierung."
+    },
+    "plugins": {
+      "name": "Gemini CLI-Plugins",
+      "desc": "Aktiviere oder deaktiviere Gemini CLI Plugins aus ~/.gemini/plugins. Aktivierte Plugins werden pro Vault gespeichert."
+    },
+    "subagents": {
+      "name": "Sub-Agenten",
+      "desc": "Konfiguriere benutzerdefinierte Sub-Agenten, an die Gemini delegieren kann.",
+      "noAgents": "Keine Sub-Agenten konfiguriert. Klicke auf +, um einen zu erstellen.",
+      "deleteConfirm": "Sub-Agent \"{name}\" löschen?",
+      "saveFailed": "Sub-Agent konnte nicht gespeichert werden: {message}",
+      "refreshFailed": "Sub-Agenten konnten nicht aktualisiert werden: {message}",
+      "deleteFailed": "Sub-Agent konnte nicht gelöscht werden: {message}",
+      "renameCleanupFailed": "Warnung: Alte Datei für \"{name}\" konnte nicht entfernt werden",
+      "created": "Sub-Agent \"{name}\" erstellt",
+      "updated": "Sub-Agent \"{name}\" aktualisiert",
+      "deleted": "Sub-Agent \"{name}\" gelöscht",
+      "duplicateName": "Ein Agent mit dem Namen \"{name}\" existiert bereits",
+      "descriptionRequired": "Beschreibung ist erforderlich",
+      "promptRequired": "System-Prompt ist erforderlich",
+      "modal": {
+        "titleEdit": "Sub-Agent bearbeiten",
+        "titleAdd": "Sub-Agent hinzufügen",
+        "name": "Name",
+        "nameDesc": "Nur Kleinbuchstaben, Zahlen und Bindestriche",
+        "namePlaceholder": "code-reviewer",
+        "description": "Beschreibung",
+        "descriptionDesc": "Kurzbeschreibung dieses Agenten",
+        "descriptionPlaceholder": "Prüft Code auf Fehler und Stil",
+        "advancedOptions": "Erweiterte Optionen",
+        "model": "Modell",
+        "modelDesc": "Modellüberschreibung für diesen Agenten",
+        "tools": "Tools",
+        "toolsDesc": "Kommagetrennte Liste zulässiger Tools (leer = alle)",
+        "disallowedTools": "Nicht erlaubte Tools",
+        "disallowedToolsDesc": "Kommagetrennte Liste der zu verbietenden Tools",
+        "skills": "Fähigkeiten",
+        "skillsDesc": "Kommagetrennte Liste von Fähigkeiten",
+        "prompt": "System-Prompt",
+        "promptDesc": "Anweisungen für den Agenten",
+        "promptPlaceholder": "Du bist ein Code-Reviewer. Analysiere den angegebenen Code auf..."
+      }
+    },
+    "safety": "Sicherheit",
+    "loadUserSettings": {
+      "name": "Benutzer-Gemini-Einstellungen laden",
+      "desc": "Lädt ~/.gemini/settings.json. Wenn aktiviert, können Benutzer-Gemini-Code-Berechtigungsregeln den Sicherheitsmodus umgehen."
+    },
+    "enableBlocklist": {
+      "name": "Befehlsblockliste aktivieren",
+      "desc": "Blockiert potenziell gefährliche Bash-Befehle"
+    },
+    "blockedCommands": {
+      "name": "Blockierte Befehle ({platform})",
+      "desc": "Muster zum Blockieren auf {platform} (einer pro Zeile). Unterstützt Regex.",
+      "unixName": "Blockierte Befehle (Unix/Git Bash)",
+      "unixDesc": "Unix-Muster werden auch auf Windows blockiert, da Git Bash sie aufrufen kann."
+    },
+    "exportPaths": {
+      "name": "Zugelassene Exportpfade",
+      "desc": "Pfade außerhalb des Vaults, in die Dateien exportiert werden können (einer pro Zeile). Unterstützt ~ für Home-Verzeichnis."
+    },
+    "environment": "Umgebung",
+    "customVariables": {
+      "name": "Benutzerdefinierte Variablen",
+      "desc": "Umgebungsvariablen für Gemini SDK (KEY=VALUE-Format, eine pro Zeile). Export-Präfix unterstützt."
+    },
+    "envSnippets": {
+      "name": "Snippets",
+      "addBtn": "Snippet hinzufügen",
+      "noSnippets": "Keine gespeicherten Umgebungsvariablen-Snippets. Klicken Sie auf +, um Ihre aktuelle Konfiguration zu speichern.",
+      "nameRequired": "Bitte geben Sie einen Namen für das Snippet ein",
+      "modal": {
+        "titleEdit": "Snippet bearbeiten",
+        "titleSave": "Snippet speichern",
+        "name": "Name",
+        "namePlaceholder": "Ein beschreibender Name für diese Umgebungskonfiguration",
+        "description": "Beschreibung",
+        "descPlaceholder": "Optionale Beschreibung",
+        "envVars": "Umgebungsvariablen",
+        "envVarsPlaceholder": "KEY=VALUE-Format, eine pro Zeile (export-Präfix unterstützt)",
+        "save": "Speichern",
+        "update": "Aktualisieren",
+        "cancel": "Abbrechen"
+      }
+    },
+    "customContextLimits": {
+      "name": "Benutzerdefinierte Kontextlimits",
+      "desc": "Legen Sie die Kontextfenstergrößen für Ihre benutzerdefinierten Modelle fest. Leer lassen für den Standardwert (200k Token).",
+      "invalid": "Ungültiges Format. Verwenden Sie: 256k, 1m oder exakte Anzahl (1000-10000000)."
+    },
+    "advanced": "Erweitert",
+    "show1MModel": {
+      "name": "Sonnet mit 1M-Kontextfenster aktivieren",
+      "desc": "Standard-Sonnet durch Sonnet (1M) in der Modellauswahl ersetzen. Gleiche Preise unter 200k Token. Erfordert Max-Abonnement."
+    },
+    "enableBangBash": {
+      "name": "Bash-Modus (!) aktivieren",
+      "desc": "Gib ! in ein leeres Eingabefeld ein, um den Bash-Modus zu starten. Führt Befehle direkt über Node.js child_process aus. Die Ansicht muss neu geöffnet werden.",
+      "validation": {
+        "noNode": "Node.js wurde auf PATH nicht gefunden. Installiere Node.js oder prüfe deine PATH-Konfiguration."
+      }
+    },
+    "maxTabs": {
+      "name": "Maximale Chat-Tabs",
+      "desc": "Maximale Anzahl gleichzeitiger Chat-Tabs (3-10). Jeder Tab verwendet eine separate Gemini-Sitzung.",
+      "warning": "Mehr als 5 Tabs können Leistung und Speichernutzung beeinträchtigen."
+    },
+    "tabBarPosition": {
+      "name": "Tab-Leiste Position",
+      "desc": "Wählen Sie, wo Tab-Badges und Aktionsschaltflächen angezeigt werden",
+      "input": "Über Eingabefeld (Standard)",
+      "header": "In Kopfzeile"
+    },
+    "enableAutoScroll": {
+      "name": "Automatisches Scrollen während Streaming",
+      "desc": "Automatisch nach unten scrollen, während Gemini Antworten streamt. Deaktivieren, um oben zu bleiben und von Anfang an zu lesen."
+    },
+    "openInMainTab": {
+      "name": "Im Haupteditorbereich öffnen",
+      "desc": "Chat-Panel als Haupttab im zentralen Editorbereich statt in der rechten Seitenleiste öffnen"
+    },
+    "cliPath": {
+      "name": "Gemini CLI-Pfad",
+      "desc": "Benutzerdefinierter Pfad zum Gemini CLI CLI. Leer lassen für automatische Erkennung.",
+      "descWindows": "Für den nativen Installer verwenden Sie gemini.exe. Für npm/pnpm/yarn oder andere Paketmanager-Installationen verwenden Sie den cli.js-Pfad (nicht gemini.cmd).",
+      "descUnix": "Fügen Sie die Ausgabe von \"which gemini\" ein — funktioniert sowohl für native als auch npm/pnpm/yarn-Installationen.",
+      "validation": {
+        "notExist": "Pfad existiert nicht",
+        "isDirectory": "Pfad ist ein Verzeichnis, keine Datei"
+      }
+    },
+    "language": {
+      "name": "Sprache",
+      "desc": "Anzeigesprache der Plugin-Oberfläche ändern"
+    }
+  }
+}

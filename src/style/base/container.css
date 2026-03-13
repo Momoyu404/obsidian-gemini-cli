@@ -1,0 +1,9 @@
+.obsidian-gemini-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  container-type: inline-size;
+  container-name: gemini-sidebar;
+}

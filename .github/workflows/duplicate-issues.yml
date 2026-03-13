@@ -1,0 +1,22 @@
+name: Potential Duplicates
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  check-duplicates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wow-actions/potential-duplicates@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          threshold: 0.6
+          state: all
+          label: possible-duplicate
+          comment: >
+            Possible duplicates found:
+            {{#issues}}
+            - #{{number}} ({{similarity}}% similar): {{title}}
+            {{/issues}}
+
+            If one of these matches your issue, please add your details there instead.

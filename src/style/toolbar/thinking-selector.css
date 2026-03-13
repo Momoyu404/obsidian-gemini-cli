@@ -1,0 +1,78 @@
+/* Thinking budget selector */
+.obsidian-gemini-thinking-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  min-width: 0;
+}
+
+.obsidian-gemini-thinking-label-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.obsidian-gemini-thinking-gears {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+}
+
+/* Current selection (visible when collapsed) */
+.obsidian-gemini-thinking-current {
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--obsidian-gemini-brand);
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 3px;
+  white-space: nowrap;
+  background: transparent;
+}
+
+/* Options container - expands vertically upward */
+.obsidian-gemini-thinking-options {
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+/* Expand on hover */
+.obsidian-gemini-thinking-gears:hover .obsidian-gemini-thinking-options {
+  opacity: 1;
+  visibility: visible;
+}
+
+.obsidian-gemini-thinking-gear {
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.1s ease, color 0.1s ease;
+  white-space: nowrap;
+}
+
+.obsidian-gemini-thinking-gear:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-thinking-gear.selected {
+  background: rgba(var(--obsidian-gemini-brand-rgb), 0.15);
+  color: var(--obsidian-gemini-brand);
+  font-weight: 500;
+}

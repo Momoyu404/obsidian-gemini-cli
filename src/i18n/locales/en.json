@@ -1,0 +1,272 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "clear": "Clear",
+    "clearAll": "Clear all",
+    "loading": "Loading",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "confirm": "Confirm",
+    "settings": "Settings",
+    "advanced": "Advanced",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "platform": "Platform",
+    "refresh": "Refresh"
+  },
+  "chat": {
+    "fork": {
+      "ariaLabel": "Fork conversation",
+      "chooseTarget": "Fork conversation",
+      "targetNewTab": "New tab",
+      "targetCurrentTab": "Current tab",
+      "maxTabsReached": "Cannot fork: maximum {count} tabs reached",
+      "notice": "Forked to new tab",
+      "noticeCurrentTab": "Forked in current tab",
+      "failed": "Fork failed: {error}",
+      "unavailableStreaming": "Cannot fork while streaming",
+      "unavailableNoUuid": "Cannot fork: missing message identifiers",
+      "unavailableNoResponse": "Cannot fork: no response to fork from",
+      "errorMessageNotFound": "Message not found",
+      "errorNoSession": "No session ID available",
+      "errorNoActiveTab": "No active tab",
+      "commandNoMessages": "Cannot fork: no messages in conversation",
+      "commandNoAssistantUuid": "Cannot fork: no assistant response with identifiers"
+    },
+    "bangBash": {
+      "placeholder": "> Run a bash command...",
+      "commandPanel": "Command panel",
+      "copyAriaLabel": "Copy latest command output",
+      "clearAriaLabel": "Clear bash output",
+      "commandLabel": "{command}",
+      "statusLabel": "Status: {status}",
+      "collapseOutput": "Collapse command output",
+      "expandOutput": "Expand command output",
+      "running": "Running...",
+      "copyFailed": "Failed to copy to clipboard"
+    }
+  },
+  "settings": {
+    "title": "Geminian Settings",
+    "customization": "Customization",
+    "userName": {
+      "name": "What should Geminian call you?",
+      "desc": "Your name for personalized greetings (leave empty for generic greetings)"
+    },
+    "excludedTags": {
+      "name": "Excluded tags",
+      "desc": "Notes with these tags will not auto-load as context (one per line, without #)"
+    },
+    "mediaFolder": {
+      "name": "Media folder",
+      "desc": "Folder containing attachments/images. When notes use ![[image.jpg]], Gemini will look here. Leave empty for vault root."
+    },
+    "systemPrompt": {
+      "name": "Custom system prompt",
+      "desc": "Additional instructions appended to the default system prompt"
+    },
+    "autoTitle": {
+      "name": "Auto-generate conversation titles",
+      "desc": "Automatically generate conversation titles after the first user message is sent."
+    },
+    "titleModel": {
+      "name": "Title generation model",
+      "desc": "Model used for auto-generating conversation titles.",
+      "auto": "Auto (Haiku)"
+    },
+    "navMappings": {
+      "name": "Vim-style navigation mappings",
+      "desc": "One mapping per line. Format: \"map <key> <action>\" (actions: scrollUp, scrollDown, focusInput)."
+    },
+    "hotkeys": "Hotkeys",
+    "inlineEditHotkey": {
+      "name": "Inline Edit",
+      "descWithKey": "Current hotkey: {hotkey}",
+      "descNoKey": "No hotkey set",
+      "btnChange": "Change",
+      "btnSet": "Set hotkey"
+    },
+    "openChatHotkey": {
+      "name": "Open Chat",
+      "descWithKey": "Current hotkey: {hotkey}",
+      "descNoKey": "No hotkey set",
+      "btnChange": "Change",
+      "btnSet": "Set hotkey"
+    },
+    "newSessionHotkey": {
+      "name": "New Session",
+      "descWithKey": "Current hotkey: {hotkey}",
+      "descNoKey": "No hotkey set",
+      "btnChange": "Change",
+      "btnSet": "Set hotkey"
+    },
+    "newTabHotkey": {
+      "name": "New Tab",
+      "descWithKey": "Current hotkey: {hotkey}",
+      "descNoKey": "No hotkey set",
+      "btnChange": "Change",
+      "btnSet": "Set hotkey"
+    },
+    "closeTabHotkey": {
+      "name": "Close Tab",
+      "descWithKey": "Current hotkey: {hotkey}",
+      "descNoKey": "No hotkey set",
+      "btnChange": "Change",
+      "btnSet": "Set hotkey"
+    },
+    "slashCommands": {
+      "name": "Commands and Skills",
+      "desc": "Define custom commands and skills triggered by /name."
+    },
+    "hiddenSlashCommands": {
+      "name": "Hidden Commands",
+      "desc": "Hide specific slash commands from the dropdown. Useful for hiding Gemini CLI commands that are not relevant to Geminian. Enter command names without the leading slash, one per line.",
+      "placeholder": "commit\nbuild\ntest"
+    },
+    "mcpServers": {
+      "name": "MCP Servers",
+      "desc": "Configure Model Context Protocol servers to extend Gemini's capabilities with external tools and data sources. Servers with context-saving mode require @mention to activate."
+    },
+    "plugins": {
+      "name": "Gemini CLI Plugins",
+      "desc": "Enable or disable Gemini CLI plugins discovered from ~/.gemini/plugins. Enabled plugins are stored per vault."
+    },
+    "subagents": {
+      "name": "Subagents",
+      "desc": "Configure custom subagents that Gemini can delegate to.",
+      "noAgents": "No subagents configured. Click + to create one.",
+      "deleteConfirm": "Delete subagent \"{name}\"?",
+      "saveFailed": "Failed to save subagent: {message}",
+      "refreshFailed": "Failed to refresh subagents: {message}",
+      "deleteFailed": "Failed to delete subagent: {message}",
+      "renameCleanupFailed": "Warning: could not remove old file for \"{name}\"",
+      "created": "Subagent \"{name}\" created",
+      "updated": "Subagent \"{name}\" updated",
+      "deleted": "Subagent \"{name}\" deleted",
+      "duplicateName": "An agent named \"{name}\" already exists",
+      "descriptionRequired": "Description is required",
+      "promptRequired": "System prompt is required",
+      "modal": {
+        "titleEdit": "Edit Subagent",
+        "titleAdd": "Add Subagent",
+        "name": "Name",
+        "nameDesc": "Lowercase letters, numbers, and hyphens only",
+        "namePlaceholder": "code-reviewer",
+        "description": "Description",
+        "descriptionDesc": "Brief description of this agent",
+        "descriptionPlaceholder": "Reviews code for bugs and style",
+        "advancedOptions": "Advanced options",
+        "model": "Model",
+        "modelDesc": "Model override for this agent",
+        "tools": "Tools",
+        "toolsDesc": "Comma-separated list of allowed tools (empty = all)",
+        "disallowedTools": "Disallowed tools",
+        "disallowedToolsDesc": "Comma-separated list of tools to disallow",
+        "skills": "Skills",
+        "skillsDesc": "Comma-separated list of skills",
+        "prompt": "System prompt",
+        "promptDesc": "Instructions for the agent",
+        "promptPlaceholder": "You are a code reviewer. Analyze the given code for..."
+      }
+    },
+    "safety": "Safety",
+    "loadUserSettings": {
+      "name": "Load user Gemini settings",
+      "desc": "Load ~/.gemini/settings.json. When enabled, user's Gemini CLI permission rules may bypass Safe mode."
+    },
+    "enableBlocklist": {
+      "name": "Enable command blocklist",
+      "desc": "Block potentially dangerous bash commands"
+    },
+    "blockedCommands": {
+      "name": "Blocked commands ({platform})",
+      "desc": "Patterns to block on {platform} (one per line). Supports regex.",
+      "unixName": "Blocked commands (Unix/Git Bash)",
+      "unixDesc": "Unix patterns also blocked on Windows because Git Bash can invoke them."
+    },
+    "exportPaths": {
+      "name": "Allowed export paths",
+      "desc": "Paths outside the vault where files can be exported (one per line). Supports ~ for home directory."
+    },
+    "environment": "Environment",
+    "customVariables": {
+      "name": "Custom variables",
+      "desc": "Environment variables for Gemini CLI (KEY=VALUE format, one per line). Shell export prefix supported."
+    },
+    "envSnippets": {
+      "name": "Snippets",
+      "addBtn": "Add snippet",
+      "noSnippets": "No saved environment snippets yet. Click + to save your current environment configuration.",
+      "nameRequired": "Please enter a name for the snippet",
+      "modal": {
+        "titleEdit": "Edit snippet",
+        "titleSave": "Save snippet",
+        "name": "Name",
+        "namePlaceholder": "A descriptive name for this environment configuration",
+        "description": "Description",
+        "descPlaceholder": "Optional description",
+        "envVars": "Environment variables",
+        "envVarsPlaceholder": "KEY=VALUE format, one per line (export prefix supported)",
+        "save": "Save",
+        "update": "Update",
+        "cancel": "Cancel"
+      }
+    },
+    "customContextLimits": {
+      "name": "Custom Context Limits",
+      "desc": "Set context window sizes for your custom models. Leave empty to use the default (200k tokens).",
+      "invalid": "Invalid format. Use: 256k, 1m, or exact count (1000-10000000)."
+    },
+    "advanced": "Advanced",
+    "show1MModel": {
+      "name": "Enable Sonnet with 1M context window",
+      "desc": "Enable extended context window model in the model selector."
+    },
+    "enableBangBash": {
+      "name": "Enable bash mode (!)",
+      "desc": "Type ! on empty input to enter bash mode. Runs commands directly via Node.js child_process. Requires view reopen.",
+      "validation": {
+        "noNode": "Node.js not found on PATH. Install Node.js or check your PATH configuration."
+      }
+    },
+    "maxTabs": {
+      "name": "Maximum chat tabs",
+      "desc": "Maximum number of concurrent chat tabs (3-10). Each tab uses a separate Gemini session.",
+      "warning": "More than 5 tabs may impact performance and memory usage."
+    },
+    "tabBarPosition": {
+      "name": "Tab bar position",
+      "desc": "Choose where to display tab badges and action buttons",
+      "input": "Above input (default)",
+      "header": "In header"
+    },
+    "enableAutoScroll": {
+      "name": "Auto-scroll during streaming",
+      "desc": "Automatically scroll to the bottom as Gemini streams responses. Disable to stay at the top and read from the beginning."
+    },
+    "openInMainTab": {
+      "name": "Open in main editor area",
+      "desc": "Open chat panel as a main tab in the center editor area instead of the right sidebar"
+    },
+    "cliPath": {
+      "name": "Gemini CLI path",
+      "desc": "Custom path to Gemini CLI. Leave empty for auto-detection.",
+      "descWindows": "For the native installer, use gemini.exe. For npm/pnpm/yarn or other package manager installs, use the cli.js path.",
+      "descUnix": "Paste the output of \"which gemini\" — works for both native and npm/pnpm/yarn installs.",
+      "validation": {
+        "notExist": "Path does not exist",
+        "isDirectory": "Path is a directory, not a file"
+      }
+    },
+    "language": {
+      "name": "Language",
+      "desc": "Change the display language of the plugin interface"
+    }
+  }
+}

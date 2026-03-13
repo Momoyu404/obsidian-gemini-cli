@@ -1,0 +1,272 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "add": "添加",
+    "remove": "移除",
+    "clear": "清除",
+    "clearAll": "清除全部",
+    "loading": "加载中",
+    "error": "错误",
+    "success": "成功",
+    "warning": "警告",
+    "confirm": "确认",
+    "settings": "设置",
+    "advanced": "高级",
+    "enabled": "已启用",
+    "disabled": "已禁用",
+    "platform": "平台",
+    "refresh": "刷新"
+  },
+  "chat": {
+    "fork": {
+      "ariaLabel": "分叉对话",
+      "chooseTarget": "分叉对话",
+      "targetNewTab": "新标签页",
+      "targetCurrentTab": "当前标签页",
+      "maxTabsReached": "无法分叉：已达到最大 {count} 个标签页",
+      "notice": "已分叉到新标签页",
+      "noticeCurrentTab": "已在当前标签页分叉",
+      "failed": "分叉失败：{error}",
+      "unavailableStreaming": "流式响应中无法分叉",
+      "unavailableNoUuid": "无法分叉：缺少消息标识符",
+      "unavailableNoResponse": "无法分叉：没有可分叉的响应",
+      "errorMessageNotFound": "未找到消息",
+      "errorNoSession": "没有可用的会话 ID",
+      "errorNoActiveTab": "没有活动标签页",
+      "commandNoMessages": "无法分叉：对话中没有消息",
+      "commandNoAssistantUuid": "无法分叉：没有带标识符的助手回复"
+    },
+    "bangBash": {
+      "placeholder": "> 运行命令...",
+      "commandPanel": "命令面板",
+      "copyAriaLabel": "复制最新命令输出",
+      "clearAriaLabel": "清除命令输出",
+      "commandLabel": "{command}",
+      "statusLabel": "状态: {status}",
+      "collapseOutput": "折叠命令输出",
+      "expandOutput": "展开命令输出",
+      "running": "运行中...",
+      "copyFailed": "复制到剪贴板失败"
+    }
+  },
+  "settings": {
+    "title": "Geminian 设置",
+    "customization": "个性化设置",
+    "userName": {
+      "name": "Geminian 应该如何称呼你？",
+      "desc": "用于个性化问候的用户名（留空使用通用问候）"
+    },
+    "excludedTags": {
+      "name": "排除的标签",
+      "desc": "包含这些标签的笔记不会自动加载为上下文（每行一个，不带 #）"
+    },
+    "mediaFolder": {
+      "name": "媒体文件夹",
+      "desc": "存放附件/图片的文件夹。当笔记使用 ![[image.jpg]] 时，Gemini 会在此查找。留空使用仓库根目录。"
+    },
+    "systemPrompt": {
+      "name": "自定义系统提示词",
+      "desc": "附加到默认系统提示词的额外指令"
+    },
+    "autoTitle": {
+      "name": "自动生成对话标题",
+      "desc": "在用户发送首条消息后自动生成对话标题。"
+    },
+    "titleModel": {
+      "name": "标题生成模型",
+      "desc": "用于自动生成对话标题的模型。",
+      "auto": "自动 (Haiku)"
+    },
+    "navMappings": {
+      "name": "Vim 风格导航映射",
+      "desc": "每行一个映射。格式：\"map <键> <动作>\"（动作：scrollUp, scrollDown, focusInput）。"
+    },
+    "hotkeys": "快捷键",
+    "inlineEditHotkey": {
+      "name": "内联编辑",
+      "descWithKey": "当前快捷键：{hotkey}",
+      "descNoKey": "未设置快捷键",
+      "btnChange": "更改",
+      "btnSet": "设置快捷键"
+    },
+    "openChatHotkey": {
+      "name": "打开聊天",
+      "descWithKey": "当前快捷键：{hotkey}",
+      "descNoKey": "未设置快捷键",
+      "btnChange": "更改",
+      "btnSet": "设置快捷键"
+    },
+    "newSessionHotkey": {
+      "name": "新会话",
+      "descWithKey": "当前快捷键：{hotkey}",
+      "descNoKey": "未设置快捷键",
+      "btnChange": "更改",
+      "btnSet": "设置快捷键"
+    },
+    "newTabHotkey": {
+      "name": "新标签页",
+      "descWithKey": "当前快捷键：{hotkey}",
+      "descNoKey": "未设置快捷键",
+      "btnChange": "更改",
+      "btnSet": "设置快捷键"
+    },
+    "closeTabHotkey": {
+      "name": "关闭标签页",
+      "descWithKey": "当前快捷键：{hotkey}",
+      "descNoKey": "未设置快捷键",
+      "btnChange": "更改",
+      "btnSet": "设置快捷键"
+    },
+    "slashCommands": {
+      "name": "命令与技能",
+      "desc": "定义由 /名称 触发的自定义命令与技能。"
+    },
+    "hiddenSlashCommands": {
+      "name": "隐藏命令",
+      "desc": "从下拉菜单中隐藏特定的斜杠命令。适用于隐藏与 Geminian 无关的 Gemini CLI 命令。每行输入一个命令名称，无需前导斜杠。",
+      "placeholder": "commit\nbuild\ntest"
+    },
+    "mcpServers": {
+      "name": "MCP 服务器",
+      "desc": "配置模型上下文协议服务器，通过外部工具和数据源扩展 Gemini 的能力。启用上下文保存模式的服务器需要 @ 提及才能激活。"
+    },
+    "plugins": {
+      "name": "Gemini CLI 插件",
+      "desc": "启用或禁用从 ~/.gemini/plugins 发现的 Gemini CLI 插件。启用的插件按 Vault 存储。"
+    },
+    "subagents": {
+      "name": "子代理",
+      "desc": "配置 Gemini 可委派给其处理的自定义子代理。",
+      "noAgents": "尚未配置子代理。点击 + 创建一个。",
+      "deleteConfirm": "删除子代理“{name}”？",
+      "saveFailed": "保存子代理失败：{message}",
+      "refreshFailed": "刷新子代理失败：{message}",
+      "deleteFailed": "删除子代理失败：{message}",
+      "renameCleanupFailed": "警告：无法删除“{name}”的旧文件",
+      "created": "已创建子代理“{name}”",
+      "updated": "已更新子代理“{name}”",
+      "deleted": "已删除子代理“{name}”",
+      "duplicateName": "名为“{name}”的代理已存在",
+      "descriptionRequired": "描述为必填项",
+      "promptRequired": "系统提示词为必填项",
+      "modal": {
+        "titleEdit": "编辑子代理",
+        "titleAdd": "添加子代理",
+        "name": "名称",
+        "nameDesc": "仅允许小写字母、数字和连字符",
+        "namePlaceholder": "code-reviewer",
+        "description": "描述",
+        "descriptionDesc": "该代理的简要描述",
+        "descriptionPlaceholder": "审查代码中的错误和风格问题",
+        "advancedOptions": "高级选项",
+        "model": "模型",
+        "modelDesc": "该代理的模型覆盖",
+        "tools": "工具",
+        "toolsDesc": "允许使用的工具列表，用逗号分隔（留空 = 全部）",
+        "disallowedTools": "禁用工具",
+        "disallowedToolsDesc": "要禁用的工具列表，用逗号分隔",
+        "skills": "技能",
+        "skillsDesc": "技能列表，用逗号分隔",
+        "prompt": "系统提示词",
+        "promptDesc": "给代理的指令",
+        "promptPlaceholder": "你是一名代码审查员。请分析给定代码中的..."
+      }
+    },
+    "safety": "安全",
+    "loadUserSettings": {
+      "name": "加载用户 Gemini 设置",
+      "desc": "加载 ~/.gemini/settings.json。启用后，用户的 Gemini CLI 权限规则可能绕过安全模式。"
+    },
+    "enableBlocklist": {
+      "name": "启用命令黑名单",
+      "desc": "阻止潜在危险的 bash 命令"
+    },
+    "blockedCommands": {
+      "name": "阻止的命令 ({platform})",
+      "desc": "在 {platform} 上阻止的模式（每行一个）。支持正则表达式。",
+      "unixName": "阻止的命令 (Unix/Git Bash)",
+      "unixDesc": "Unix 模式在 Windows 上也会被阻止，因为 Git Bash 可以调用它们。"
+    },
+    "exportPaths": {
+      "name": "允许的导出路径",
+      "desc": "允许导出文件的仓库外部路径（每行一个）。支持 ~ 表示主目录。"
+    },
+    "environment": "环境",
+    "customVariables": {
+      "name": "自定义变量",
+      "desc": "Gemini SDK 的环境变量（KEY=VALUE 格式，每行一个）。支持 export 前缀。"
+    },
+    "envSnippets": {
+      "name": "片段",
+      "addBtn": "添加片段",
+      "noSnippets": "尚无保存的环境变量片段。点击 + 保存当前配置。",
+      "nameRequired": "请输入片段名称",
+      "modal": {
+        "titleEdit": "编辑片段",
+        "titleSave": "保存片段",
+        "name": "名称",
+        "namePlaceholder": "此配置的描述性名称",
+        "description": "描述",
+        "descPlaceholder": "可选描述",
+        "envVars": "环境变量",
+        "envVarsPlaceholder": "KEY=VALUE 格式，每行一个（支持 export 前缀）",
+        "save": "保存",
+        "update": "更新",
+        "cancel": "取消"
+      }
+    },
+    "customContextLimits": {
+      "name": "自定义上下文限制",
+      "desc": "为您的自定义模型设置上下文窗口大小。留空使用默认值（200k 令牌）。",
+      "invalid": "格式无效。使用：256k、1m 或精确数量（1000-10000000）。"
+    },
+    "advanced": "高级",
+    "show1MModel": {
+      "name": "启用具有 1M 上下文窗口的 Sonnet",
+      "desc": "在模型选择器中将标准 Sonnet 替换为 Sonnet (1M)。在 200k 令牌以下价格相同。需要 Max 订阅。"
+    },
+    "enableBangBash": {
+      "name": "启用命令模式 (!)",
+      "desc": "在空输入框中输入 ! 进入命令模式。通过 Node.js child_process 直接运行命令。需要重新打开视图。",
+      "validation": {
+        "noNode": "未在 PATH 中找到 Node.js。请安装 Node.js 或检查 PATH 配置。"
+      }
+    },
+    "maxTabs": {
+      "name": "最大聊天标签数",
+      "desc": "同时开启的最大聊天标签数（3-10）。每个标签使用独立的 Gemini 会话。",
+      "warning": "超过 5 个标签可能会影响性能和内存使用。"
+    },
+    "tabBarPosition": {
+      "name": "标签栏位置",
+      "desc": "选择标签徽章和操作按钮的显示位置",
+      "input": "输入框上方（默认）",
+      "header": "在标题栏"
+    },
+    "enableAutoScroll": {
+      "name": "流式传输时自动滚动",
+      "desc": "在 Gemini 流式传输响应时自动滚动到底部。禁用后将停留在顶部，从头开始阅读。"
+    },
+    "openInMainTab": {
+      "name": "在主编辑器区域打开",
+      "desc": "在中央编辑器区域以主标签页形式打开聊天面板，而不是在右侧边栏"
+    },
+    "cliPath": {
+      "name": "Gemini CLI 路径",
+      "desc": "Gemini CLI CLI 的自定义路径。留空使用自动检测。",
+      "descWindows": "对于原生安装程序，使用 gemini.exe。对于 npm/pnpm/yarn 或其他包管理器安装，使用 cli.js 路径（不是 gemini.cmd）。",
+      "descUnix": "粘贴 \"which gemini\" 的输出 - 适用于原生安装和 npm/pnpm/yarn 安装。",
+      "validation": {
+        "notExist": "路径不存在",
+        "isDirectory": "路径是目录，不是文件"
+      }
+    },
+    "language": {
+      "name": "语言",
+      "desc": "更改插件界面的显示语言"
+    }
+  }
+}

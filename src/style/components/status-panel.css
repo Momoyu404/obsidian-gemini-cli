@@ -1,0 +1,250 @@
+/* Status Panel - persistent bottom panel for async subagents and todos */
+
+.obsidian-gemini-status-panel-container {
+  flex-shrink: 0;
+  padding: 0 14px;
+}
+
+.obsidian-gemini-status-panel {
+  padding-top: 12px;
+}
+
+/* Async Subagent Section */
+
+.obsidian-gemini-status-panel-subagents {
+  margin-bottom: 4px;
+}
+
+.obsidian-gemini-status-panel-done-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.obsidian-gemini-status-panel-combined-row {
+  justify-content: flex-start;
+}
+
+.obsidian-gemini-status-panel-combined-row .obsidian-gemini-status-panel-done-text {
+  flex: 1;
+}
+
+.obsidian-gemini-status-panel-icon.obsidian-gemini-status-panel-done-icon {
+  color: var(--color-green);
+}
+
+.obsidian-gemini-status-panel-icon.obsidian-gemini-status-panel-bot-icon {
+  color: var(--interactive-accent);
+}
+
+.obsidian-gemini-status-panel-done-text {
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-status-panel-running-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 2px 0;
+}
+
+.obsidian-gemini-status-panel-running-text {
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  color: var(--color-cyan);
+}
+
+/* Todo Section */
+
+.obsidian-gemini-status-panel-todos {
+  margin-top: 4px;
+}
+
+.obsidian-gemini-status-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+  overflow: hidden;
+}
+
+.obsidian-gemini-status-panel-header:hover {
+  background: var(--background-modifier-hover);
+}
+
+.obsidian-gemini-status-panel-header:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+}
+
+.obsidian-gemini-status-panel-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-accent);
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-status-panel-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.obsidian-gemini-status-panel-label {
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-status-panel-current {
+  flex: 1;
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.obsidian-gemini-status-panel-status {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-status-panel-status svg {
+  width: 14px;
+  height: 14px;
+}
+
+.obsidian-gemini-status-panel-status.status-completed {
+  color: var(--color-green);
+}
+
+.obsidian-gemini-status-panel-content {
+  padding: 2px 0;
+}
+
+/* Individual todo item - shared by status panel and inline tool via .obsidian-gemini-todo-list-container */
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 1px 0;
+}
+
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-status-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-status-icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-text {
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  line-height: 1.4;
+  flex: 1;
+  padding-left: 12px;
+}
+
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-pending .obsidian-gemini-todo-status-icon {
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-pending .obsidian-gemini-todo-status-icon svg {
+  transform: scale(2);
+}
+
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-pending .obsidian-gemini-todo-text {
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-in_progress .obsidian-gemini-todo-status-icon {
+  color: var(--interactive-accent);
+}
+
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-in_progress .obsidian-gemini-todo-status-icon svg {
+  transform: scale(2);
+}
+
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-in_progress .obsidian-gemini-todo-text {
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-completed .obsidian-gemini-todo-status-icon {
+  color: var(--color-green);
+}
+
+.obsidian-gemini-todo-list-container .obsidian-gemini-todo-completed .obsidian-gemini-todo-text {
+  color: var(--text-muted);
+}
+
+/* Bash Output Section */
+
+.obsidian-gemini-status-panel-bash {
+  margin-bottom: 4px;
+}
+
+.obsidian-gemini-status-panel-bash-header {
+  padding: 4px 0;
+}
+
+.obsidian-gemini-status-panel-bash-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.obsidian-gemini-status-panel-bash-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+
+.obsidian-gemini-status-panel-bash-action:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-status-panel-bash-content {
+  padding-top: 2px;
+  max-height: 320px;
+  max-height: min(40vh, 320px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.obsidian-gemini-status-panel-bash-entry {
+  margin: 4px 0;
+}
+
+.obsidian-gemini-status-panel-bash-entry .obsidian-gemini-tool-icon svg {
+  width: 14px;
+  height: 14px;
+  position: relative;
+  top: -1px;
+}
+
+.obsidian-gemini-status-panel-bash-entry .obsidian-gemini-tool-call {
+  margin: 0;
+}
+
+/* Keep bash output blocks from growing without bound */
+.obsidian-gemini-status-panel-bash-entry .obsidian-gemini-tool-result-text {
+  max-height: 200px;
+  overflow-y: auto;
+  word-break: break-word;
+}

@@ -1,0 +1,187 @@
+.obsidian-gemini-history-container {
+  position: relative;
+}
+
+/* History dropup menu (opens upward since it's at bottom of view) */
+.obsidian-gemini-history-menu {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  inset-inline-end: 0;
+  margin-bottom: 4px;
+  background: var(--background-secondary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  max-height: 400px;
+  overflow: hidden;
+  width: 280px;
+}
+
+.obsidian-gemini-history-menu.visible {
+  display: block;
+}
+
+/* Header mode: dropdown instead of dropup */
+.obsidian-gemini-container--header-mode .obsidian-gemini-history-menu {
+  bottom: auto;
+  top: 100%;
+  margin-bottom: 0;
+  margin-top: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.obsidian-gemini-history-header {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.obsidian-gemini-history-list {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.obsidian-gemini-history-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.obsidian-gemini-history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  transition: background 0.15s ease;
+}
+
+.obsidian-gemini-history-item-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-history-item-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.obsidian-gemini-history-item:last-child {
+  border-bottom: none;
+}
+
+.obsidian-gemini-history-item:hover {
+  background: var(--background-modifier-hover);
+}
+
+.obsidian-gemini-history-item.active {
+  background: var(--background-secondary);
+  border-inline-start: 2px solid var(--interactive-accent);
+  padding-inline-start: 10px;
+}
+
+.obsidian-gemini-history-item.active .obsidian-gemini-history-item-icon {
+  color: var(--interactive-accent);
+}
+
+.obsidian-gemini-history-item.active .obsidian-gemini-history-item-content {
+  cursor: default;
+}
+
+.obsidian-gemini-history-item.active .obsidian-gemini-history-item-date {
+  color: var(--text-faint);
+}
+
+.obsidian-gemini-history-item-content {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.obsidian-gemini-history-item-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-normal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.obsidian-gemini-history-item-date {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+
+.obsidian-gemini-history-item-actions {
+  display: flex;
+  gap: 4px;
+  margin-inline-start: 8px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.obsidian-gemini-history-item:hover .obsidian-gemini-history-item-actions {
+  opacity: 1;
+}
+
+.obsidian-gemini-action-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: var(--text-muted);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.obsidian-gemini-action-btn:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-action-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.obsidian-gemini-delete-btn:hover {
+  color: var(--color-red);
+}
+
+.obsidian-gemini-rename-input {
+  width: 100%;
+  padding: 2px 4px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--interactive-accent);
+  border-radius: 4px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-rename-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--interactive-accent-hover);
+}
+
+/* Loading indicator for title generation */
+.obsidian-gemini-action-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: spin 1s linear infinite;
+  opacity: 0.6;
+  cursor: default;
+}

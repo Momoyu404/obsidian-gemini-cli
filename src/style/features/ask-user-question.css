@@ -1,0 +1,315 @@
+/* AskUserQuestion - inline widget rendered in chat panel */
+
+.obsidian-gemini-ask-question-inline {
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  outline: none;
+}
+
+.obsidian-gemini-ask-inline-title {
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 6px 10px 0;
+}
+
+/* ── Tab bar ─────────────────────────────────── */
+
+.obsidian-gemini-ask-tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  line-height: 1.4;
+}
+
+.obsidian-gemini-ask-tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  user-select: none;
+  color: var(--text-muted);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.obsidian-gemini-ask-tab:hover {
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-ask-tab.is-active {
+  background: hsla(55, 30%, 50%, 0.18);
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-ask-tab-label {
+  font-weight: 600;
+  max-width: 14ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.obsidian-gemini-ask-tab-tick {
+  color: var(--color-green);
+  font-weight: 700;
+}
+
+.obsidian-gemini-ask-tab-submit-check {
+  color: var(--color-green);
+  white-space: pre;
+}
+
+/* ── Content area ────────────────────────────── */
+
+.obsidian-gemini-ask-content {
+  padding: 8px 10px;
+}
+
+.obsidian-gemini-ask-question-text {
+  font-weight: 700;
+  color: var(--text-normal);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+/* ── Item list ───────────────────────────────── */
+
+.obsidian-gemini-ask-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.obsidian-gemini-ask-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 3px 4px;
+  cursor: pointer;
+  line-height: 1.4;
+  color: var(--text-normal);
+  border-radius: 3px;
+}
+
+.obsidian-gemini-ask-item:hover {
+  background: var(--background-modifier-hover);
+}
+
+.obsidian-gemini-ask-cursor {
+  display: inline-block;
+  width: 2ch;
+  flex-shrink: 0;
+  color: var(--text-accent);
+  font-weight: 700;
+}
+
+.obsidian-gemini-ask-item-num {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-ask-item-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.obsidian-gemini-ask-label-row {
+  display: flex;
+  align-items: baseline;
+}
+
+.obsidian-gemini-ask-item-label {
+  font-weight: 600;
+}
+
+.obsidian-gemini-ask-item-desc {
+  color: var(--text-muted);
+  font-weight: 400;
+  line-height: 1.4;
+  margin-top: 1px;
+}
+
+/* Selected items: green text */
+.obsidian-gemini-ask-item.is-selected .obsidian-gemini-ask-item-label {
+  color: var(--color-green);
+}
+
+/* Disabled items: muted text */
+.obsidian-gemini-ask-item.is-disabled .obsidian-gemini-ask-item-label {
+  color: var(--text-faint);
+}
+
+/* ── Multi-select brackets ───────────────────── */
+
+.obsidian-gemini-ask-check {
+  color: var(--text-faint);
+  flex-shrink: 0;
+  white-space: pre;
+}
+
+.obsidian-gemini-ask-check.is-checked {
+  color: var(--color-green);
+}
+
+/* ── Single-select check mark ────────────────── */
+
+.obsidian-gemini-ask-check-mark {
+  color: var(--color-green);
+  font-weight: 700;
+}
+
+/* ── Custom input ────────────────────────────── */
+
+.obsidian-gemini-ask-item input.obsidian-gemini-ask-custom-text,
+.obsidian-gemini-ask-item input.obsidian-gemini-ask-custom-text:hover,
+.obsidian-gemini-ask-item input.obsidian-gemini-ask-custom-text:focus {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-monospace);
+  font-size: inherit;
+  color: var(--text-normal);
+  outline: none;
+  padding: 0;
+  width: 0;
+  height: auto;
+  min-height: 0;
+  line-height: 1.4;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.obsidian-gemini-ask-custom-text::placeholder {
+  color: var(--text-faint);
+}
+
+/* ── Submit review tab ───────────────────────── */
+
+.obsidian-gemini-ask-review-title {
+  font-weight: 700;
+  color: var(--text-normal);
+  margin-bottom: 6px;
+}
+
+.obsidian-gemini-ask-review {
+  font-family: var(--font-monospace);
+  margin-bottom: 16px;
+}
+
+.obsidian-gemini-tool-content .obsidian-gemini-ask-review {
+  font-size: 12px;
+}
+
+.obsidian-gemini-ask-review:last-child {
+  margin-bottom: 0;
+}
+
+.obsidian-gemini-ask-review-pair {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.obsidian-gemini-ask-review-pair:last-child {
+  margin-bottom: 0;
+}
+
+.obsidian-gemini-ask-review-num {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-ask-review-body {
+  min-width: 0;
+}
+
+.obsidian-gemini-ask-review-q-text {
+  color: var(--text-muted);
+}
+
+.obsidian-gemini-ask-review-a-text {
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-ask-review-empty {
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.obsidian-gemini-ask-review-prompt {
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+/* ── Hints ───────────────────────────────────── */
+
+.obsidian-gemini-ask-hints {
+  color: var(--text-faint);
+  padding-top: 6px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+/* ── Approval header (inline permission request) ── */
+
+.obsidian-gemini-ask-approval-info {
+  padding: 8px 10px;
+}
+
+.obsidian-gemini-ask-approval-tool {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.obsidian-gemini-ask-approval-icon {
+  color: var(--obsidian-gemini-brand);
+}
+
+.obsidian-gemini-ask-approval-tool-name {
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-ask-approval-reason {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.obsidian-gemini-ask-approval-blocked-path {
+  font-family: var(--font-monospace);
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 3px 6px;
+  background: var(--background-primary-alt);
+  border-radius: 4px;
+  margin-bottom: 6px;
+  word-break: break-all;
+}
+
+.obsidian-gemini-ask-approval-agent {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.obsidian-gemini-ask-approval-desc {
+  padding: 8px 10px;
+  background: var(--background-primary-alt);
+  border-radius: 6px;
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  color: var(--text-normal);
+  word-break: break-all;
+}

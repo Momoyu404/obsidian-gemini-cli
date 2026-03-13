@@ -1,0 +1,40 @@
+/* Accessibility - Focus Visible Styles */
+
+/* outline + offset + border-radius */
+.obsidian-gemini-tool-header:focus-visible,
+.obsidian-gemini-thinking-header:focus-visible,
+.obsidian-gemini-subagent-header:focus-visible,
+.obsidian-gemini-header-btn:focus-visible,
+.obsidian-gemini-model-btn:focus-visible,
+.obsidian-gemini-thinking-current:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* outline + offset only */
+.obsidian-gemini-action-btn:focus-visible,
+.obsidian-gemini-toggle-switch:focus-visible,
+.obsidian-gemini-file-chip:focus-visible,
+.obsidian-gemini-image-chip:focus-visible,
+.obsidian-gemini-file-chip-remove:focus-visible,
+.obsidian-gemini-image-remove:focus-visible,
+.obsidian-gemini-image-modal-close:focus-visible,
+.obsidian-gemini-approved-remove-btn:focus-visible,
+.obsidian-gemini-save-env-btn:focus-visible,
+.obsidian-gemini-restore-snippet-btn:focus-visible,
+.obsidian-gemini-edit-snippet-btn:focus-visible,
+.obsidian-gemini-delete-snippet-btn:focus-visible,
+.obsidian-gemini-cancel-btn:focus-visible,
+.obsidian-gemini-save-btn:focus-visible,
+.obsidian-gemini-code-lang-label:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+}
+
+/* outline + negative offset + border-radius */
+.obsidian-gemini-history-item-content:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: -2px;
+  border-radius: 4px;
+}

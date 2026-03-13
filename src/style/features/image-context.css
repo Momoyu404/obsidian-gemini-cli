@@ -1,0 +1,179 @@
+/* Image Context - Preview & Attachments */
+
+/* Image preview container (in input area) */
+.obsidian-gemini-image-preview {
+  display: none;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+  margin-bottom: 4px;
+}
+
+/* Individual image preview chip */
+.obsidian-gemini-image-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  max-width: 200px;
+}
+
+.obsidian-gemini-image-chip:hover {
+  border-color: var(--interactive-accent);
+}
+
+/* Image thumbnail */
+.obsidian-gemini-image-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.obsidian-gemini-image-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Image info */
+.obsidian-gemini-image-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.obsidian-gemini-image-name {
+  font-size: 12px;
+  color: var(--text-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.obsidian-gemini-image-size {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Remove button */
+.obsidian-gemini-image-remove {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+  font-size: 0; /* Hide text character */
+}
+
+.obsidian-gemini-image-remove::before,
+.obsidian-gemini-image-remove::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 2px;
+  background: var(--text-muted);
+  border-radius: 1px;
+  transition: background 0.15s ease;
+}
+
+.obsidian-gemini-image-remove::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.obsidian-gemini-image-remove::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.obsidian-gemini-image-remove:hover {
+  background: var(--background-modifier-error);
+}
+
+.obsidian-gemini-image-remove:hover::before,
+.obsidian-gemini-image-remove:hover::after {
+  background: var(--text-on-accent);
+}
+
+/* Drop overlay - inside input wrapper */
+.obsidian-gemini-drop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(var(--obsidian-gemini-brand-rgb), 0.08);
+  border: 2px dashed var(--obsidian-gemini-brand);
+  border-radius: 6px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.obsidian-gemini-drop-overlay.visible {
+  display: flex;
+}
+
+.obsidian-gemini-drop-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--obsidian-gemini-brand);
+}
+
+.obsidian-gemini-drop-content svg {
+  opacity: 0.7;
+}
+
+.obsidian-gemini-drop-content span {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Images in Messages (displayed above user bubble) */
+
+/* Images container - right-aligned above user message */
+.obsidian-gemini-message-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+  padding-right: 4px;
+}
+
+/* Individual image in message - standardized size */
+.obsidian-gemini-message-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.obsidian-gemini-message-image:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.obsidian-gemini-message-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}

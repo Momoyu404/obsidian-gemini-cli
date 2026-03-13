@@ -1,0 +1,49 @@
+# CSS Style Guide
+
+## Structure
+
+```
+src/style/
+├── base/           # container, animations (@keyframes), variables
+├── components/     # header, history, messages, code, thinking, toolcalls, status-panel, subagent, input, context-footer, tabs, scroll-to-bottom
+├── toolbar/        # model-selector, thinking-selector, permission-toggle, external-context, mcp-selector
+├── features/       # file-context, image-context, image-modal, inline-edit, diff, slash-commands, file-link, image-embed, plan-mode, ask-user-question
+├── modals/         # instruction, mcp-modal, fork-target
+├── settings/       # base (shared .geminian-sp-* panel layout), env-snippets, slash-settings, mcp-settings, plugin-settings, agent-settings
+├── accessibility.css
+└── index.css       # Build order (@import list)
+```
+
+## Build
+
+CSS is built into root `styles.css` via `npm run build:css` (also runs in `npm run dev`).
+
+**Adding new modules**: Register in `index.css` via `@import` or the build will omit them.
+
+## Conventions
+
+- **Prefix**: All classes use `.geminian-` prefix
+- **BEM-lite**: `.geminian-{block}`, `.geminian-{block}-{element}`, `.geminian-{block}--{modifier}`
+- **No `!important`**: Avoid unless overriding Obsidian defaults
+- **CSS variables**: Use Obsidian's `--background-*`, `--text-*`, `--interactive-*` tokens
+
+## Naming Patterns
+
+| Pattern | Examples |
+|---------|----------|
+| Layout | `-container`, `-header`, `-messages`, `-input` |
+| Messages | `-message`, `-message-user`, `-message-assistant` |
+| Tool calls | `-tool-call`, `-tool-header`, `-tool-content`, `-tool-status` |
+| Thinking | `-thinking-block`, `-thinking-header`, `-thinking-content` |
+| Panels | `-todo-list`, `-todo-item`, `-subagent-list`, `-subagent-header` |
+| Context | `-file-chip`, `-image-chip`, `-mention-dropdown` |
+| Plan mode | `-plan-approval-inline`, `-plan-content-preview`, `-plan-feedback-*`, `-plan-permissions` |
+| Ask user | `-ask-list`, `-ask-item`, `-ask-cursor`, `-ask-hints` |
+| Command panel | `-status-panel-bash`, `-status-panel-bash-header`, `-status-panel-bash-entry`, `-status-panel-bash-actions` |
+| Modals | `-instruction-modal`, `-mcp-modal`, `-fork-target-*` |
+
+## Gotchas
+
+- Obsidian uses `body.theme-dark` / `body.theme-light` for theme detection
+- Modal z-index must be > 1000 to overlay Obsidian UI
+- Use `var(--font-monospace)` for code blocks, not hardcoded fonts

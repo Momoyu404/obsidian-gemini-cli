@@ -1,0 +1,348 @@
+/* Context Limits Styles */
+.obsidian-gemini-context-limits-container {
+  margin-top: 16px;
+}
+
+.obsidian-gemini-context-limits-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  margin-top: 16px;
+  padding: 0 12px;
+}
+
+.obsidian-gemini-context-limits-label {
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  font-weight: var(--font-medium);
+}
+
+.obsidian-gemini-context-limits-desc {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  padding: 0 12px;
+  margin-bottom: 8px;
+}
+
+.obsidian-gemini-context-limits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.obsidian-gemini-context-limits-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.obsidian-gemini-context-limits-item:hover {
+  background: var(--background-modifier-hover);
+}
+
+.obsidian-gemini-context-limits-model {
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+  flex: 1;
+  min-width: 0;
+  word-break: break-all;
+}
+
+.obsidian-gemini-context-limits-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 16px;
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-context-limits-input {
+  width: 80px;
+  padding: 4px 8px;
+  font-size: var(--font-ui-small);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-context-limits-input:focus {
+  border-color: var(--interactive-accent);
+  outline: none;
+}
+
+.obsidian-gemini-context-limits-input.obsidian-gemini-input-error {
+  border-color: var(--text-error);
+}
+
+.obsidian-gemini-context-limit-validation {
+  display: none;
+  font-size: var(--font-ui-smaller);
+  color: var(--text-error);
+  margin-top: 4px;
+}
+
+/* Environment Snippets Styles */
+.obsidian-gemini-env-snippets-container {
+  margin-top: 16px;
+}
+
+.obsidian-gemini-snippet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  margin-top: 16px;
+  padding: 0 12px;
+}
+
+.obsidian-gemini-snippet-label {
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  font-weight: var(--font-medium);
+}
+
+.obsidian-gemini-save-env-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.obsidian-gemini-save-env-btn:hover {
+  opacity: 0.9;
+}
+
+.obsidian-gemini-snippet-empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--background-secondary);
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.obsidian-gemini-snippet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.obsidian-gemini-snippet-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.obsidian-gemini-snippet-item:hover {
+  background: var(--background-modifier-hover);
+}
+
+.obsidian-gemini-snippet-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.obsidian-gemini-snippet-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.obsidian-gemini-snippet-description {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.obsidian-gemini-snippet-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: 16px;
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-restore-snippet-btn {
+  padding: 4px 12px;
+  font-size: 12px;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.obsidian-gemini-restore-snippet-btn:hover {
+  opacity: 0.9;
+}
+
+.obsidian-gemini-edit-snippet-btn {
+  padding: 4px 12px;
+  font-size: 12px;
+  background: var(--background-modifier-border);
+  color: var(--text-normal);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.obsidian-gemini-edit-snippet-btn:hover {
+  background: var(--background-modifier-border-hover);
+}
+
+.obsidian-gemini-delete-snippet-btn {
+  padding: 4px 12px;
+  font-size: 12px;
+  background: var(--background-modifier-error);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.obsidian-gemini-delete-snippet-btn:hover {
+  opacity: 0.9;
+}
+
+/* Env Snippet Modal */
+.obsidian-gemini-env-snippet-modal .modal-content {
+  max-width: 550px;
+  width: 550px;
+  padding: 16px;
+}
+
+.obsidian-gemini-env-snippet-modal h2 {
+  margin: 0 0 16px 0;
+}
+
+.obsidian-gemini-env-snippet-modal .setting-item {
+  padding: 8px 0;
+  margin: 0;
+}
+
+.obsidian-gemini-env-snippet-modal .setting-item-info {
+  margin-bottom: 4px;
+}
+
+/* Full-width env vars textarea setting */
+.obsidian-gemini-env-snippet-setting {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.obsidian-gemini-env-snippet-setting .setting-item-info {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.obsidian-gemini-env-snippet-control {
+  width: 100%;
+}
+
+.obsidian-gemini-env-snippet-control textarea {
+  width: 100%;
+  min-width: 100%;
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  resize: vertical;
+}
+
+.obsidian-gemini-snippet-preview {
+  margin: 8px 0;
+  padding: 6px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+}
+
+.obsidian-gemini-env-preview {
+  background: var(--background-primary);
+  padding: 6px;
+  border-radius: 4px;
+  font-family: var(--font-monospace);
+  font-size: 11px;
+  line-height: 1.3;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: var(--text-muted);
+  max-height: 120px;
+  overflow-y: auto;
+  margin: 0;
+}
+
+.obsidian-gemini-snippet-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  justify-content: flex-end;
+}
+
+.obsidian-gemini-cancel-btn,
+.obsidian-gemini-save-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.obsidian-gemini-cancel-btn {
+  background: var(--background-modifier-border);
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-cancel-btn:hover {
+  background: var(--background-modifier-border-hover);
+}
+
+.obsidian-gemini-save-btn {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.obsidian-gemini-save-btn:hover {
+  opacity: 0.9;
+}
+
+/* Context limits section in snippet modal */
+.obsidian-gemini-snippet-context-limits {
+  margin-top: 1em;
+}
+
+.obsidian-gemini-snippet-context-limits .setting-item-description {
+  margin-bottom: 0.5em;
+}
+
+.obsidian-gemini-snippet-limit-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.25em;
+}
+
+.obsidian-gemini-snippet-limit-model {
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-small);
+}
+
+.obsidian-gemini-snippet-limit-spacer {
+  flex: 1;
+}
+
+.obsidian-gemini-snippet-limit-input {
+  width: 80px;
+}

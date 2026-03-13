@@ -1,0 +1,272 @@
+{
+  "common": {
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "편집",
+    "add": "추가",
+    "remove": "제거",
+    "clear": "지우기",
+    "clearAll": "모두 지우기",
+    "loading": "로딩 중",
+    "error": "오류",
+    "success": "성공",
+    "warning": "경고",
+    "confirm": "확인",
+    "settings": "설정",
+    "advanced": "고급",
+    "enabled": "활성화",
+    "disabled": "비활성화",
+    "platform": "플랫폼",
+    "refresh": "새로고침"
+  },
+  "chat": {
+    "fork": {
+      "ariaLabel": "대화 분기",
+      "chooseTarget": "대화 분기",
+      "targetNewTab": "새 탭",
+      "targetCurrentTab": "현재 탭",
+      "maxTabsReached": "분기 불가: 최대 {count}개 탭에 도달했습니다",
+      "notice": "새 탭으로 분기됨",
+      "noticeCurrentTab": "현재 탭에서 분기됨",
+      "failed": "분기 실패: {error}",
+      "unavailableStreaming": "스트리밍 중에는 분기할 수 없습니다",
+      "unavailableNoUuid": "분기 불가: 메시지 식별자 누락",
+      "unavailableNoResponse": "분기 불가: 분기할 응답이 없습니다",
+      "errorMessageNotFound": "메시지를 찾을 수 없습니다",
+      "errorNoSession": "사용 가능한 세션 ID가 없습니다",
+      "errorNoActiveTab": "활성 탭이 없습니다",
+      "commandNoMessages": "포크할 수 없습니다: 대화에 메시지가 없습니다",
+      "commandNoAssistantUuid": "포크할 수 없습니다: 식별자가 있는 어시스턴트 응답이 없습니다"
+    },
+    "bangBash": {
+      "placeholder": "> bash 명령 실행...",
+      "commandPanel": "명령 패널",
+      "copyAriaLabel": "최신 명령 출력을 복사",
+      "clearAriaLabel": "bash 출력 지우기",
+      "commandLabel": "{command}",
+      "statusLabel": "상태: {status}",
+      "collapseOutput": "명령 출력 접기",
+      "expandOutput": "명령 출력 펼치기",
+      "running": "실행 중...",
+      "copyFailed": "클립보드에 복사하지 못했습니다"
+    }
+  },
+  "settings": {
+    "title": "Geminian 설정",
+    "customization": "사용자 정의",
+    "userName": {
+      "name": "Geminian이 당신을 어떻게 불러야 합니까?",
+      "desc": "개인화된 인사에 사용할 이름 (비워두면 일반 인사)"
+    },
+    "excludedTags": {
+      "name": "제외 태그",
+      "desc": "이 태그가 포함된 노트는 자동으로 컨텍스트로 로드되지 않습니다 (한 줄에 하나, # 제외)"
+    },
+    "mediaFolder": {
+      "name": "미디어 폴더",
+      "desc": "첨부 파일/이미지를 저장할 폴더. 노트가 ![[image.jpg]]를 사용할 때 Gemini가 여기서 찾습니다. 비워두면 저장소 루트 사용."
+    },
+    "systemPrompt": {
+      "name": "커스텀 시스템 프롬프트",
+      "desc": "기본 시스템 프롬프트에 추가되는 추가 지침"
+    },
+    "autoTitle": {
+      "name": "대화 제목 자동 생성",
+      "desc": "첫 번째 사용자 메시지 전송 후 자동으로 대화 제목을 생성합니다."
+    },
+    "titleModel": {
+      "name": "제목 생성 모델",
+      "desc": "대화 제목을 자동 생성하는 데 사용되는 모델.",
+      "auto": "자동 (Haiku)"
+    },
+    "navMappings": {
+      "name": "Vim 스타일 네비게이션 매핑",
+      "desc": "한 줄에 하나의 매핑. 형식: \"map <키> <동작>\" (동작: scrollUp, scrollDown, focusInput)."
+    },
+    "hotkeys": "단축키",
+    "inlineEditHotkey": {
+      "name": "인라인 편집",
+      "descWithKey": "현재 단축키: {hotkey}",
+      "descNoKey": "단축키 미설정",
+      "btnChange": "변경",
+      "btnSet": "단축키 설정"
+    },
+    "openChatHotkey": {
+      "name": "채팅 열기",
+      "descWithKey": "현재 단축키: {hotkey}",
+      "descNoKey": "단축키 미설정",
+      "btnChange": "변경",
+      "btnSet": "단축키 설정"
+    },
+    "newSessionHotkey": {
+      "name": "새 세션",
+      "descWithKey": "현재 단축키: {hotkey}",
+      "descNoKey": "단축키 미설정",
+      "btnChange": "변경",
+      "btnSet": "단축키 설정"
+    },
+    "newTabHotkey": {
+      "name": "새 탭",
+      "descWithKey": "현재 단축키: {hotkey}",
+      "descNoKey": "단축키 미설정",
+      "btnChange": "변경",
+      "btnSet": "단축키 설정"
+    },
+    "closeTabHotkey": {
+      "name": "탭 닫기",
+      "descWithKey": "현재 단축키: {hotkey}",
+      "descNoKey": "단축키 미설정",
+      "btnChange": "변경",
+      "btnSet": "단축키 설정"
+    },
+    "slashCommands": {
+      "name": "명령어와 스킬",
+      "desc": "/이름으로 트리거되는 커스텀 명령어와 스킬을 정의합니다."
+    },
+    "hiddenSlashCommands": {
+      "name": "숨겨진 명령어",
+      "desc": "드롭다운에서 특정 슬래시 명령어를 숨깁니다. Geminian과 관련 없는 Gemini CLI 명령어를 숨기는 데 유용합니다. 앞의 슬래시 없이 한 줄에 하나씩 명령어 이름을 입력하세요.",
+      "placeholder": "commit\nbuild\ntest"
+    },
+    "mcpServers": {
+      "name": "MCP 서버",
+      "desc": "모델 컨텍스트 프로토콜 서버를 설정하여 외부 도구와 데이터 소스로 Gemini의 기능을 확장합니다. 컨텍스트 저장 모드 서버는 @mention으로 활성화해야 합니다."
+    },
+    "plugins": {
+      "name": "Gemini CLI 플러그인",
+      "desc": "~/.gemini/plugins에서 발견된 Gemini CLI 플러그인을 활성화 또는 비활성화합니다. 활성화된 플러그인은 볼트별로 저장됩니다."
+    },
+    "subagents": {
+      "name": "서브에이전트",
+      "desc": "Gemini가 위임할 수 있는 사용자 정의 서브에이전트를 설정합니다.",
+      "noAgents": "구성된 서브에이전트가 없습니다. +를 클릭해 새로 만드세요.",
+      "deleteConfirm": "서브에이전트 \"{name}\"을 삭제하시겠습니까?",
+      "saveFailed": "서브에이전트를 저장하지 못했습니다: {message}",
+      "refreshFailed": "서브에이전트를 새로고침하지 못했습니다: {message}",
+      "deleteFailed": "서브에이전트를 삭제하지 못했습니다: {message}",
+      "renameCleanupFailed": "경고: \"{name}\"의 이전 파일을 제거하지 못했습니다",
+      "created": "서브에이전트 \"{name}\"를 생성했습니다",
+      "updated": "서브에이전트 \"{name}\"를 업데이트했습니다",
+      "deleted": "서브에이전트 \"{name}\"를 삭제했습니다",
+      "duplicateName": "\"{name}\"이라는 이름의 에이전트가 이미 있습니다",
+      "descriptionRequired": "설명은 필수입니다",
+      "promptRequired": "시스템 프롬프트는 필수입니다",
+      "modal": {
+        "titleEdit": "서브에이전트 편집",
+        "titleAdd": "서브에이전트 추가",
+        "name": "이름",
+        "nameDesc": "소문자, 숫자, 하이픈만 사용할 수 있습니다",
+        "namePlaceholder": "code-reviewer",
+        "description": "설명",
+        "descriptionDesc": "이 에이전트에 대한 간단한 설명",
+        "descriptionPlaceholder": "코드의 버그와 스타일을 검토합니다",
+        "advancedOptions": "고급 옵션",
+        "model": "모델",
+        "modelDesc": "이 에이전트에 사용할 모델 재정의",
+        "tools": "도구",
+        "toolsDesc": "허용할 도구를 쉼표로 구분해 입력하세요 (비워두면 모두 허용)",
+        "disallowedTools": "금지 도구",
+        "disallowedToolsDesc": "금지할 도구를 쉼표로 구분해 입력하세요",
+        "skills": "스킬",
+        "skillsDesc": "스킬 목록을 쉼표로 구분해 입력하세요",
+        "prompt": "시스템 프롬프트",
+        "promptDesc": "에이전트용 지침",
+        "promptPlaceholder": "당신은 코드 리뷰어입니다. 주어진 코드를 분석하여..."
+      }
+    },
+    "safety": "보안",
+    "loadUserSettings": {
+      "name": "사용자 Gemini 설정 로드",
+      "desc": "~/.gemini/settings.json을 로드합니다. 활성화하면 사용자의 Gemini CLI 허용 규칙이 보안 모드를 우회할 수 있습니다."
+    },
+    "enableBlocklist": {
+      "name": "명령어 블랙리스트 활성화",
+      "desc": "잠재적으로 위험한 bash 명령어 차단"
+    },
+    "blockedCommands": {
+      "name": "차단된 명령어 ({platform})",
+      "desc": "{platform}에서 차단할 패턴 (한 줄에 하나). 정규식 지원.",
+      "unixName": "차단된 명령어 (Unix/Git Bash)",
+      "unixDesc": "Git Bash가 호출할 수 있으므로 Unix 패턴도 Windows에서 차단됩니다."
+    },
+    "exportPaths": {
+      "name": "허용된 내보내기 경로",
+      "desc": "파일을 내보낼 수 있는 저장소 외부 경로 (한 줄에 하나). ~로 홈 디렉토리 지원."
+    },
+    "environment": "환경",
+    "customVariables": {
+      "name": "커스텀 변수",
+      "desc": "Gemini SDK 환경 변수 (KEY=VALUE 형식, 한 줄에 하나). export 접두사 지원."
+    },
+    "envSnippets": {
+      "name": "스니펫",
+      "addBtn": "스니펫 추가",
+      "noSnippets": "저장된 환경 변수 스니펫이 없습니다. +를 클릭하여 현재 구성을 저장하세요.",
+      "nameRequired": "스니펫 이름을 입력하세요",
+      "modal": {
+        "titleEdit": "스니펫 편집",
+        "titleSave": "스니펫 저장",
+        "name": "이름",
+        "namePlaceholder": "이 구성에 대한 설명적인 이름",
+        "description": "설명",
+        "descPlaceholder": "선택적 설명",
+        "envVars": "환경 변수",
+        "envVarsPlaceholder": "KEY=VALUE 형식, 한 줄에 하나 (export 접두사 지원)",
+        "save": "저장",
+        "update": "업데이트",
+        "cancel": "취소"
+      }
+    },
+    "customContextLimits": {
+      "name": "사용자 정의 컨텍스트 제한",
+      "desc": "사용자 정의 모델의 컨텍스트 창 크기를 설정합니다. 기본값(200k 토큰)을 사용하려면 비워두세요.",
+      "invalid": "잘못된 형식입니다. 사용: 256k, 1m 또는 정확한 숫자(1000-10000000)."
+    },
+    "advanced": "고급",
+    "show1MModel": {
+      "name": "1M 컨텍스트 창을 가진 Sonnet 활성화",
+      "desc": "모델 선택기에서 표준 Sonnet을 Sonnet (1M)으로 교체합니다. 200k 토큰 미만에서는 동일한 가격. Max 구독이 필요합니다."
+    },
+    "enableBangBash": {
+      "name": "bash 모드 (!) 활성화",
+      "desc": "입력창이 비어 있을 때 !를 입력하면 bash 모드로 들어갑니다. Node.js child_process를 통해 명령을 직접 실행합니다. 보기를 다시 열어야 합니다.",
+      "validation": {
+        "noNode": "PATH에서 Node.js를 찾을 수 없습니다. Node.js를 설치하거나 PATH 설정을 확인하세요."
+      }
+    },
+    "maxTabs": {
+      "name": "최대 채팅 탭 수",
+      "desc": "동시에 열 수 있는 최대 채팅 탭 수(3-10). 각 탭은 별도의 Gemini 세션을 사용합니다.",
+      "warning": "5개 탭을 초과하면 성능 및 메모리 사용량에 영향을 줄 수 있습니다."
+    },
+    "tabBarPosition": {
+      "name": "탭 바 위치",
+      "desc": "탭 배지와 작업 버튼의 표시 위치 선택",
+      "input": "입력창 위(기본값)",
+      "header": "헤더에"
+    },
+    "enableAutoScroll": {
+      "name": "스트리밍 중 자동 스크롤",
+      "desc": "Gemini가 응답을 스트리밍하는 동안 자동으로 아래로 스크롤합니다. 비활성화하면 상단에 머물러 처음부터 읽을 수 있습니다."
+    },
+    "openInMainTab": {
+      "name": "메인 편집기 영역에서 열기",
+      "desc": "채팅 패널을 오른쪽 사이드바가 아닌 중앙 편집기 영역의 메인 탭으로 엽니다"
+    },
+    "cliPath": {
+      "name": "Gemini CLI 경로",
+      "desc": "Gemini CLI CLI의 사용자 정의 경로. 비워두면 자동 감지 사용.",
+      "descWindows": "네이티브 설치 프로그램의 경우 gemini.exe를 사용하세요. npm/pnpm/yarn 또는 기타 패키지 관리자 설치의 경우 cli.js 경로를 사용하세요 (gemini.cmd가 아님).",
+      "descUnix": "\"which gemini\"의 출력을 붙여넣으세요 - 네이티브 및 npm/pnpm/yarn 설치 모두에서 작동합니다.",
+      "validation": {
+        "notExist": "경로가 존재하지 않습니다",
+        "isDirectory": "경로가 디렉토리입니다 파일이 아닙니다"
+      }
+    },
+    "language": {
+      "name": "언어",
+      "desc": "플러그인 인터페이스의 표시 언어 변경"
+    }
+  }
+}

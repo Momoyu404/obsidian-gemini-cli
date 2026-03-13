@@ -1,0 +1,256 @@
+.obsidian-gemini-tool-call {
+  margin: 8px 0;
+}
+
+.obsidian-gemini-tool-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.obsidian-gemini-tool-header:hover {
+  opacity: 0.85;
+}
+
+.obsidian-gemini-tool-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-accent);
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-tool-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.obsidian-gemini-tool-name {
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-normal);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-tool-summary {
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.obsidian-gemini-tool-summary:empty {
+  display: none;
+}
+
+/* Legacy: StatusPanel bash entries still use obsidian-gemini-tool-label */
+.obsidian-gemini-tool-label {
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-normal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.obsidian-gemini-tool-current {
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.obsidian-gemini-tool-current:empty {
+  display: none;
+}
+
+.obsidian-gemini-tool-status {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.obsidian-gemini-tool-status svg {
+  width: 14px;
+  height: 14px;
+}
+
+.obsidian-gemini-tool-status.status-running {
+  color: var(--text-accent);
+}
+
+.obsidian-gemini-tool-status.status-completed {
+  color: var(--color-green);
+}
+
+.obsidian-gemini-tool-status.status-error {
+  color: var(--color-red);
+}
+
+.obsidian-gemini-tool-status.status-blocked {
+  color: var(--color-orange);
+}
+
+/* Tool call content - border style (like thinking block) */
+.obsidian-gemini-tool-content {
+  padding: 4px 0;
+  padding-inline-start: 16px;
+  margin-inline-start: 7px;
+  border-inline-start: 2px solid var(--background-modifier-border);
+}
+
+/* Tool content variants that render inline widgets instead of bordered results */
+.obsidian-gemini-tool-content-todo,
+.obsidian-gemini-tool-content-ask {
+  border-inline-start: none;
+  margin-inline-start: 0;
+  padding-inline-start: 0;
+}
+
+/* Expanded content: per-line rendering */
+.obsidian-gemini-tool-lines {
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-x: auto;
+}
+
+.obsidian-gemini-tool-line {
+  padding: 1px 0;
+  color: var(--text-muted);
+  white-space: pre;
+}
+
+/* Hover highlight for file search results */
+.obsidian-gemini-tool-line.hoverable:hover {
+  background: var(--background-modifier-hover);
+}
+
+/* Truncation indicator: "... N more lines" */
+.obsidian-gemini-tool-truncated {
+  color: var(--text-faint);
+  font-style: italic;
+  padding: 4px 0;
+  font-family: var(--font-monospace);
+  font-size: 12px;
+}
+
+/* ToolSearch expanded: icon + tool name rows */
+.obsidian-gemini-tool-search-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.obsidian-gemini-tool-search-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--text-faint);
+}
+
+.obsidian-gemini-tool-search-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Web search links */
+.obsidian-gemini-tool-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 3px 0;
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.obsidian-gemini-tool-link:hover {
+  color: var(--text-accent);
+}
+
+.obsidian-gemini-tool-link-icon {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  margin-top: 2px;
+  color: var(--text-faint);
+}
+
+.obsidian-gemini-tool-link-icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+.obsidian-gemini-tool-link-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Web search summary section */
+.obsidian-gemini-tool-web-summary {
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  color: var(--text-muted);
+  padding-top: 4px;
+  border-top: 1px solid var(--background-modifier-border);
+  margin-top: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Empty state for file search */
+.obsidian-gemini-tool-empty {
+  color: var(--text-faint);
+  font-style: italic;
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.obsidian-gemini-tool-result-row {
+  display: flex;
+  align-items: flex-start;
+}
+
+.obsidian-gemini-tool-result-text {
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow: hidden;
+  flex: 1;
+}
+
+.obsidian-gemini-tool-result-item {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.obsidian-gemini-tool-result-item:last-child {
+  margin-bottom: 0;
+}
+

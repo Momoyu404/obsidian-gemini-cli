@@ -1,0 +1,272 @@
+{
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "add": "Adicionar",
+    "remove": "Remover",
+    "clear": "Limpar",
+    "clearAll": "Limpar tudo",
+    "loading": "Carregando",
+    "error": "Erro",
+    "success": "Sucesso",
+    "warning": "Aviso",
+    "confirm": "Confirmar",
+    "settings": "Configurações",
+    "advanced": "Avançado",
+    "enabled": "Ativado",
+    "disabled": "Desativado",
+    "platform": "Plataforma",
+    "refresh": "Atualizar"
+  },
+  "chat": {
+    "fork": {
+      "ariaLabel": "Bifurcar conversa",
+      "chooseTarget": "Bifurcar conversa",
+      "targetNewTab": "Nova aba",
+      "targetCurrentTab": "Aba atual",
+      "maxTabsReached": "Não é possível bifurcar: máximo de {count} abas atingido",
+      "notice": "Bifurcado para nova aba",
+      "noticeCurrentTab": "Bifurcado na aba atual",
+      "failed": "Falha ao bifurcar: {error}",
+      "unavailableStreaming": "Não é possível bifurcar durante a transmissão",
+      "unavailableNoUuid": "Não é possível bifurcar: identificadores de mensagem ausentes",
+      "unavailableNoResponse": "Não é possível bifurcar: nenhuma resposta para bifurcar",
+      "errorMessageNotFound": "Mensagem não encontrada",
+      "errorNoSession": "Nenhum ID de sessão disponível",
+      "errorNoActiveTab": "Nenhuma aba ativa",
+      "commandNoMessages": "Não é possível bifurcar: não há mensagens na conversa",
+      "commandNoAssistantUuid": "Não é possível bifurcar: não há resposta do assistente com identificadores"
+    },
+    "bangBash": {
+      "placeholder": "> Executar um comando bash...",
+      "commandPanel": "Painel de comandos",
+      "copyAriaLabel": "Copiar a saída do comando mais recente",
+      "clearAriaLabel": "Limpar a saída do bash",
+      "commandLabel": "{command}",
+      "statusLabel": "Estado: {status}",
+      "collapseOutput": "Recolher a saída do comando",
+      "expandOutput": "Expandir a saída do comando",
+      "running": "Executando...",
+      "copyFailed": "Falha ao copiar para a área de transferência"
+    }
+  },
+  "settings": {
+    "title": "Configurações do Geminian",
+    "customization": "Personalização",
+    "userName": {
+      "name": "Como o Geminian deve chamá-lo?",
+      "desc": "Seu nome para saudações personalizadas (deixe vazio para saudações genéricas)"
+    },
+    "excludedTags": {
+      "name": "Tags excluídas",
+      "desc": "Notas com estas tags não serão carregadas automaticamente como contexto (uma por linha, sem #)"
+    },
+    "mediaFolder": {
+      "name": "Pasta de mídia",
+      "desc": "Pasta contendo anexos/imagens. Quando notas usam ![[image.jpg]], Gemini procurará aqui. Deixe vazio para a raiz do repositório."
+    },
+    "systemPrompt": {
+      "name": "Prompt de sistema personalizado",
+      "desc": "Instruções adicionais anexadas ao prompt de sistema padrão"
+    },
+    "autoTitle": {
+      "name": "Gerar automaticamente títulos de conversa",
+      "desc": "Gera automaticamente títulos de conversa após a primeira mensagem do usuário."
+    },
+    "titleModel": {
+      "name": "Modelo de geração de título",
+      "desc": "Modelo usado para gerar automaticamente títulos de conversa.",
+      "auto": "Automático (Haiku)"
+    },
+    "navMappings": {
+      "name": "Mapeamentos de navegação estilo Vim",
+      "desc": "Um mapeamento por linha. Formato: \"map <tecla> <ação>\" (ações: scrollUp, scrollDown, focusInput)."
+    },
+    "hotkeys": "Atalhos",
+    "inlineEditHotkey": {
+      "name": "Edição em linha",
+      "descWithKey": "Atalho atual: {hotkey}",
+      "descNoKey": "Nenhum atalho definido",
+      "btnChange": "Alterar",
+      "btnSet": "Definir"
+    },
+    "openChatHotkey": {
+      "name": "Abrir chat",
+      "descWithKey": "Atalho atual: {hotkey}",
+      "descNoKey": "Nenhum atalho definido",
+      "btnChange": "Alterar",
+      "btnSet": "Definir"
+    },
+    "newSessionHotkey": {
+      "name": "Nova sessão",
+      "descWithKey": "Atalho atual: {hotkey}",
+      "descNoKey": "Nenhum atalho definido",
+      "btnChange": "Alterar",
+      "btnSet": "Definir"
+    },
+    "newTabHotkey": {
+      "name": "Nova aba",
+      "descWithKey": "Atalho atual: {hotkey}",
+      "descNoKey": "Nenhum atalho definido",
+      "btnChange": "Alterar",
+      "btnSet": "Definir"
+    },
+    "closeTabHotkey": {
+      "name": "Fechar aba",
+      "descWithKey": "Atalho atual: {hotkey}",
+      "descNoKey": "Nenhum atalho definido",
+      "btnChange": "Alterar",
+      "btnSet": "Definir"
+    },
+    "slashCommands": {
+      "name": "Comandos e habilidades",
+      "desc": "Defina comandos e habilidades personalizados acionados por /nome."
+    },
+    "hiddenSlashCommands": {
+      "name": "Comandos ocultos",
+      "desc": "Ocultar comandos slash específicos do menu suspenso. Útil para ocultar comandos do Gemini CLI que não são relevantes para o Geminian. Digite os nomes dos comandos sem a barra inicial, um por linha.",
+      "placeholder": "commit\nbuild\ntest"
+    },
+    "mcpServers": {
+      "name": "Servidores MCP",
+      "desc": "Configure servidores Model Context Protocol para estender as capacidades do Gemini com ferramentas e fontes de dados externas. Servidores com modo de salvamento de contexto exigem @mention para ativar."
+    },
+    "plugins": {
+      "name": "Plugins do Gemini CLI",
+      "desc": "Ative ou desative plugins do Gemini CLI descobertos em ~/.gemini/plugins. Plugins ativados são armazenados por cofre."
+    },
+    "subagents": {
+      "name": "Subagentes",
+      "desc": "Configure subagentes personalizados para os quais Gemini pode delegar.",
+      "noAgents": "Nenhum subagente configurado. Clique em + para criar um.",
+      "deleteConfirm": "Excluir o subagente \"{name}\"?",
+      "saveFailed": "Falha ao salvar o subagente: {message}",
+      "refreshFailed": "Falha ao atualizar subagentes: {message}",
+      "deleteFailed": "Falha ao excluir o subagente: {message}",
+      "renameCleanupFailed": "Aviso: não foi possível remover o arquivo antigo de \"{name}\"",
+      "created": "Subagente \"{name}\" criado",
+      "updated": "Subagente \"{name}\" atualizado",
+      "deleted": "Subagente \"{name}\" excluído",
+      "duplicateName": "Já existe um agente chamado \"{name}\"",
+      "descriptionRequired": "A descrição é obrigatória",
+      "promptRequired": "O prompt do sistema é obrigatório",
+      "modal": {
+        "titleEdit": "Editar subagente",
+        "titleAdd": "Adicionar subagente",
+        "name": "Nome",
+        "nameDesc": "Use apenas letras minúsculas, números e hífens",
+        "namePlaceholder": "code-reviewer",
+        "description": "Descrição",
+        "descriptionDesc": "Breve descrição deste agente",
+        "descriptionPlaceholder": "Revisa código em busca de bugs e estilo",
+        "advancedOptions": "Opções avançadas",
+        "model": "Modelo",
+        "modelDesc": "Substituir o modelo deste agente",
+        "tools": "Ferramentas",
+        "toolsDesc": "Lista de ferramentas permitidas separadas por vírgula (vazio = todas)",
+        "disallowedTools": "Ferramentas não permitidas",
+        "disallowedToolsDesc": "Lista de ferramentas a desativar separadas por vírgula",
+        "skills": "Habilidades",
+        "skillsDesc": "Lista de habilidades separadas por vírgula",
+        "prompt": "Prompt do sistema",
+        "promptDesc": "Instruções para o agente",
+        "promptPlaceholder": "Você é um revisor de código. Analise o código fornecido para..."
+      }
+    },
+    "safety": "Segurança",
+    "loadUserSettings": {
+      "name": "Carregar configurações do usuário Gemini",
+      "desc": "Carrega ~/.gemini/settings.json. Quando habilitado, as regras de permissão do usuário podem ignorar o modo seguro."
+    },
+    "enableBlocklist": {
+      "name": "Habilitar lista negra de comandos",
+      "desc": "Bloqueia comandos bash potencialmente perigosos"
+    },
+    "blockedCommands": {
+      "name": "Comandos bloqueados ({platform})",
+      "desc": "Padrões para bloquear em {platform} (um por linha). Suporta expressões regulares.",
+      "unixName": "Comandos bloqueados (Unix/Git Bash)",
+      "unixDesc": "Padrões Unix também bloqueados no Windows porque Git Bash pode invocá-los."
+    },
+    "exportPaths": {
+      "name": "Caminhos de exportação permitidos",
+      "desc": "Caminhos fora do repositório onde arquivos podem ser exportados (um por linha). Suporta ~ para diretório home."
+    },
+    "environment": "Ambiente",
+    "customVariables": {
+      "name": "Variáveis personalizadas",
+      "desc": "Variáveis de ambiente para Gemini SDK (formato KEY=VALUE, uma por linha). Prefixo export suportado."
+    },
+    "envSnippets": {
+      "name": "Snippets",
+      "addBtn": "Adicionar snippet",
+      "noSnippets": "Nenhum snippet de ambiente salvo. Clique em + para salvar sua configuração atual.",
+      "nameRequired": "Por favor, insira um nome para o snippet",
+      "modal": {
+        "titleEdit": "Editar snippet",
+        "titleSave": "Salvar snippet",
+        "name": "Nome",
+        "namePlaceholder": "Um nome descritivo para esta configuração",
+        "description": "Descrição",
+        "descPlaceholder": "Descrição opcional",
+        "envVars": "Variáveis de ambiente",
+        "envVarsPlaceholder": "Formato KEY=VALUE, uma por linha (prefixo export suportado)",
+        "save": "Salvar",
+        "update": "Atualizar",
+        "cancel": "Cancelar"
+      }
+    },
+    "customContextLimits": {
+      "name": "Limites de contexto personalizados",
+      "desc": "Defina tamanhos de janela de contexto para seus modelos personalizados. Deixe vazio para usar o padrão (200k tokens).",
+      "invalid": "Formato inválido. Use: 256k, 1m ou número exato (1000-10000000)."
+    },
+    "advanced": "Avançado",
+    "show1MModel": {
+      "name": "Habilitar Sonnet com janela de contexto de 1M",
+      "desc": "Substituir Sonnet padrão por Sonnet (1M) no seletor de modelos. Mesmo preço abaixo de 200k tokens. Requer assinatura Max."
+    },
+    "enableBangBash": {
+      "name": "Ativar modo bash (!)",
+      "desc": "Digite ! com a entrada vazia para entrar no modo bash. Executa comandos diretamente via Node.js child_process. Requer reabrir a visualização.",
+      "validation": {
+        "noNode": "Node.js não encontrado no PATH. Instale o Node.js ou verifique a configuração do PATH."
+      }
+    },
+    "maxTabs": {
+      "name": "Máximo de abas de chat",
+      "desc": "Número máximo de abas de chat simultâneas (3-10). Cada aba usa uma sessão Gemini separada.",
+      "warning": "Mais de 5 abas pode afetar o desempenho e o uso de memória."
+    },
+    "tabBarPosition": {
+      "name": "Posição da barra de abas",
+      "desc": "Escolha onde exibir os emblemas de abas e botões de ação",
+      "input": "Acima da entrada (padrão)",
+      "header": "No cabeçalho"
+    },
+    "enableAutoScroll": {
+      "name": "Rolagem automática durante streaming",
+      "desc": "Rolar automaticamente para baixo enquanto o Gemini transmite respostas. Desativar para ficar no topo e ler desde o início."
+    },
+    "openInMainTab": {
+      "name": "Abrir na área do editor principal",
+      "desc": "Abrir o painel de chat como uma aba principal na área do editor central em vez da barra lateral direita"
+    },
+    "cliPath": {
+      "name": "Caminho CLI Gemini",
+      "desc": "Caminho personalizado para Gemini CLI CLI. Deixe vazio para detecção automática.",
+      "descWindows": "Para o instalador nativo, use gemini.exe. Para instalações com npm/pnpm/yarn ou outros gerenciadores de pacotes, use o caminho cli.js (não gemini.cmd).",
+      "descUnix": "Cole a saída de \"which gemini\" — funciona tanto para instalações nativas quanto npm/pnpm/yarn.",
+      "validation": {
+        "notExist": "Caminho não existe",
+        "isDirectory": "Caminho é um diretório, não um arquivo"
+      }
+    },
+    "language": {
+      "name": "Idioma",
+      "desc": "Alterar o idioma de exibição da interface do plugin"
+    }
+  }
+}

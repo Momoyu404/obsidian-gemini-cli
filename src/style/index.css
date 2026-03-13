@@ -1,0 +1,58 @@
+/* CSS module order. scripts/build-css.mjs reads these @import lines. */
+/* Add new modules here to include them in the build. */
+
+/* Base */
+@import "./base/variables.css";
+@import "./base/container.css";
+@import "./base/animations.css";
+@import "./base/responsive.css";
+
+/* Components */
+@import "./components/header.css";
+@import "./components/tabs.css";
+@import "./components/history.css";
+@import "./components/messages.css";
+@import "./components/nav-sidebar.css";
+@import "./components/code.css";
+@import "./components/thinking.css";
+@import "./components/toolcalls.css";
+@import "./components/status-panel.css";
+@import "./components/subagent.css";
+@import "./components/input.css";
+@import "./components/context-footer.css";
+
+/* Toolbar */
+@import "./toolbar/model-selector.css";
+@import "./toolbar/thinking-selector.css";
+@import "./toolbar/permission-toggle.css";
+@import "./toolbar/external-context.css";
+@import "./toolbar/mcp-selector.css";
+
+/* Features */
+@import "./features/file-context.css";
+@import "./features/file-link.css";
+@import "./features/image-context.css";
+@import "./features/image-embed.css";
+@import "./features/image-modal.css";
+@import "./features/inline-edit.css";
+@import "./features/diff.css";
+@import "./features/slash-commands.css";
+@import "./features/resume-session.css";
+@import "./features/ask-user-question.css";
+@import "./features/plan-mode.css";
+
+/* Modals */
+@import "./modals/instruction.css";
+@import "./modals/mcp-modal.css";
+@import "./modals/fork-target.css";
+
+/* Settings */
+@import "./settings/base.css";
+@import "./settings/env-snippets.css";
+@import "./settings/slash-settings.css";
+@import "./settings/mcp-settings.css";
+@import "./settings/plugin-settings.css";
+@import "./settings/agent-settings.css";
+
+/* Accessibility */
+@import "./accessibility.css";

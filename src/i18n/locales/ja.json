@@ -1,0 +1,272 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "add": "追加",
+    "remove": "削除",
+    "clear": "クリア",
+    "clearAll": "すべてクリア",
+    "loading": "読み込み中",
+    "error": "エラー",
+    "success": "成功",
+    "warning": "警告",
+    "confirm": "確認",
+    "settings": "設定",
+    "advanced": "詳細",
+    "enabled": "有効",
+    "disabled": "無効",
+    "platform": "プラットフォーム",
+    "refresh": "更新"
+  },
+  "chat": {
+    "fork": {
+      "ariaLabel": "会話を分岐",
+      "chooseTarget": "会話を分岐",
+      "targetNewTab": "新しいタブ",
+      "targetCurrentTab": "現在のタブ",
+      "maxTabsReached": "分岐できません：最大 {count} タブに達しました",
+      "notice": "新しいタブに分岐しました",
+      "noticeCurrentTab": "現在のタブで分岐しました",
+      "failed": "分岐に失敗：{error}",
+      "unavailableStreaming": "ストリーミング中は分岐できません",
+      "unavailableNoUuid": "分岐できません：メッセージ識別子がありません",
+      "unavailableNoResponse": "分岐できません：分岐元の応答がありません",
+      "errorMessageNotFound": "メッセージが見つかりません",
+      "errorNoSession": "セッション ID がありません",
+      "errorNoActiveTab": "アクティブなタブがありません",
+      "commandNoMessages": "フォークできません: 会話にメッセージがありません",
+      "commandNoAssistantUuid": "フォークできません: 識別子付きのアシスタント応答がありません"
+    },
+    "bangBash": {
+      "placeholder": "> bash コマンドを実行...",
+      "commandPanel": "コマンドパネル",
+      "copyAriaLabel": "最新のコマンド出力をコピー",
+      "clearAriaLabel": "bash 出力をクリア",
+      "commandLabel": "{command}",
+      "statusLabel": "状態: {status}",
+      "collapseOutput": "コマンド出力を折りたたむ",
+      "expandOutput": "コマンド出力を展開",
+      "running": "実行中...",
+      "copyFailed": "クリップボードへのコピーに失敗しました"
+    }
+  },
+  "settings": {
+    "title": "Geminian 設定",
+    "customization": "カスタマイズ",
+    "userName": {
+      "name": "Geminian はどのように呼びますか？",
+      "desc": "パーソナライズされた挨拶に使用する名前（空欄で一般の挨拶）"
+    },
+    "excludedTags": {
+      "name": "除外タグ",
+      "desc": "これらのタグを含むノートは自動的にコンテキストとして読み込まれません（1行に1つ、#なし）"
+    },
+    "mediaFolder": {
+      "name": "メディアフォルダ",
+      "desc": "添付ファイル/画像を格納するフォルダ。ノートが ![[image.jpg]] を使用する場合、Gemini はここで探します。空欄でリポジトリのルートを使用。"
+    },
+    "systemPrompt": {
+      "name": "カスタムシステムプロンプト",
+      "desc": "デフォルトのシステムプロンプトに追加される追加指示"
+    },
+    "autoTitle": {
+      "name": "会話タイトルを自動生成",
+      "desc": "最初のユーザーメッセージ送信後に会話タイトルを自動的に生成します。"
+    },
+    "titleModel": {
+      "name": "タイトル生成モデル",
+      "desc": "会話タイトルを自動生成するために使用されるモデル。",
+      "auto": "自動 (Haiku)"
+    },
+    "navMappings": {
+      "name": "Vimスタイルナビゲーションマッピング",
+      "desc": "1行に1つのマッピング。形式：\"map <キー> <アクション>\"（アクション：scrollUp, scrollDown, focusInput）。"
+    },
+    "hotkeys": "ホットキー",
+    "inlineEditHotkey": {
+      "name": "インライン編集",
+      "descWithKey": "現在のホットキー: {hotkey}",
+      "descNoKey": "ホットキー未設定",
+      "btnChange": "変更",
+      "btnSet": "設定"
+    },
+    "openChatHotkey": {
+      "name": "チャットを開く",
+      "descWithKey": "現在のホットキー: {hotkey}",
+      "descNoKey": "ホットキー未設定",
+      "btnChange": "変更",
+      "btnSet": "設定"
+    },
+    "newSessionHotkey": {
+      "name": "新規セッション",
+      "descWithKey": "現在のホットキー: {hotkey}",
+      "descNoKey": "ホットキー未設定",
+      "btnChange": "変更",
+      "btnSet": "設定"
+    },
+    "newTabHotkey": {
+      "name": "新規タブ",
+      "descWithKey": "現在のホットキー: {hotkey}",
+      "descNoKey": "ホットキー未設定",
+      "btnChange": "変更",
+      "btnSet": "設定"
+    },
+    "closeTabHotkey": {
+      "name": "タブを閉じる",
+      "descWithKey": "現在のホットキー: {hotkey}",
+      "descNoKey": "ホットキー未設定",
+      "btnChange": "変更",
+      "btnSet": "設定"
+    },
+    "slashCommands": {
+      "name": "コマンドとスキル",
+      "desc": "/名前 でトリガーされるカスタムコマンドとスキルを定義します。"
+    },
+    "hiddenSlashCommands": {
+      "name": "非表示コマンド",
+      "desc": "ドロップダウンから特定のスラッシュコマンドを非表示にします。Geminian に関係のない Gemini CLI コマンドを非表示にするのに便利です。先頭のスラッシュなしでコマンド名を1行に1つ入力してください。",
+      "placeholder": "commit\nbuild\ntest"
+    },
+    "mcpServers": {
+      "name": "MCP サーバー",
+      "desc": "モデルコンテキストプロトコルサーバーを設定し、外部ツールやデータソースで Gemini の機能を拡張します。コンテキスト保存モードのサーバーは @mention でアクティブにする必要があります。"
+    },
+    "plugins": {
+      "name": "Gemini CLI プラグイン",
+      "desc": "~/.gemini/plugins から検出された Gemini CLI プラグインを有効化または無効化します。有効化されたプラグインは保管庫ごとに保存されます。"
+    },
+    "subagents": {
+      "name": "サブエージェント",
+      "desc": "Gemini が委任できるカスタムサブエージェントを設定します。",
+      "noAgents": "サブエージェントが設定されていません。+ をクリックして作成してください。",
+      "deleteConfirm": "サブエージェント「{name}」を削除しますか？",
+      "saveFailed": "サブエージェントの保存に失敗しました: {message}",
+      "refreshFailed": "サブエージェントを更新できませんでした: {message}",
+      "deleteFailed": "サブエージェントの削除に失敗しました: {message}",
+      "renameCleanupFailed": "警告: 「{name}」の古いファイルを削除できませんでした",
+      "created": "サブエージェント「{name}」を作成しました",
+      "updated": "サブエージェント「{name}」を更新しました",
+      "deleted": "サブエージェント「{name}」を削除しました",
+      "duplicateName": "「{name}」という名前のエージェントは既に存在します",
+      "descriptionRequired": "説明は必須です",
+      "promptRequired": "システムプロンプトは必須です",
+      "modal": {
+        "titleEdit": "サブエージェントを編集",
+        "titleAdd": "サブエージェントを追加",
+        "name": "名前",
+        "nameDesc": "小文字、数字、ハイフンのみ使用できます",
+        "namePlaceholder": "code-reviewer",
+        "description": "説明",
+        "descriptionDesc": "このエージェントの簡単な説明",
+        "descriptionPlaceholder": "コードのバグやスタイルをレビューします",
+        "advancedOptions": "詳細オプション",
+        "model": "モデル",
+        "modelDesc": "このエージェントのモデル上書き",
+        "tools": "ツール",
+        "toolsDesc": "許可するツールのカンマ区切りリスト（空欄 = すべて）",
+        "disallowedTools": "禁止ツール",
+        "disallowedToolsDesc": "禁止するツールのカンマ区切りリスト",
+        "skills": "スキル",
+        "skillsDesc": "スキルのカンマ区切りリスト",
+        "prompt": "システムプロンプト",
+        "promptDesc": "エージェントへの指示",
+        "promptPlaceholder": "あなたはコードレビュアーです。与えられたコードを分析して..."
+      }
+    },
+    "safety": "セキュリティ",
+    "loadUserSettings": {
+      "name": "ユーザーGemini設定を読み込む",
+      "desc": "~/.gemini/settings.json を読み込みます。有効にすると、ユーザーの Gemini CLI 許可ルールがセキュリティモードをバイパスする可能性があります。"
+    },
+    "enableBlocklist": {
+      "name": "コマンドブラックリストを有効化",
+      "desc": "潜在的に危険なbashコマンドをブロック"
+    },
+    "blockedCommands": {
+      "name": "ブロックされたコマンド ({platform})",
+      "desc": "{platform} でブロックするパターン（1行に1つ）。正規表現をサポート。",
+      "unixName": "ブロックされたコマンド (Unix/Git Bash)",
+      "unixDesc": "Git Bashが呼び出せるため、UnixパターンもWindows上でブロックされます。"
+    },
+    "exportPaths": {
+      "name": "許可されたエクスポートパス",
+      "desc": "ファイルをエクスポートできるリポジトリ外のパス（1行に1つ）。~ でホームディレクトリをサポート。"
+    },
+    "environment": "環境",
+    "customVariables": {
+      "name": "カスタム変数",
+      "desc": "Gemini SDKの環境変数（KEY=VALUE形式、1行に1つ）。exportプレフィックス対応。"
+    },
+    "envSnippets": {
+      "name": "スニペット",
+      "addBtn": "スニペットを追加",
+      "noSnippets": "保存された環境変数スニペットはありません。+をクリックして現在の設定を保存してください。",
+      "nameRequired": "スニペットの名前を入力してください",
+      "modal": {
+        "titleEdit": "スニペットを編集",
+        "titleSave": "スニペットを保存",
+        "name": "名前",
+        "namePlaceholder": "この設定のわかりやすい名前",
+        "description": "説明",
+        "descPlaceholder": "任意の説明",
+        "envVars": "環境変数",
+        "envVarsPlaceholder": "KEY=VALUE形式、1行に1つ（exportプレフィックス対応）",
+        "save": "保存",
+        "update": "更新",
+        "cancel": "キャンセル"
+      }
+    },
+    "customContextLimits": {
+      "name": "カスタムコンテキスト制限",
+      "desc": "カスタムモデルのコンテキストウィンドウサイズを設定します。デフォルト（200kトークン）を使用する場合は空欄のままにしてください。",
+      "invalid": "無効な形式です。使用：256k、1m、または正確な数値（1000-10000000）。"
+    },
+    "advanced": "詳細設定",
+    "show1MModel": {
+      "name": "1Mコンテキストウィンドウを持つSonnetを有効化",
+      "desc": "モデルセレクターで標準Sonnetを Sonnet (1M) に置き換えます。200kトークン未満では同じ価格。Maxサブスクリプションが必要です。"
+    },
+    "enableBangBash": {
+      "name": "bash モード (!) を有効化",
+      "desc": "入力欄が空の状態で ! を入力すると bash モードに入ります。Node.js の child_process 経由でコマンドを直接実行します。ビューの再オープンが必要です。",
+      "validation": {
+        "noNode": "PATH に Node.js が見つかりません。Node.js をインストールするか、PATH 設定を確認してください。"
+      }
+    },
+    "maxTabs": {
+      "name": "最大チャットタブ数",
+      "desc": "同時に開ける最大チャットタブ数（3-10）。各タブは個別の Gemini セッションを使用します。",
+      "warning": "5 タブを超えるとパフォーマンスやメモリ使用量に影響する可能性があります。"
+    },
+    "tabBarPosition": {
+      "name": "タブバーの位置",
+      "desc": "タブバッジとアクションボタンの表示位置を選択",
+      "input": "入力欄の上（デフォルト）",
+      "header": "ヘッダー内"
+    },
+    "enableAutoScroll": {
+      "name": "ストリーミング中の自動スクロール",
+      "desc": "Geminiが応答をストリーミングしている間、自動的に下にスクロールします。無効にすると上部に留まり、最初から読むことができます。"
+    },
+    "openInMainTab": {
+      "name": "メインエディタ領域で開く",
+      "desc": "チャットパネルを右サイドバーではなく、中央エディタ領域のメインタブとして開きます"
+    },
+    "cliPath": {
+      "name": "Gemini CLI パス",
+      "desc": "Gemini CLI CLI のカスタムパス。空欄で自動検出を使用。",
+      "descWindows": "ネイティブインストーラーの場合は gemini.exe を使用。npm/pnpm/yarn やその他のパッケージマネージャーでのインストールの場合は cli.js パスを使用（gemini.cmd ではない）。",
+      "descUnix": "\"which gemini\" の出力を貼り付けてください - ネイティブと npm/pnpm/yarn インストールの両方で動作します。",
+      "validation": {
+        "notExist": "パスが存在しません",
+        "isDirectory": "パスはディレクトリでファイルではありません"
+      }
+    },
+    "language": {
+      "name": "言語",
+      "desc": "プラグインインターフェースの表示言語を変更"
+    }
+  }
+}

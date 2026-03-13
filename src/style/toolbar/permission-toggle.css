@@ -1,0 +1,86 @@
+/* Permission Mode Selector (dropdown, mirrors model-selector pattern) */
+.obsidian-gemini-permission-selector {
+  position: relative;
+  margin-left: auto;
+  padding-left: 8px;
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-permission-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: color 0.2s ease;
+  min-width: 0;
+}
+
+.obsidian-gemini-permission-label {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Mode-specific colors on the button */
+.obsidian-gemini-permission-selector.mode-plan .obsidian-gemini-permission-btn {
+  color: rgb(92, 148, 140);
+}
+
+.obsidian-gemini-permission-selector.mode-build .obsidian-gemini-permission-btn {
+  color: var(--obsidian-gemini-brand, #8a58ff);
+}
+
+/* Dropdown (hover to show, like model selector) */
+.obsidian-gemini-permission-dropdown {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  width: max-content;
+  padding: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.obsidian-gemini-permission-selector:hover .obsidian-gemini-permission-dropdown {
+  opacity: 1;
+  visibility: visible;
+}
+
+.obsidian-gemini-permission-option {
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-radius: 3px;
+  transition: background 0.1s ease, color 0.1s ease;
+  white-space: nowrap;
+}
+
+.obsidian-gemini-permission-option:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-permission-option.selected {
+  background: rgba(var(--obsidian-gemini-brand-rgb, 138, 88, 255), 0.15);
+  color: var(--obsidian-gemini-brand, #8a58ff);
+  font-weight: 500;
+}
+
+/* Plan mode selected option gets teal highlight */
+.obsidian-gemini-permission-selector.mode-plan .obsidian-gemini-permission-option.selected {
+  background: rgba(92, 148, 140, 0.15);
+  color: rgb(92, 148, 140);
+}

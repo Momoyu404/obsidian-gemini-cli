@@ -1,0 +1,75 @@
+/* Header - logo, title/tabs slot, and actions */
+.obsidian-gemini-header {
+  display: flex;
+  align-items: center;
+  padding: 0 12px 12px 12px;
+}
+
+/* Title slot: contains logo + title (or tabs in header mode) */
+.obsidian-gemini-title-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;  /* Allow flex item to shrink below content size */
+}
+
+/* Legacy class for backwards compatibility */
+.obsidian-gemini-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.obsidian-gemini-title-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.obsidian-gemini-logo {
+  display: flex;
+  align-items: center;
+}
+
+/* Header actions (end side - always stays at end via margin-inline-start: auto) */
+.obsidian-gemini-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+.obsidian-gemini-header-actions-slot {
+  /* No margin-inline-start: auto here; it's set by the base .obsidian-gemini-header-actions */
+}
+
+.obsidian-gemini-header .obsidian-gemini-tab-bar-container {
+  display: flex;
+  gap: 4px;
+}
+
+.obsidian-gemini-header-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-faint);
+  transition: color 0.15s ease;
+}
+
+.obsidian-gemini-header-btn:hover {
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-header-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.obsidian-gemini-new-tab-btn svg {
+  width: 16.8px;
+  height: 16.8px;
+}

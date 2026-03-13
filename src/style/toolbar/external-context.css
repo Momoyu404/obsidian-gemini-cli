@@ -1,0 +1,177 @@
+/* External Context Selector */
+.obsidian-gemini-external-context-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.obsidian-gemini-external-context-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.obsidian-gemini-external-context-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--text-faint);
+  transition: color 0.15s ease;
+}
+
+.obsidian-gemini-external-context-icon-wrapper:hover .obsidian-gemini-external-context-icon {
+  color: var(--text-normal);
+}
+
+.obsidian-gemini-external-context-icon.active {
+  color: var(--obsidian-gemini-brand);
+  animation: external-context-glow 2s ease-in-out infinite;
+}
+
+.obsidian-gemini-external-context-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.obsidian-gemini-external-context-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--obsidian-gemini-brand);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.obsidian-gemini-external-context-badge.visible {
+  opacity: 1;
+}
+
+.obsidian-gemini-external-context-dropdown {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 100%;
+  margin-bottom: 4px;
+  min-width: 260px;
+  max-width: 320px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  z-index: 100;
+}
+
+.obsidian-gemini-external-context-selector:hover .obsidian-gemini-external-context-dropdown {
+  opacity: 1;
+  visibility: visible;
+}
+
+.obsidian-gemini-external-context-header {
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.obsidian-gemini-external-context-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.obsidian-gemini-external-context-empty {
+  padding: 16px 12px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.obsidian-gemini-external-context-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 8px;
+  border-bottom: 1px solid var(--background-modifier-border-focus);
+}
+
+.obsidian-gemini-external-context-item:last-child {
+  border-bottom: none;
+}
+
+.obsidian-gemini-external-context-text {
+  flex: 1;
+  font-size: 12px;
+  font-family: var(--font-monospace);
+  color: var(--text-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.obsidian-gemini-external-context-lock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  opacity: 0.4;
+  transition: all 0.15s ease;
+}
+
+.obsidian-gemini-external-context-lock:hover {
+  background: var(--background-modifier-hover);
+  opacity: 0.8;
+}
+
+.obsidian-gemini-external-context-lock.locked {
+  color: var(--obsidian-gemini-brand);
+  opacity: 0.9;
+}
+
+.obsidian-gemini-external-context-lock.locked:hover {
+  opacity: 1;
+}
+
+.obsidian-gemini-external-context-lock svg {
+  width: 12px;
+  height: 12px;
+}
+
+.obsidian-gemini-external-context-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  opacity: 0.6;
+  transition: all 0.15s ease;
+}
+
+.obsidian-gemini-external-context-remove:hover {
+  background: rgba(var(--obsidian-gemini-error-rgb), 0.15);
+  color: var(--obsidian-gemini-error);
+  opacity: 1;
+}
+
+.obsidian-gemini-external-context-remove svg {
+  width: 14px;
+  height: 14px;
+}

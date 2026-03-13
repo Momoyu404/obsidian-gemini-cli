@@ -1,0 +1,124 @@
+import { collapseElement, setupCollapsible } from './collapsible';
+
+export type RenderContentFn = (el: HTMLElement, markdown: string) => Promise<void>;
+
+export interface ThinkingBlockState {
+  wrapperEl: HTMLElement;
+  contentEl: HTMLElement;
+  labelEl: HTMLElement;
+  content: string;
+  startTime: number;
+  timerInterval: ReturnType<typeof setInterval> | null;
+  isExpanded: boolean;
+}
+
+export function createThinkingBlock(
+  parentEl: HTMLElement,
+  renderContent: RenderContentFn
+): ThinkingBlockState {
+  const wrapperEl = parentEl.createDiv({ cls: 'obsidian-gemini-thinking-block' });
+
+  // Header (clickable to expand/collapse)
+  const header = wrapperEl.createDiv({ cls: 'obsidian-gemini-thinking-header' });
+  header.setAttribute('tabindex', '0');
+  header.setAttribute('role', 'button');
+  header.setAttribute('aria-expanded', 'false');
+  header.setAttribute('aria-label', 'Extended thinking - click to expand');
+
+  // Label with timer
+  const labelEl = header.createSpan({ cls: 'obsidian-gemini-thinking-label' });
+  const startTime = Date.now();
+  labelEl.setText('Thinking 0s...');
+
+  // Start timer interval to update label every second
+  const timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    labelEl.setText(`Thinking ${elapsed}s...`);
+  }, 1000);
+
+  // Collapsible content (collapsed by default)
+  const contentEl = wrapperEl.createDiv({ cls: 'obsidian-gemini-thinking-content' });
+
+  // Create state object first so toggle can reference it
+  const state: ThinkingBlockState = {
+    wrapperEl,
+    contentEl,
+    labelEl,
+    content: '',
+    startTime,
+    timerInterval,
+    isExpanded: false,
+  };
+
+  // Setup collapsible behavior (handles click, keyboard, ARIA, CSS)
+  setupCollapsible(wrapperEl, header, contentEl, state);
+
+  return state;
+}
+
+export async function appendThinkingContent(
+  state: ThinkingBlockState,
+  content: string,
+  renderContent: RenderContentFn
+) {
+  state.content += content;
+  await renderContent(state.contentEl, state.content);
+}
+
+export function finalizeThinkingBlock(state: ThinkingBlockState): number {
+  // Stop the timer
+  if (state.timerInterval) {
+    clearInterval(state.timerInterval);
+    state.timerInterval = null;
+  }
+
+  // Calculate final duration
+  const durationSeconds = Math.floor((Date.now() - state.startTime) / 1000);
+
+  // Update label to show final duration (without "...")
+  state.labelEl.setText(`Thought for ${durationSeconds}s`);
+
+  // Collapse when done and sync state
+  const header = state.wrapperEl.querySelector('.obsidian-gemini-thinking-header');
+  if (header) {
+    collapseElement(state.wrapperEl, header as HTMLElement, state.contentEl, state);
+  }
+
+  return durationSeconds;
+}
+
+export function cleanupThinkingBlock(state: ThinkingBlockState | null) {
+  if (state?.timerInterval) {
+    clearInterval(state.timerInterval);
+  }
+}
+
+export function renderStoredThinkingBlock(
+  parentEl: HTMLElement,
+  content: string,
+  durationSeconds: number | undefined,
+  renderContent: RenderContentFn
+): HTMLElement {
+  const wrapperEl = parentEl.createDiv({ cls: 'obsidian-gemini-thinking-block' });
+
+  // Header (clickable to expand/collapse)
+  const header = wrapperEl.createDiv({ cls: 'obsidian-gemini-thinking-header' });
+  header.setAttribute('tabindex', '0');
+  header.setAttribute('role', 'button');
+  header.setAttribute('aria-label', 'Extended thinking - click to expand');
+
+  // Label with duration
+  const labelEl = header.createSpan({ cls: 'obsidian-gemini-thinking-label' });
+  const labelText = durationSeconds !== undefined ? `Thought for ${durationSeconds}s` : 'Thought';
+  labelEl.setText(labelText);
+
+  // Collapsible content
+  const contentEl = wrapperEl.createDiv({ cls: 'obsidian-gemini-thinking-content' });
+  renderContent(contentEl, content);
+
+  // Setup collapsible behavior (handles click, keyboard, ARIA, CSS)
+  const state = { isExpanded: false };
+  setupCollapsible(wrapperEl, header, contentEl, state);
+
+  return wrapperEl;
+}

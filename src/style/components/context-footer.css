@@ -1,0 +1,76 @@
+/* Context usage meter (inline in toolbar) */
+
+.obsidian-gemini-context-meter {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-inline-start: 4px;
+  cursor: default;
+}
+
+/* Custom tooltip */
+.obsidian-gemini-context-meter::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: var(--text-normal);
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.obsidian-gemini-context-meter:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.obsidian-gemini-context-meter-gauge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.obsidian-gemini-context-meter-gauge svg {
+  width: 16px;
+  height: 16px;
+}
+
+.obsidian-gemini-meter-bg {
+  stroke: var(--background-modifier-border);
+}
+
+.obsidian-gemini-meter-fill {
+  stroke: var(--obsidian-gemini-brand);
+  transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+}
+
+.obsidian-gemini-context-meter-percent {
+  font-size: 11px;
+  color: var(--obsidian-gemini-brand);
+  min-width: 24px;
+  text-align: end;
+  transition: color 0.3s ease;
+}
+
+/* Warning state (> 80%) - pale red */
+.obsidian-gemini-context-meter.warning .obsidian-gemini-meter-fill {
+  stroke: #E57373;
+}
+
+.obsidian-gemini-context-meter.warning .obsidian-gemini-context-meter-percent {
+  color: #E57373;
+}
