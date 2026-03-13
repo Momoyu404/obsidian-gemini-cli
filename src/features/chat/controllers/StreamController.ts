@@ -62,6 +62,15 @@ export class StreamController {
   // ============================================
 
   async handleStreamChunk(chunk: StreamChunk, msg: ChatMessage): Promise<void> {
+    try {
+      await this.handleStreamChunkInner(chunk, msg);
+    } catch (err) {
+      // Error boundary: log and continue streaming instead of crashing
+      console.error('[StreamController] Failed to handle stream chunk:', err, chunk);
+    }
+  }
+
+  private async handleStreamChunkInner(chunk: StreamChunk, msg: ChatMessage): Promise<void> {
     const { state } = this.deps;
 
     // Route subagent chunks
@@ -78,7 +87,7 @@ export class StreamController {
         if (state.currentTextEl) {
           this.finalizeCurrentTextBlock(msg);
         }
-        await this.appendThinking(chunk.content);
+        this.appendThinking(chunk.content);
         break;
 
       case 'text':
@@ -88,7 +97,7 @@ export class StreamController {
           this.finalizeCurrentThinkingBlock(msg);
         }
         msg.content += chunk.content;
-        await this.appendText(chunk.content);
+        this.appendText(chunk.content);
         break;
 
       case 'tool_use': {
@@ -121,13 +130,13 @@ export class StreamController {
       case 'blocked':
         // Flush pending tools before rendering blocked message
         this.flushPendingTools();
-        await this.appendText(`\n\n⚠️ **Blocked:** ${chunk.content}`);
+        this.appendText(`\n\n⚠️ **Blocked:** ${chunk.content}`);
         break;
 
       case 'error':
         // Flush pending tools before rendering error message
         this.flushPendingTools();
-        await this.appendText(`\n\n❌ **Error:** ${chunk.content}`);
+        this.appendText(`\n\n❌ **Error:** ${chunk.content}`);
         break;
 
       case 'done':
@@ -432,7 +441,7 @@ export class StreamController {
   // Text Block Management
   // ============================================
 
-  async appendText(text: string): Promise<void> {
+  appendText(text: string): void {
     const { state, renderer } = this.deps;
     if (!state.currentContentEl) return;
 
@@ -444,16 +453,29 @@ export class StreamController {
     }
 
     state.currentTextContent += text;
-    await renderer.renderContent(state.currentTextEl, state.currentTextContent);
+
+    // Batch rendering within a single animation frame to avoid re-rendering
+    // on every text chunk (Markdown re-parse + full DOM rebuild per chunk).
+    if (state.pendingRenderFrame === null) {
+      state.pendingRenderFrame = requestAnimationFrame(() => {
+        state.pendingRenderFrame = null;
+        if (state.currentTextEl) {
+          void renderer.renderContent(state.currentTextEl, state.currentTextContent);
+        }
+      });
+    }
   }
 
   finalizeCurrentTextBlock(msg?: ChatMessage): void {
     const { state, renderer } = this.deps;
+    // Flush any pending rAF render so the final content is visible
+    state.cancelPendingRenderFrame();
     if (msg && state.currentTextContent) {
       msg.contentBlocks = msg.contentBlocks || [];
       msg.contentBlocks.push({ type: 'text', content: state.currentTextContent });
-      // Copy button added here (not during streaming) to match history-loaded messages
+      // Ensure final content is rendered (rAF may have been cancelled before executing)
       if (state.currentTextEl) {
+        void renderer.renderContent(state.currentTextEl, state.currentTextContent);
         renderer.addTextCopyButton(state.currentTextEl, state.currentTextContent);
       }
     }
@@ -465,7 +487,7 @@ export class StreamController {
   // Thinking Block Management
   // ============================================
 
-  async appendThinking(content: string): Promise<void> {
+  appendThinking(content: string): void {
     const { state, renderer } = this.deps;
     if (!state.currentContentEl) return;
 
@@ -477,12 +499,32 @@ export class StreamController {
       );
     }
 
-    await appendThinkingContent(state.currentThinkingState, content, (el, md) => renderer.renderContent(el, md));
+    // Accumulate content directly; batch the render call via rAF.
+    state.currentThinkingState.content += content;
+    if (state.pendingRenderFrame === null) {
+      state.pendingRenderFrame = requestAnimationFrame(() => {
+        state.pendingRenderFrame = null;
+        if (state.currentThinkingState) {
+          void renderer.renderContent(
+            state.currentThinkingState.contentEl,
+            state.currentThinkingState.content
+          );
+        }
+      });
+    }
   }
 
   finalizeCurrentThinkingBlock(msg?: ChatMessage): void {
     const { state } = this.deps;
     if (!state.currentThinkingState) return;
+
+    // Flush any pending rAF render before finalizing
+    state.cancelPendingRenderFrame();
+    // Ensure final thinking content is rendered
+    void this.deps.renderer.renderContent(
+      state.currentThinkingState.contentEl,
+      state.currentThinkingState.content
+    );
 
     const durationSeconds = finalizeThinkingBlock(state.currentThinkingState);
 
@@ -1016,6 +1058,7 @@ export class StreamController {
   resetStreamingState(): void {
     const { state } = this.deps;
     this.hideThinkingIndicator();
+    state.cancelPendingRenderFrame();
     state.currentContentEl = null;
     state.currentTextEl = null;
     state.currentTextContent = '';

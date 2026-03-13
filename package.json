@@ -1,6 +1,6 @@
 {
   "name": "obsidian-gemini-cli",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "obsidian-gemini-cli - Gemini CLI embedded in Obsidian sidebar",
   "main": "main.js",
   "scripts": {

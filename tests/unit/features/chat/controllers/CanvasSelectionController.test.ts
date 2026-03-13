@@ -9,10 +9,11 @@ function createMockIndicator() {
 
 function createMockContextRow() {
   const elements: Record<string, any> = {
-    '.geminian-selection-indicator': { style: { display: 'none' } },
-    '.geminian-canvas-indicator': { style: { display: 'none' } },
-    '.geminian-file-indicator': null,
-    '.geminian-image-preview': null,
+    '.obsidian-gemini-selection-indicator': { style: { display: 'none' } },
+    '.obsidian-gemini-browser-selection-indicator': null,
+    '.obsidian-gemini-canvas-indicator': { style: { display: 'none' } },
+    '.obsidian-gemini-file-indicator': null,
+    '.obsidian-gemini-image-preview': null,
   };
 
   return {
@@ -75,7 +76,7 @@ describe('CanvasSelectionController', () => {
 
   it('captures canvas selection and updates indicator', () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
 
     expect(controller.hasSelection()).toBe(true);
     expect(controller.getContext()).toEqual({
@@ -91,7 +92,7 @@ describe('CanvasSelectionController', () => {
     canvasView.canvas.selection = new Set([singleNode]);
 
     controller.start();
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
 
     expect(controller.getContext()?.nodeIds).toEqual(['single1']);
     expect(indicatorEl.textContent).toBe('node "single1" selected');
@@ -99,13 +100,13 @@ describe('CanvasSelectionController', () => {
 
   it('clears selection when no nodes selected and input not focused', () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
     expect(controller.hasSelection()).toBe(true);
 
     canvasView.canvas.selection = new Set();
     (global as any).document.activeElement = null;
 
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
 
     expect(controller.hasSelection()).toBe(false);
     expect(indicatorEl.style.display).toBe('none');
@@ -113,13 +114,13 @@ describe('CanvasSelectionController', () => {
 
   it('preserves selection when input is focused (sticky)', () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
     expect(controller.hasSelection()).toBe(true);
 
     canvasView.canvas.selection = new Set();
     (global as any).document.activeElement = inputEl;
 
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
 
     expect(controller.hasSelection()).toBe(true);
     expect(indicatorEl.textContent).toBe('2 nodes selected');
@@ -128,18 +129,18 @@ describe('CanvasSelectionController', () => {
   it('returns null context when no selection', () => {
     canvasView.canvas.selection = new Set();
     controller.start();
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
 
     expect(controller.getContext()).toBeNull();
   });
 
   it('does not update when selection unchanged', () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
 
     contextRowEl.classList.toggle.mockClear();
 
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
 
     // toggle should not be called again (no change)
     expect(contextRowEl.classList.toggle).not.toHaveBeenCalled();
@@ -148,7 +149,7 @@ describe('CanvasSelectionController', () => {
   it('keeps context row visible when editor selection indicator is visible', () => {
     const editorIndicator = { style: { display: 'block' } };
     contextRowEl.querySelector.mockImplementation((selector: string) => {
-      if (selector === '.geminian-selection-indicator') return editorIndicator;
+      if (selector === '.obsidian-gemini-selection-indicator') return editorIndicator;
       return null;
     });
 
@@ -178,7 +179,7 @@ describe('CanvasSelectionController', () => {
     app.workspace.activeLeaf = { view: activeCanvasView };
 
     controller.start();
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
 
     expect(controller.getContext()).toEqual({
       canvasPath: 'active.canvas',
@@ -191,7 +192,7 @@ describe('CanvasSelectionController', () => {
     app.workspace.getLeavesOfType.mockReturnValue([]);
 
     controller.start();
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
 
     expect(controller.hasSelection()).toBe(false);
     expect(controller.getContext()).toBeNull();
@@ -199,7 +200,7 @@ describe('CanvasSelectionController', () => {
 
   it('clear() resets state and indicator', () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    jest.advanceTimersByTime(1000);
     expect(controller.hasSelection()).toBe(true);
 
     controller.clear();

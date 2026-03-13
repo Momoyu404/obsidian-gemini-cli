@@ -6,8 +6,8 @@ import { type EditorSelectionContext, getEditorView } from '../../../utils/edito
 import type { StoredSelection } from '../state/types';
 import { updateContextRowHasContent } from './contextRowVisibility';
 
-/** Polling interval for editor selection (ms). */
-const SELECTION_POLL_INTERVAL = 250;
+/** Debounce delay for selectionchange events (ms). */
+const SELECTION_DEBOUNCE_MS = 100;
 /** Grace period for editor blur when handing focus to chat input (ms). */
 const INPUT_HANDOFF_GRACE_MS = 1500;
 
@@ -19,10 +19,18 @@ export class SelectionController {
   private onVisibilityChange: (() => void) | null;
   private storedSelection: StoredSelection | null = null;
   private inputHandoffGraceUntil: number | null = null;
-  private pollInterval: ReturnType<typeof setInterval> | null = null;
+  private isListening = false;
+  private debounceTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly inputPointerDownHandler = () => {
     if (!this.storedSelection) return;
     this.inputHandoffGraceUntil = Date.now() + INPUT_HANDOFF_GRACE_MS;
+  };
+  private readonly selectionChangeHandler = () => {
+    if (this.debounceTimeout) clearTimeout(this.debounceTimeout);
+    this.debounceTimeout = setTimeout(() => {
+      this.debounceTimeout = null;
+      this.poll();
+    }, SELECTION_DEBOUNCE_MS);
   };
 
   constructor(
@@ -40,15 +48,19 @@ export class SelectionController {
   }
 
   start(): void {
-    if (this.pollInterval) return;
+    if (this.isListening) return;
+    this.isListening = true;
     this.inputEl.addEventListener('pointerdown', this.inputPointerDownHandler);
-    this.pollInterval = setInterval(() => this.poll(), SELECTION_POLL_INTERVAL);
+    document.addEventListener('selectionchange', this.selectionChangeHandler);
   }
 
   stop(): void {
-    if (this.pollInterval) {
-      clearInterval(this.pollInterval);
-      this.pollInterval = null;
+    if (!this.isListening) return;
+    this.isListening = false;
+    document.removeEventListener('selectionchange', this.selectionChangeHandler);
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout);
+      this.debounceTimeout = null;
     }
     this.inputEl.removeEventListener('pointerdown', this.inputPointerDownHandler);
     this.clear();
@@ -59,7 +71,7 @@ export class SelectionController {
   }
 
   // ============================================
-  // Selection Polling
+  // Selection Detection
   // ============================================
 
   private poll(): void {

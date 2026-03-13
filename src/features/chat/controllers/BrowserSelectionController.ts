@@ -3,7 +3,10 @@ import type { App, ItemView } from 'obsidian';
 import type { BrowserSelectionContext } from '../../../utils/browser';
 import { updateContextRowHasContent } from './contextRowVisibility';
 
-const BROWSER_SELECTION_POLL_INTERVAL = 250;
+/** Reduced polling interval for webview selection (ms) — webviews cannot fire selectionchange. */
+const WEBVIEW_POLL_INTERVAL = 1000;
+/** Debounce delay for selectionchange events (ms). */
+const BROWSER_SELECTION_DEBOUNCE_MS = 100;
 
 type BrowserLikeWebview = HTMLElement & {
   executeJavaScript?: (code: string, userGesture?: boolean) => Promise<unknown>;
@@ -18,6 +21,15 @@ export class BrowserSelectionController {
   private storedSelection: BrowserSelectionContext | null = null;
   private pollInterval: ReturnType<typeof setInterval> | null = null;
   private pollInFlight = false;
+  private isListening = false;
+  private debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+  private readonly selectionChangeHandler = () => {
+    if (this.debounceTimeout) clearTimeout(this.debounceTimeout);
+    this.debounceTimeout = setTimeout(() => {
+      this.debounceTimeout = null;
+      void this.poll();
+    }, BROWSER_SELECTION_DEBOUNCE_MS);
+  };
 
   constructor(
     app: App,
@@ -34,13 +46,24 @@ export class BrowserSelectionController {
   }
 
   start(): void {
-    if (this.pollInterval) return;
+    if (this.isListening) return;
+    this.isListening = true;
+    // Event-driven for document/iframe selections
+    document.addEventListener('selectionchange', this.selectionChangeHandler);
+    // Reduced-frequency polling only for webview selections (cross-process, no events)
     this.pollInterval = setInterval(() => {
       void this.poll();
-    }, BROWSER_SELECTION_POLL_INTERVAL);
+    }, WEBVIEW_POLL_INTERVAL);
   }
 
   stop(): void {
+    if (!this.isListening) return;
+    this.isListening = false;
+    document.removeEventListener('selectionchange', this.selectionChangeHandler);
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout);
+      this.debounceTimeout = null;
+    }
     if (this.pollInterval) {
       clearInterval(this.pollInterval);
       this.pollInterval = null;

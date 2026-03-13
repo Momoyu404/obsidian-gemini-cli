@@ -918,9 +918,30 @@ export default class GeminianPlugin extends Plugin {
     const conversation = this.conversations.find(c => c.id === id);
     if (!conversation) return null;
 
+    // Release messages from other native conversations to reduce memory usage.
+    // Native conversations can reload messages from SDK storage on demand.
+    this.releaseInactiveConversationMessages(id);
+
     await this.loadSdkMessagesForConversation(conversation);
 
     return conversation;
+  }
+
+  /**
+   * Releases message arrays from native conversations that are not currently active,
+   * freeing memory. Messages will be reloaded from SDK storage on next switch.
+   */
+  private releaseInactiveConversationMessages(activeId: string): void {
+    for (const conv of this.conversations) {
+      if (conv.id === activeId) continue;
+      if (!conv.isNative) continue;
+      if (!conv.sdkMessagesLoaded) continue;
+      if (conv.messages.length === 0) continue;
+
+      // Clear messages and mark as not loaded so they reload on next access
+      conv.messages = [];
+      conv.sdkMessagesLoaded = false;
+    }
   }
 
   /**

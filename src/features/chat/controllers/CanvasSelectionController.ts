@@ -3,7 +3,8 @@ import type { App, ItemView } from 'obsidian';
 import type { CanvasSelectionContext } from '../../../utils/canvas';
 import { updateContextRowHasContent } from './contextRowVisibility';
 
-const CANVAS_POLL_INTERVAL = 250;
+/** Reduced polling interval — canvas has no selectionchange event, but changes are infrequent. */
+const CANVAS_POLL_INTERVAL = 1000;
 
 export class CanvasSelectionController {
   private app: App;

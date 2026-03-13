@@ -18,6 +18,11 @@ import { renderStoredWriteEdit } from './WriteEditRenderer';
 
 export type RenderContentFn = (el: HTMLElement, markdown: string) => Promise<void>;
 
+/** Number of messages to render initially; older messages load on scroll. */
+const INITIAL_RENDER_COUNT = 30;
+/** Number of messages to load per batch when scrolling up. */
+const LOAD_MORE_BATCH_SIZE = 20;
+
 export class MessageRenderer {
   private app: App;
   private plugin: GeminianPlugin;
@@ -25,6 +30,15 @@ export class MessageRenderer {
   private messagesEl: HTMLElement;
   private forkCallback?: (messageId: string) => Promise<void>;
   private liveMessageEls = new Map<string, HTMLElement>();
+
+  /** All messages for current conversation (for pagination). */
+  private allMessages: ChatMessage[] = [];
+  /** How many messages from the end have been rendered so far. */
+  private renderedCount = 0;
+  /** IntersectionObserver for "load more" sentinel. */
+  private loadMoreObserver: IntersectionObserver | null = null;
+  /** Sentinel element at top of messages for triggering lazy load. */
+  private sentinelEl: HTMLElement | null = null;
 
   private static readonly FORK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"/><path d="M12 12v3"/></svg>`;
 
@@ -104,7 +118,9 @@ export class MessageRenderer {
   // ============================================
 
   /**
-   * Renders all messages for conversation load/switch.
+   * Renders messages for conversation load/switch with pagination.
+   * Only the most recent INITIAL_RENDER_COUNT messages are rendered initially.
+   * Older messages are loaded on demand when the user scrolls to the top.
    * @param messages Array of messages to render
    * @param getGreeting Function to get greeting text
    * @returns The newly created welcome element
@@ -115,20 +131,135 @@ export class MessageRenderer {
   ): HTMLElement {
     this.messagesEl.empty();
     this.liveMessageEls.clear();
+    this.cleanupPagination();
+
+    // Store for lazy loading
+    this.allMessages = messages;
+    this.renderedCount = 0;
 
     // Recreate welcome element after clearing
     const newWelcomeEl = this.messagesEl.createDiv({ cls: 'obsidian-gemini-welcome' });
     newWelcomeEl.createDiv({ cls: 'obsidian-gemini-welcome-greeting', text: getGreeting() });
 
-    for (let i = 0; i < messages.length; i++) {
+    // Render only the tail of the conversation initially
+    const startIndex = Math.max(0, messages.length - INITIAL_RENDER_COUNT);
+    for (let i = startIndex; i < messages.length; i++) {
       this.renderStoredMessage(messages[i], messages, i);
+    }
+    this.renderedCount = messages.length - startIndex;
+
+    // Add "load more" sentinel if there are older messages
+    if (startIndex > 0) {
+      this.addLoadMoreSentinel(newWelcomeEl);
     }
 
     this.scrollToBottom();
     return newWelcomeEl;
   }
 
+  /**
+   * Creates a sentinel element and IntersectionObserver to trigger loading
+   * older messages when the user scrolls near the top.
+   */
+  private addLoadMoreSentinel(afterEl: HTMLElement): void {
+    this.sentinelEl = document.createElement('div');
+    this.sentinelEl.className = 'obsidian-gemini-load-more-sentinel';
+    this.sentinelEl.textContent = 'Loading earlier messages...';
+    // Insert sentinel after the welcome element
+    afterEl.insertAdjacentElement('afterend', this.sentinelEl);
+
+    this.loadMoreObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            this.loadOlderMessages();
+          }
+        }
+      },
+      { root: this.messagesEl, rootMargin: '200px 0px 0px 0px' }
+    );
+    this.loadMoreObserver.observe(this.sentinelEl);
+  }
+
+  /**
+   * Loads the next batch of older messages, preserving scroll position.
+   */
+  private loadOlderMessages(): void {
+    const totalMessages = this.allMessages.length;
+    const alreadyRenderedStart = totalMessages - this.renderedCount;
+    if (alreadyRenderedStart <= 0) {
+      this.cleanupPagination();
+      return;
+    }
+
+    // Calculate batch range
+    const batchStart = Math.max(0, alreadyRenderedStart - LOAD_MORE_BATCH_SIZE);
+    const batchEnd = alreadyRenderedStart;
+
+    // Preserve scroll position: record height before adding elements
+    const scrollHeightBefore = this.messagesEl.scrollHeight;
+    const scrollTopBefore = this.messagesEl.scrollTop;
+
+    // Find the insertion point (right after sentinel or after welcome)
+    const insertBefore = this.sentinelEl?.nextSibling ?? this.messagesEl.children[1] ?? null;
+
+    // Render batch in order (oldest first)
+    for (let i = batchStart; i < batchEnd; i++) {
+      // Create a temporary container, render the message, then insert before the insertion point
+      const tempDiv = document.createElement('div');
+      tempDiv.style.display = 'contents';
+
+      // Save and restore messagesEl to render into the temp container
+      const originalMessagesEl = this.messagesEl;
+      this.messagesEl = tempDiv;
+      this.renderStoredMessage(this.allMessages[i], this.allMessages, i);
+      this.messagesEl = originalMessagesEl;
+
+      // Move rendered children into the real container
+      while (tempDiv.firstChild) {
+        this.messagesEl.insertBefore(tempDiv.firstChild, insertBefore as Node);
+      }
+    }
+
+    this.renderedCount += (batchEnd - batchStart);
+
+    // Restore scroll position so content doesn't jump
+    const scrollHeightAfter = this.messagesEl.scrollHeight;
+    this.messagesEl.scrollTop = scrollTopBefore + (scrollHeightAfter - scrollHeightBefore);
+
+    // Remove sentinel if all messages are now rendered
+    if (batchStart <= 0) {
+      this.cleanupPagination();
+    }
+  }
+
+  /** Cleans up pagination state (observer and sentinel). */
+  private cleanupPagination(): void {
+    if (this.loadMoreObserver) {
+      this.loadMoreObserver.disconnect();
+      this.loadMoreObserver = null;
+    }
+    if (this.sentinelEl) {
+      this.sentinelEl.remove();
+      this.sentinelEl = null;
+    }
+  }
+
   renderStoredMessage(msg: ChatMessage, allMessages?: ChatMessage[], index?: number): void {
+    try {
+      this.renderStoredMessageInner(msg, allMessages, index);
+    } catch (err) {
+      // Error boundary: render placeholder instead of crashing the entire conversation view
+      console.error('[MessageRenderer] Failed to render message:', err, msg);
+      const errorEl = this.messagesEl.createDiv({
+        cls: 'obsidian-gemini-message obsidian-gemini-render-error',
+        attr: { 'data-message-id': msg.id },
+      });
+      errorEl.setText('Failed to render message');
+    }
+  }
+
+  private renderStoredMessageInner(msg: ChatMessage, allMessages?: ChatMessage[], index?: number): void {
     // Render interrupt messages with special styling (not as user bubbles)
     if (msg.isInterrupt) {
       this.renderInterruptMessage();
@@ -197,38 +328,46 @@ export class MessageRenderer {
     if (msg.contentBlocks && msg.contentBlocks.length > 0) {
       const renderedToolIds = new Set<string>();
       for (const block of msg.contentBlocks) {
-        if (block.type === 'thinking') {
-          renderStoredThinkingBlock(
-            contentEl,
-            block.content,
-            block.durationSeconds,
-            (el, md) => this.renderContent(el, md)
-          );
-        } else if (block.type === 'text') {
-          // Skip empty or whitespace-only text blocks to avoid extra gaps
-          if (!block.content || !block.content.trim()) {
-            continue;
-          }
-          const textEl = contentEl.createDiv({ cls: 'obsidian-gemini-text-block' });
-          void this.renderContent(textEl, block.content);
-          this.addTextCopyButton(textEl, block.content);
-        } else if (block.type === 'tool_use') {
-          const toolCall = msg.toolCalls?.find(tc => tc.id === block.toolId);
-          if (toolCall) {
-            this.renderToolCall(contentEl, toolCall);
-            renderedToolIds.add(toolCall.id);
-          }
-        } else if (block.type === 'compact_boundary') {
-          const boundaryEl = contentEl.createDiv({ cls: 'obsidian-gemini-compact-boundary' });
-          boundaryEl.createSpan({ cls: 'obsidian-gemini-compact-boundary-label', text: 'Conversation compacted' });
-        } else if (block.type === 'subagent') {
-          const taskToolCall = msg.toolCalls?.find(
-            tc => tc.id === block.subagentId && isSubagentToolName(tc.name)
-          );
-          if (!taskToolCall) continue;
+        try {
+          if (block.type === 'thinking') {
+            renderStoredThinkingBlock(
+              contentEl,
+              block.content,
+              block.durationSeconds,
+              (el, md) => this.renderContent(el, md)
+            );
+          } else if (block.type === 'text') {
+            // Skip empty or whitespace-only text blocks to avoid extra gaps
+            if (!block.content || !block.content.trim()) {
+              continue;
+            }
+            const textEl = contentEl.createDiv({ cls: 'obsidian-gemini-text-block' });
+            void this.renderContent(textEl, block.content);
+            this.addTextCopyButton(textEl, block.content);
+          } else if (block.type === 'tool_use') {
+            const toolCall = msg.toolCalls?.find(tc => tc.id === block.toolId);
+            if (toolCall) {
+              this.renderToolCall(contentEl, toolCall);
+              renderedToolIds.add(toolCall.id);
+            }
+          } else if (block.type === 'compact_boundary') {
+            const boundaryEl = contentEl.createDiv({ cls: 'obsidian-gemini-compact-boundary' });
+            boundaryEl.createSpan({ cls: 'obsidian-gemini-compact-boundary-label', text: 'Conversation compacted' });
+          } else if (block.type === 'subagent') {
+            const taskToolCall = msg.toolCalls?.find(
+              tc => tc.id === block.subagentId && isSubagentToolName(tc.name)
+            );
+            if (!taskToolCall) continue;
 
-          this.renderTaskSubagent(contentEl, taskToolCall, block.mode);
-          renderedToolIds.add(taskToolCall.id);
+            this.renderTaskSubagent(contentEl, taskToolCall, block.mode);
+            renderedToolIds.add(taskToolCall.id);
+          }
+        } catch (err) {
+          console.error('[MessageRenderer] Failed to render content block:', err, block);
+          contentEl.createDiv({
+            cls: 'obsidian-gemini-render-error',
+            text: 'Failed to render content block',
+          });
         }
       }
 

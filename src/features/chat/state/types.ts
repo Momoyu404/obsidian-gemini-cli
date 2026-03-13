@@ -72,6 +72,8 @@ export interface ChatStateData {
   queueIndicatorEl: HTMLElement | null;
   /** Debounce timeout for showing thinking indicator after inactivity. */
   thinkingIndicatorTimeout: ReturnType<typeof setTimeout> | null;
+  /** Pending requestAnimationFrame ID for batched text/thinking rendering. */
+  pendingRenderFrame: number | null;
 
   // Tool tracking maps
   toolCallElements: Map<string, HTMLElement>;

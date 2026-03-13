@@ -28,6 +28,7 @@ function createInitialState(): ChatStateData {
     thinkingEl: null,
     queueIndicatorEl: null,
     thinkingIndicatorTimeout: null,
+    pendingRenderFrame: null,
     toolCallElements: new Map(),
     writeEditStates: new Map(),
     pendingTools: new Map(),
@@ -224,6 +225,21 @@ export class ChatState {
     this.state.thinkingIndicatorTimeout = value;
   }
 
+  get pendingRenderFrame(): number | null {
+    return this.state.pendingRenderFrame;
+  }
+
+  set pendingRenderFrame(value: number | null) {
+    this.state.pendingRenderFrame = value;
+  }
+
+  cancelPendingRenderFrame(): void {
+    if (this.state.pendingRenderFrame !== null) {
+      cancelAnimationFrame(this.state.pendingRenderFrame);
+      this.state.pendingRenderFrame = null;
+    }
+  }
+
   // ============================================
   // Tool Tracking Maps (mutable references)
   // ============================================
@@ -367,11 +383,16 @@ export class ChatState {
     this.state.currentThinkingState = null;
     this.state.isStreaming = false;
     this.state.cancelRequested = false;
+    // Cancel pending rAF render
+    this.cancelPendingRenderFrame();
     // Clear thinking indicator timeout
     if (this.state.thinkingIndicatorTimeout) {
       clearTimeout(this.state.thinkingIndicatorTimeout);
       this.state.thinkingIndicatorTimeout = null;
     }
+    // Clear streaming-only DOM tracking maps (tool elements, write/edit states, pending tools).
+    // These reference DOM elements from the completed stream and are not needed after reset.
+    this.clearMaps();
     // Clear response timer
     this.clearFlavorTimerInterval();
     this.state.responseStartTime = null;

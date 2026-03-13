@@ -32,6 +32,13 @@ async function flushMicrotasks(): Promise<void> {
   await Promise.resolve();
 }
 
+/** Helper to trigger a selection change via event + debounce. */
+function triggerSelectionChange() {
+  document.dispatchEvent(new Event('selectionchange'));
+  // Advance past the 100ms debounce
+  jest.advanceTimersByTime(100);
+}
+
 describe('BrowserSelectionController', () => {
   let controller: BrowserSelectionController;
   let app: any;
@@ -84,9 +91,9 @@ describe('BrowserSelectionController', () => {
     jest.useRealTimers();
   });
 
-  it('captures browser selection and updates indicator', async () => {
+  it('captures browser selection and updates indicator via selectionchange event', async () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
     await flushMicrotasks();
 
     expect(controller.getContext()).toEqual({
@@ -104,10 +111,23 @@ describe('BrowserSelectionController', () => {
     expect(indicatorEl.getAttribute('title')).toContain('https://example.com');
   });
 
+  it('captures browser selection via reduced-frequency webview polling', async () => {
+    controller.start();
+    jest.advanceTimersByTime(1000);
+    await flushMicrotasks();
+
+    expect(controller.getContext()).toEqual({
+      source: 'browser:https://example.com',
+      selectedText: 'selected web snippet',
+      title: 'Surfing',
+      url: 'https://example.com',
+    });
+  });
+
   it('shows line-based indicator text for multi-line browser selection', async () => {
     selectionText = 'line 1\nline 2';
     controller.start();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
     await flushMicrotasks();
 
     expect(indicatorEl.textContent).toBe('2 lines selected');
@@ -115,12 +135,12 @@ describe('BrowserSelectionController', () => {
 
   it('clears selection when text is deselected and input is not focused', async () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
     await flushMicrotasks();
     expect(controller.hasSelection()).toBe(true);
 
     selectionText = '';
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
     await flushMicrotasks();
 
     expect(controller.hasSelection()).toBe(false);
@@ -129,13 +149,13 @@ describe('BrowserSelectionController', () => {
 
   it('keeps selection while input is focused', async () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
     await flushMicrotasks();
     expect(controller.hasSelection()).toBe(true);
 
     selectionText = '';
     inputEl.focus();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
     await flushMicrotasks();
 
     expect(controller.hasSelection()).toBe(true);
@@ -143,7 +163,7 @@ describe('BrowserSelectionController', () => {
 
   it('clears selection when clear is called', async () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
     await flushMicrotasks();
     expect(controller.hasSelection()).toBe(true);
 
@@ -158,7 +178,7 @@ describe('BrowserSelectionController', () => {
       .mockRejectedValueOnce(new Error('poll failed'));
 
     controller.start();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
     await flushMicrotasks();
 
     expect(extractSpy).toHaveBeenCalled();

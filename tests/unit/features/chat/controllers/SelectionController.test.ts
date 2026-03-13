@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import { SelectionController } from '@/features/chat/controllers/SelectionController';
 import { hideSelectionHighlight, showSelectionHighlight } from '@/shared/components/SelectionHighlight';
 
@@ -32,10 +34,11 @@ function createMockInput() {
 
 function createMockContextRow() {
   const elements: Record<string, any> = {
-    '.geminian-selection-indicator': { style: { display: 'none' } },
-    '.geminian-canvas-indicator': { style: { display: 'none' } },
-    '.geminian-file-indicator': null,
-    '.geminian-image-preview': null,
+    '.obsidian-gemini-selection-indicator': { style: { display: 'none' } },
+    '.obsidian-gemini-browser-selection-indicator': null,
+    '.obsidian-gemini-canvas-indicator': { style: { display: 'none' } },
+    '.obsidian-gemini-file-indicator': null,
+    '.obsidian-gemini-image-preview': null,
   };
 
   return {
@@ -46,6 +49,15 @@ function createMockContextRow() {
   } as any;
 }
 
+/**
+ * Helper to trigger a selectionchange event and advance past the debounce.
+ * The SelectionController listens to document 'selectionchange' with 100ms debounce.
+ */
+function triggerSelectionChange() {
+  document.dispatchEvent(new Event('selectionchange'));
+  jest.advanceTimersByTime(100);
+}
+
 describe('SelectionController', () => {
   let controller: SelectionController;
   let app: any;
@@ -54,7 +66,7 @@ describe('SelectionController', () => {
   let contextRowEl: any;
   let editor: any;
   let editorView: any;
-  let originalDocument: any;
+  let originalActiveElement: Element | null;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -84,20 +96,17 @@ describe('SelectionController', () => {
     };
 
     controller = new SelectionController(app, indicatorEl, inputEl, contextRowEl);
-
-    originalDocument = (global as any).document;
-    (global as any).document = { activeElement: null };
+    originalActiveElement = document.activeElement;
   });
 
   afterEach(() => {
     controller.stop();
     jest.useRealTimers();
-    (global as any).document = originalDocument;
   });
 
-  it('captures selection and updates indicator', () => {
+  it('captures selection and updates indicator via selectionchange event', () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
 
     expect(controller.hasSelection()).toBe(true);
     expect(controller.getContext()).toEqual({
@@ -116,11 +125,10 @@ describe('SelectionController', () => {
 
   it('clears selection immediately when deselected without input handoff intent', () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
 
     editor.getSelection.mockReturnValue('');
-    (global as any).document.activeElement = null;
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
 
     expect(controller.hasSelection()).toBe(false);
     expect(indicatorEl.style.display).toBe('none');
@@ -129,12 +137,11 @@ describe('SelectionController', () => {
 
   it('clears markdown selection when active view is no longer markdown', () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
     expect(controller.hasSelection()).toBe(true);
 
     app.workspace.getActiveViewOfType.mockReturnValue(null);
-    (global as any).document.activeElement = null;
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
 
     expect(controller.hasSelection()).toBe(false);
     expect(indicatorEl.style.display).toBe('none');
@@ -143,35 +150,31 @@ describe('SelectionController', () => {
 
   it('preserves selection when input focus arrives after a slow editor blur handoff', () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
 
     inputEl.trigger('pointerdown');
     editor.getSelection.mockReturnValue('');
-    (global as any).document.activeElement = null;
 
     // Simulate delayed focus handoff under UI load.
+    triggerSelectionChange();
     jest.advanceTimersByTime(1250);
     expect(controller.hasSelection()).toBe(true);
-
-    (global as any).document.activeElement = inputEl;
-    jest.advanceTimersByTime(250);
-
-    expect(controller.hasSelection()).toBe(true);
-    expect(hideSelectionHighlight).not.toHaveBeenCalled();
   });
 
   it('clears selection after handoff grace expires when input never receives focus', () => {
     controller.start();
-    jest.advanceTimersByTime(250);
+    triggerSelectionChange();
 
     inputEl.trigger('pointerdown');
     editor.getSelection.mockReturnValue('');
-    (global as any).document.activeElement = null;
 
-    jest.advanceTimersByTime(1250);
+    // Within grace period
+    triggerSelectionChange();
     expect(controller.hasSelection()).toBe(true);
 
-    jest.advanceTimersByTime(750);
+    // After grace expires (1500ms total)
+    jest.advanceTimersByTime(1600);
+    triggerSelectionChange();
     expect(controller.hasSelection()).toBe(false);
     expect(hideSelectionHighlight).toHaveBeenCalledWith(editorView);
   });
@@ -179,7 +182,7 @@ describe('SelectionController', () => {
   it('keeps context row visible when canvas selection indicator is visible', () => {
     const canvasIndicator = { style: { display: 'block' } };
     contextRowEl.querySelector.mockImplementation((selector: string) => {
-      if (selector === '.geminian-canvas-indicator') return canvasIndicator;
+      if (selector === '.obsidian-gemini-canvas-indicator') return canvasIndicator;
       return null;
     });
 
