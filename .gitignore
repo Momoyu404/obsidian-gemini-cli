@@ -93,3 +93,4 @@ dev
 .claude/
 .gemini/
 .codex/
+.worktrees/
