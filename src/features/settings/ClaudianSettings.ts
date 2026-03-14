@@ -609,8 +609,8 @@ export class GeminianSettingTab extends PluginSettingTab {
 
     cliPathSetting.addText((text) => {
       const placeholder = process.platform === 'win32'
-        ? 'D:\\nodejs\\node_global\\node_modules\\@google\\gemini-cli\\gemini.js'
-        : '/usr/local/lib/node_modules/@google/gemini-cli/gemini.js';
+        ? '%APPDATA%\\npm\\node_modules\\@google\\gemini-cli\\dist\\index.js'
+        : '/usr/local/lib/node_modules/@google/gemini-cli/dist/index.js';
 
       const currentValue = this.plugin.settings.geminiCliPathsByHost?.[hostnameKey] || '';
 

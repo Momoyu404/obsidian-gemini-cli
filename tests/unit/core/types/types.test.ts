@@ -27,7 +27,7 @@ import {
 describe('types.ts', () => {
   describe('VIEW_TYPE_GEMINIAN', () => {
     it('should be defined as the correct view type', () => {
-      expect(VIEW_TYPE_GEMINIAN).toBe('geminian-view');
+      expect(VIEW_TYPE_GEMINIAN).toBe('obsidian-gemini-view');
     });
   });
 

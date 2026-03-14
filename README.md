@@ -30,11 +30,22 @@ obsidian-gemini-cli is an Obsidian plugin that embeds [Gemini CLI](https://githu
 
 ### Prerequisites: Install Gemini CLI
 
+Depending on your platform, ensure Node.js is installed first.
+
+**macOS & Linux**
 ```bash
 npm install -g @google/gemini-cli
 ```
 
-Then authenticate:
+**Windows**
+1. Install Node.js from [nodejs.org](https://nodejs.org/). Make sure "Add to PATH" is checked during installation.
+2. Open Command Prompt or PowerShell and install the CLI:
+   ```powershell
+   npm install -g @google/gemini-cli
+   ```
+3. **IMPORTANT:** Fully restart Obsidian after installation to ensure it picks up the new environment variables.
+
+Then authenticate (on any platform):
 
 ```bash
 gemini
@@ -136,8 +147,8 @@ If you encounter `Gemini CLI not found`, the plugin can't auto-detect your insta
 |----------|---------|--------------|
 | macOS/Linux | `which gemini` | `/usr/local/bin/gemini` |
 | macOS (Homebrew) | `which gemini` | `/opt/homebrew/bin/gemini` |
-| Windows | `where.exe gemini` | `C:\Users\you\AppData\Roaming\npm\gemini` |
-| npm global | `npm root -g` | `{root}/@google/gemini-cli/gemini.js` |
+| Windows | `where.exe gemini` | `%APPDATA%\npm\node_modules\@google\gemini-cli\dist\index.js` |
+| npm global | `npm root -g` | `{root}/@google/gemini-cli/dist/index.js` |
 
 **Alternative**: Add your Node.js bin directory to PATH in Settings → Environment → Custom variables.
 

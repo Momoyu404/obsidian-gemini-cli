@@ -172,6 +172,10 @@ function isExistingFile(filePath: string): boolean {
 }
 
 function resolveCliJsNearPathEntry(entry: string, isWindows: boolean): string | null {
+  const distCandidate = path.join(entry, 'node_modules', '@google', 'gemini-cli', 'dist', 'index.js');
+  if (isExistingFile(distCandidate)) {
+    return distCandidate;
+  }
   const directCandidate = path.join(entry, 'node_modules', '@google', 'gemini-cli', 'gemini.js');
   if (isExistingFile(directCandidate)) {
     return directCandidate;
@@ -180,6 +184,12 @@ function resolveCliJsNearPathEntry(entry: string, isWindows: boolean): string | 
   const baseName = path.basename(entry).toLowerCase();
   if (baseName === 'bin') {
     const prefix = path.dirname(entry);
+    const distCandidatePrefix = isWindows
+      ? path.join(prefix, 'node_modules', '@google', 'gemini-cli', 'dist', 'index.js')
+      : path.join(prefix, 'lib', 'node_modules', '@google', 'gemini-cli', 'dist', 'index.js');
+    if (isExistingFile(distCandidatePrefix)) {
+      return distCandidatePrefix;
+    }
     const candidate = isWindows
       ? path.join(prefix, 'node_modules', '@google', 'gemini-cli', 'gemini.js')
       : path.join(prefix, 'lib', 'node_modules', '@google', 'gemini-cli', 'gemini.js');
@@ -251,12 +261,14 @@ function getNpmCliJsPaths(): string[] {
 
   if (isWindows) {
     cliJsPaths.push(
+      path.join(homeDir, 'AppData', 'Roaming', 'npm', 'node_modules', '@google', 'gemini-cli', 'dist', 'index.js'),
       path.join(homeDir, 'AppData', 'Roaming', 'npm', 'node_modules', '@google', 'gemini-cli', 'gemini.js')
     );
 
     const npmPrefix = getNpmGlobalPrefix();
     if (npmPrefix) {
       cliJsPaths.push(
+        path.join(npmPrefix, 'node_modules', '@google', 'gemini-cli', 'dist', 'index.js'),
         path.join(npmPrefix, 'node_modules', '@google', 'gemini-cli', 'gemini.js')
       );
     }
@@ -265,15 +277,21 @@ function getNpmCliJsPaths(): string[] {
     const programFilesX86 = process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)';
 
     cliJsPaths.push(
+      path.join(programFiles, 'nodejs', 'node_global', 'node_modules', '@google', 'gemini-cli', 'dist', 'index.js'),
+      path.join(programFilesX86, 'nodejs', 'node_global', 'node_modules', '@google', 'gemini-cli', 'dist', 'index.js'),
       path.join(programFiles, 'nodejs', 'node_global', 'node_modules', '@google', 'gemini-cli', 'gemini.js'),
       path.join(programFilesX86, 'nodejs', 'node_global', 'node_modules', '@google', 'gemini-cli', 'gemini.js')
     );
 
     cliJsPaths.push(
+      path.join('D:', 'Program Files', 'nodejs', 'node_global', 'node_modules', '@google', 'gemini-cli', 'dist', 'index.js'),
       path.join('D:', 'Program Files', 'nodejs', 'node_global', 'node_modules', '@google', 'gemini-cli', 'gemini.js')
     );
   } else {
     cliJsPaths.push(
+      path.join(homeDir, '.npm-global', 'lib', 'node_modules', '@google', 'gemini-cli', 'dist', 'index.js'),
+      '/usr/local/lib/node_modules/@google/gemini-cli/dist/index.js',
+      '/usr/lib/node_modules/@google/gemini-cli/dist/index.js',
       path.join(homeDir, '.npm-global', 'lib', 'node_modules', '@google', 'gemini-cli', 'gemini.js'),
       '/usr/local/lib/node_modules/@google/gemini-cli/gemini.js',
       '/usr/lib/node_modules/@google/gemini-cli/gemini.js'
@@ -281,6 +299,7 @@ function getNpmCliJsPaths(): string[] {
 
     if (process.env.npm_config_prefix) {
       cliJsPaths.push(
+        path.join(process.env.npm_config_prefix, 'lib', 'node_modules', '@google', 'gemini-cli', 'dist', 'index.js'),
         path.join(process.env.npm_config_prefix, 'lib', 'node_modules', '@google', 'gemini-cli', 'gemini.js')
       );
     }
