@@ -584,7 +584,7 @@ export class GemineseSettingTab extends PluginSettingTab {
       .setName(`${t('settings.cliPath.name')} (${hostnameKey})`)
       .setDesc(cliPathDescription);
 
-    const validationEl = containerEl.createDiv({ cls: 'geminese-cli-path-validation' });
+    const validationEl = containerEl.createDiv({ cls: 'geminese-path-validation' });
     validationEl.style.color = 'var(--text-error)';
     validationEl.style.fontSize = '0.85em';
     validationEl.style.marginTop = '-0.5em';
