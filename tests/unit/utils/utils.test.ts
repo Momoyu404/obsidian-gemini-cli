@@ -700,10 +700,6 @@ describe('utils.ts', () => {
       expect(getPathAccessType('~/.gemini/sessions/abc.jsonl', [], [], '/vault')).toBe('vault');
     });
 
-    it('should allow access to ~/.claude/ via tilde expansion', () => {
-      // Intentionally left blank or remove test
-    });
-
     it('should block other home directory paths', () => {
       jest.spyOn(os, 'homedir').mockReturnValue('/home/test');
       const realpathSpy = jest.spyOn(fs, 'realpathSync').mockImplementation((p: any) => String(p) as any);
