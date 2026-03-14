@@ -3,7 +3,7 @@ import type {
   Conversation,
   ConversationMeta,
   EnvSnippet,
-  GeminianSettings,
+  GemineseSettings,
   LegacyPermission,
   StreamChunk,
   ToolCallInfo
@@ -27,7 +27,7 @@ import {
 describe('types.ts', () => {
   describe('VIEW_TYPE_GEMINIAN', () => {
     it('should be defined as the correct view type', () => {
-      expect(VIEW_TYPE_GEMINIAN).toBe('obsidian-gemini-view');
+      expect(VIEW_TYPE_GEMINIAN).toBe('geminese-view');
     });
   });
 
@@ -86,9 +86,9 @@ describe('types.ts', () => {
     });
   });
 
-  describe('GeminianSettings type', () => {
+  describe('GemineseSettings type', () => {
     it('should be assignable with valid settings', () => {
-      const settings: GeminianSettings = {
+      const settings: GemineseSettings = {
         userName: '',
         enableBlocklist: false,
         blockedCommands: { unix: ['test'], windows: ['test-win'] },
@@ -125,7 +125,7 @@ describe('types.ts', () => {
     });
 
     it('should accept custom model strings', () => {
-      const settings: GeminianSettings = {
+      const settings: GemineseSettings = {
         userName: '',
         enableBlocklist: true,
         blockedCommands: { unix: [], windows: [] },
@@ -160,7 +160,7 @@ describe('types.ts', () => {
     });
 
     it('should accept optional lastGeminiModel and lastCustomModel', () => {
-      const settings: GeminianSettings = {
+      const settings: GemineseSettings = {
         userName: '',
         enableBlocklist: true,
         blockedCommands: { unix: [], windows: [] },

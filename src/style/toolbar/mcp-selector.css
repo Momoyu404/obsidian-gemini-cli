@@ -1,12 +1,12 @@
 /* MCP Server Selector */
-.obsidian-gemini-mcp-selector {
+.geminese-mcp-selector {
   position: relative;
   display: flex;
   align-items: center;
   margin-left: 4px;
 }
 
-.obsidian-gemini-mcp-selector-icon-wrapper {
+.geminese-mcp-selector-icon-wrapper {
   position: relative;
   display: flex;
   align-items: center;
@@ -14,7 +14,7 @@
   cursor: pointer;
 }
 
-.obsidian-gemini-mcp-selector-icon {
+.geminese-mcp-selector-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,37 +24,37 @@
   transition: color 0.15s ease;
 }
 
-.obsidian-gemini-mcp-selector-icon-wrapper:hover .obsidian-gemini-mcp-selector-icon {
+.geminese-mcp-selector-icon-wrapper:hover .geminese-mcp-selector-icon {
   color: var(--text-normal);
 }
 
-.obsidian-gemini-mcp-selector-icon.active {
-  color: var(--obsidian-gemini-brand);
+.geminese-mcp-selector-icon.active {
+  color: var(--geminese-brand);
   animation: mcp-glow 2s ease-in-out infinite;
 }
 
-.obsidian-gemini-mcp-selector-icon svg {
+.geminese-mcp-selector-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.obsidian-gemini-mcp-selector-badge {
+.geminese-mcp-selector-badge {
   position: absolute;
   top: 0;
   right: 0;
   font-size: 9px;
   font-weight: 600;
-  color: var(--obsidian-gemini-brand);
+  color: var(--geminese-brand);
   opacity: 0;
   transition: opacity 0.15s ease;
   pointer-events: none;
 }
 
-.obsidian-gemini-mcp-selector-badge.visible {
+.geminese-mcp-selector-badge.visible {
   opacity: 1;
 }
 
-.obsidian-gemini-mcp-selector-dropdown {
+.geminese-mcp-selector-dropdown {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -73,7 +73,7 @@
 }
 
 /* Bridge the gap between icon and dropdown to prevent hover breaks */
-.obsidian-gemini-mcp-selector-dropdown::after {
+.geminese-mcp-selector-dropdown::after {
   content: '';
   position: absolute;
   left: 0;
@@ -82,13 +82,13 @@
   height: 8px;
 }
 
-.obsidian-gemini-mcp-selector-dropdown.visible,
-.obsidian-gemini-mcp-selector:hover .obsidian-gemini-mcp-selector-dropdown {
+.geminese-mcp-selector-dropdown.visible,
+.geminese-mcp-selector:hover .geminese-mcp-selector-dropdown {
   opacity: 1;
   visibility: visible;
 }
 
-.obsidian-gemini-mcp-selector-header {
+.geminese-mcp-selector-header {
   padding: 10px 12px;
   font-size: 12px;
   font-weight: 600;
@@ -96,12 +96,12 @@
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.obsidian-gemini-mcp-selector-list {
+.geminese-mcp-selector-list {
   max-height: 200px;
   overflow-y: auto;
 }
 
-.obsidian-gemini-mcp-selector-empty {
+.geminese-mcp-selector-empty {
   padding: 16px 12px;
   text-align: center;
   color: var(--text-muted);
@@ -109,7 +109,7 @@
   font-style: italic;
 }
 
-.obsidian-gemini-mcp-selector-item {
+.geminese-mcp-selector-item {
   display: flex;
   align-items: center;
   padding: 8px 12px;
@@ -118,15 +118,15 @@
   transition: background 0.15s ease;
 }
 
-.obsidian-gemini-mcp-selector-item:hover {
+.geminese-mcp-selector-item:hover {
   background: var(--background-modifier-hover);
 }
 
-.obsidian-gemini-mcp-selector-item.enabled {
-  background: rgba(var(--obsidian-gemini-brand-rgb), 0.1);
+.geminese-mcp-selector-item.enabled {
+  background: rgba(var(--geminese-brand-rgb), 0.1);
 }
 
-.obsidian-gemini-mcp-selector-check {
+.geminese-mcp-selector-check {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -134,20 +134,20 @@
   height: 16px;
   border: 1px solid var(--background-modifier-border);
   border-radius: 3px;
-  color: var(--obsidian-gemini-brand);
+  color: var(--geminese-brand);
 }
 
-.obsidian-gemini-mcp-selector-item.enabled .obsidian-gemini-mcp-selector-check {
-  background: rgba(var(--obsidian-gemini-brand-rgb), 0.2);
-  border-color: var(--obsidian-gemini-brand);
+.geminese-mcp-selector-item.enabled .geminese-mcp-selector-check {
+  background: rgba(var(--geminese-brand-rgb), 0.2);
+  border-color: var(--geminese-brand);
 }
 
-.obsidian-gemini-mcp-selector-check svg {
+.geminese-mcp-selector-check svg {
   width: 12px;
   height: 12px;
 }
 
-.obsidian-gemini-mcp-selector-item-info {
+.geminese-mcp-selector-item-info {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -156,7 +156,7 @@
   overflow: hidden;
 }
 
-.obsidian-gemini-mcp-selector-item-name {
+.geminese-mcp-selector-item-name {
   font-size: 12px;
   color: var(--text-normal);
   overflow: hidden;
@@ -164,13 +164,13 @@
   white-space: nowrap;
 }
 
-.obsidian-gemini-mcp-selector-cs-badge {
+.geminese-mcp-selector-cs-badge {
   font-size: 10px;
   font-weight: 600;
   padding: 1px 4px;
   border-radius: 3px;
-  background: rgba(var(--obsidian-gemini-brand-rgb), 0.2);
-  color: var(--obsidian-gemini-brand);
+  background: rgba(var(--geminese-brand-rgb), 0.2);
+  color: var(--geminese-brand);
   flex-shrink: 0;
   margin-left: auto;
 }

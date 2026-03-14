@@ -37,7 +37,7 @@ export {
   DEFAULT_GEMINI_PERMISSIONS,
   DEFAULT_SETTINGS,
   type EnvSnippet,
-  type GeminianSettings,
+  type GemineseSettings,
   type GeminiCLISettings,
   type GeminiPermissions,
   getBashToolBlockedCommands,
@@ -88,8 +88,8 @@ export {
 // MCP types
 export {
   DEFAULT_MCP_SERVER,
-  type GeminianMcpConfigFile,
-  type GeminianMcpServer,
+  type GemineseMcpConfigFile,
+  type GemineseMcpServer,
   getMcpServerType,
   isValidMcpServerConfig,
   type McpConfigFile,
@@ -104,9 +104,9 @@ export {
 // Extension types (formerly Plugin)
 export {
   type ExtensionScope,
-  type GeminianExtension,
+  type GemineseExtension,
   // Backwards-compatible aliases
-  type GeminianPlugin,
+  type GeminesePlugin,
   type InstalledExtensionEntry,
   type InstalledExtensionsFile,
   type InstalledPluginEntry,

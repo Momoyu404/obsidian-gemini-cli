@@ -1,14 +1,14 @@
 /* Fork Target Modal */
-.obsidian-gemini-fork-target-modal {
+.geminese-fork-target-modal {
   max-width: 340px;
 }
 
-.obsidian-gemini-fork-target-list {
+.geminese-fork-target-list {
   display: flex;
   flex-direction: column;
 }
 
-.obsidian-gemini-fork-target-option {
+.geminese-fork-target-option {
   padding: 10px 12px;
   border-radius: 6px;
   cursor: pointer;
@@ -16,6 +16,6 @@
   font-size: 14px;
 }
 
-.obsidian-gemini-fork-target-option:hover {
+.geminese-fork-target-option:hover {
   background: var(--background-modifier-hover);
 }

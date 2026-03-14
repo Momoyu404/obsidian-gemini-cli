@@ -25,7 +25,7 @@ jest.mock('@/core/types', () => {
 // Now import after all mocks are set up
 import { buildResultErrorMessage } from '@test/helpers/sdkMessages';
 
-import { GeminianService } from '@/core/agent/ClaudianService';
+import { GemineseService } from '@/core/agent/ClaudianService';
 import { createVaultRestrictionHook } from '@/core/hooks/SecurityHooks';
 import { transformGeminiEvent as transformSDKMessage } from '@/core/sdk';
 import { getActionDescription, getActionPattern } from '@/core/security/ApprovalManager';
@@ -156,15 +156,15 @@ function createMockPlugin(settings: Record<string, unknown> = {}) {
   return mockPlugin;
 }
 
-describe('GeminianService', () => {
-  let service: GeminianService;
+describe('GemineseService', () => {
+  let service: GemineseService;
   let mockPlugin: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     resetMockMessages();
     mockPlugin = createMockPlugin();
-    service = new GeminianService(mockPlugin, createMockMcpManager());
+    service = new GemineseService(mockPlugin, createMockMcpManager());
   });
 
   afterEach(() => {
@@ -234,7 +234,7 @@ describe('GeminianService', () => {
 
     it('should not block commands when blocklist is disabled', async () => {
       mockPlugin = createMockPlugin({ enableBlocklist: false });
-      service = new GeminianService(mockPlugin, createMockMcpManager());
+      service = new GemineseService(mockPlugin, createMockMcpManager());
 
       (fs.existsSync as jest.Mock).mockReturnValue(true);
 
@@ -359,7 +359,7 @@ describe('GeminianService', () => {
           mockPlugin.getActiveEnvironmentVariables()
         )
       );
-      service = new GeminianService(mockPlugin, createMockMcpManager());
+      service = new GemineseService(mockPlugin, createMockMcpManager());
 
       (fs.existsSync as jest.Mock).mockImplementation((p: string) => p === customPath);
       (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => true });
@@ -390,7 +390,7 @@ describe('GeminianService', () => {
           mockPlugin.getActiveEnvironmentVariables()
         )
       );
-      service = new GeminianService(mockPlugin, createMockMcpManager());
+      service = new GemineseService(mockPlugin, createMockMcpManager());
 
       const homeDir = os.homedir();
       const autoDetectedPath = path.join(homeDir, '.claude', 'local', 'claude');
@@ -426,7 +426,7 @@ describe('GeminianService', () => {
           mockPlugin.getActiveEnvironmentVariables()
         )
       );
-      service = new GeminianService(mockPlugin, createMockMcpManager());
+      service = new GemineseService(mockPlugin, createMockMcpManager());
 
       const homeDir = os.homedir();
       const autoDetectedPath = path.join(homeDir, '.claude', 'local', 'claude');
@@ -462,7 +462,7 @@ describe('GeminianService', () => {
           mockPlugin.getActiveEnvironmentVariables()
         )
       );
-      service = new GeminianService(mockPlugin, createMockMcpManager());
+      service = new GemineseService(mockPlugin, createMockMcpManager());
 
       const homeDir = os.homedir();
       const autoDetectedPath = path.join(homeDir, '.claude', 'local', 'claude');
@@ -508,7 +508,7 @@ describe('GeminianService', () => {
           mockPlugin.getActiveEnvironmentVariables()
         )
       );
-      service = new GeminianService(mockPlugin, createMockMcpManager());
+      service = new GemineseService(mockPlugin, createMockMcpManager());
 
       (fs.existsSync as jest.Mock).mockImplementation((p: string) => p === firstPath);
       (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => true });
@@ -993,7 +993,7 @@ describe('GeminianService', () => {
           },
         },
       };
-      service = new GeminianService(mockPlugin, createMockMcpManager());
+      service = new GemineseService(mockPlugin, createMockMcpManager());
 
       const chunks: any[] = [];
       for await (const chunk of service.query('hello')) {
@@ -1012,7 +1012,7 @@ describe('GeminianService', () => {
       mockPlugin = createMockPlugin({
         blockedCommands: { unix: ['rm\\s+-rf', 'chmod\\s+7{3}'], windows: [] },
       });
-      service = new GeminianService(mockPlugin, createMockMcpManager());
+      service = new GemineseService(mockPlugin, createMockMcpManager());
 
       (fs.existsSync as jest.Mock).mockReturnValue(true);
 
@@ -1035,7 +1035,7 @@ describe('GeminianService', () => {
       mockPlugin = createMockPlugin({
         blockedCommands: { unix: ['[invalid regex'], windows: [] },
       });
-      service = new GeminianService(mockPlugin, createMockMcpManager());
+      service = new GemineseService(mockPlugin, createMockMcpManager());
 
       (fs.existsSync as jest.Mock).mockReturnValue(true);
 
@@ -2207,7 +2207,7 @@ describe('GeminianService', () => {
     it('updates permission mode via setPermissionMode when going from YOLO to normal', async () => {
       // Start in YOLO mode
       mockPlugin.settings.permissionMode = 'yolo';
-      service = new GeminianService(mockPlugin, createMockMcpManager());
+      service = new GemineseService(mockPlugin, createMockMcpManager());
 
       const chunks1: any[] = [];
       for await (const c of service.query('first')) chunks1.push(c);
@@ -2226,7 +2226,7 @@ describe('GeminianService', () => {
     it('updates permission mode via setPermissionMode when going from normal to YOLO', async () => {
       // Start in normal mode
       mockPlugin.settings.permissionMode = 'normal';
-      service = new GeminianService(mockPlugin, createMockMcpManager());
+      service = new GemineseService(mockPlugin, createMockMcpManager());
 
       const chunks1: any[] = [];
       for await (const c of service.query('first')) chunks1.push(c);

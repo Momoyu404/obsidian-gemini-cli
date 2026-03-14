@@ -1,10 +1,10 @@
 import { Notice } from 'obsidian';
 
-import type { ApprovalCallbackOptions, GeminianService } from '../../../core/agent';
+import type { ApprovalCallbackOptions, GemineseService } from '../../../core/agent';
 import { detectBuiltInCommand } from '../../../core/commands';
 import { TOOL_EXIT_PLAN_MODE } from '../../../core/tools/toolNames';
 import type { ApprovalDecision, ChatMessage, ExitPlanModeDecision } from '../../../core/types';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { ResumeSessionDropdown } from '../../../shared/components/ResumeSessionDropdown';
 import { InstructionModal } from '../../../shared/modals/InstructionConfirmModal';
 import { appendBrowserContext, type BrowserSelectionContext } from '../../../utils/browser';
@@ -37,7 +37,7 @@ const APPROVAL_OPTION_MAP: Record<string, ApprovalDecision> = {
 };
 
 export interface InputControllerDeps {
-  plugin: GeminianPlugin;
+  plugin: GeminesePlugin;
   state: ChatState;
   renderer: MessageRenderer;
   streamController: StreamController;
@@ -62,7 +62,7 @@ export interface InputControllerDeps {
   getInputContainerEl: () => HTMLElement;
   generateId: () => string;
   resetInputHeight: () => void;
-  getAgentService?: () => GeminianService | null;
+  getAgentService?: () => GemineseService | null;
   getSubagentManager: () => SubagentManager;
   /** Called when CLI reports resolved model (e.g. gemini-2.5-pro). */
   onResolvedModel?: (model: string) => void;
@@ -84,7 +84,7 @@ export class InputController {
     this.deps = deps;
   }
 
-  private getAgentService(): GeminianService | null {
+  private getAgentService(): GemineseService | null {
     return this.deps.getAgentService?.() ?? null;
   }
 
@@ -292,7 +292,7 @@ export class InputController {
     };
     state.addMessage(assistantMsg);
     const msgEl = renderer.addMessage(assistantMsg);
-    const contentEl = msgEl.querySelector('.obsidian-gemini-message-content') as HTMLElement;
+    const contentEl = msgEl.querySelector('.geminese-message-content') as HTMLElement;
 
     state.toolCallElements.clear();
     state.currentContentEl = contentEl;
@@ -301,7 +301,7 @@ export class InputController {
 
     streamController.showThinkingIndicator(
       isCompact ? 'Compacting...' : undefined,
-      isCompact ? 'obsidian-gemini-thinking--compact' : undefined,
+      isCompact ? 'geminese-thinking--compact' : undefined,
     );
     state.responseStartTime = performance.now();
 
@@ -407,7 +407,7 @@ export class InputController {
       if (!wasInvalidated && state.streamGeneration === streamGeneration) {
         const didCancelThisTurn = wasInterrupted || state.cancelRequested;
         if (didCancelThisTurn && !state.pendingNewSessionPlan) {
-          await streamController.appendText('\n\n<span class="obsidian-gemini-interrupted">Interrupted</span> <span class="obsidian-gemini-interrupted-hint">· What should Geminian do instead?</span>');
+          await streamController.appendText('\n\n<span class="geminese-interrupted">Interrupted</span> <span class="geminese-interrupted-hint">· What should Geminese do instead?</span>');
         }
         streamController.hideThinkingIndicator();
         state.isStreaming = false;
@@ -426,10 +426,10 @@ export class InputController {
             assistantMsg.durationFlavorWord = flavorWord;
             // Add footer to live message in DOM
             if (contentEl) {
-              const footerEl = contentEl.createDiv({ cls: 'obsidian-gemini-response-footer' });
+              const footerEl = contentEl.createDiv({ cls: 'geminese-response-footer' });
               footerEl.createSpan({
                 text: `* ${flavorWord} for ${formatDurationMmSs(durationSeconds)}`,
-                cls: 'obsidian-gemini-baked-duration',
+                cls: 'geminese-baked-duration',
               });
             }
           }
@@ -786,26 +786,26 @@ export class InputController {
     }
 
     // Build header element, then detach — InlineAskUserQuestion will re-attach it
-    const headerEl = parentEl.createDiv({ cls: 'obsidian-gemini-ask-approval-info' });
+    const headerEl = parentEl.createDiv({ cls: 'geminese-ask-approval-info' });
     headerEl.remove();
 
-    const toolEl = headerEl.createDiv({ cls: 'obsidian-gemini-ask-approval-tool' });
-    const iconEl = toolEl.createSpan({ cls: 'obsidian-gemini-ask-approval-icon' });
+    const toolEl = headerEl.createDiv({ cls: 'geminese-ask-approval-tool' });
+    const iconEl = toolEl.createSpan({ cls: 'geminese-ask-approval-icon' });
     iconEl.setAttribute('aria-hidden', 'true');
     setToolIcon(iconEl, toolName);
-    toolEl.createSpan({ text: toolName, cls: 'obsidian-gemini-ask-approval-tool-name' });
+    toolEl.createSpan({ text: toolName, cls: 'geminese-ask-approval-tool-name' });
 
     if (approvalOptions?.decisionReason) {
-      headerEl.createDiv({ text: approvalOptions.decisionReason, cls: 'obsidian-gemini-ask-approval-reason' });
+      headerEl.createDiv({ text: approvalOptions.decisionReason, cls: 'geminese-ask-approval-reason' });
     }
     if (approvalOptions?.blockedPath) {
-      headerEl.createDiv({ text: approvalOptions.blockedPath, cls: 'obsidian-gemini-ask-approval-blocked-path' });
+      headerEl.createDiv({ text: approvalOptions.blockedPath, cls: 'geminese-ask-approval-blocked-path' });
     }
     if (approvalOptions?.agentID) {
-      headerEl.createDiv({ text: `Agent: ${approvalOptions.agentID}`, cls: 'obsidian-gemini-ask-approval-agent' });
+      headerEl.createDiv({ text: `Agent: ${approvalOptions.agentID}`, cls: 'geminese-ask-approval-agent' });
     }
 
-    headerEl.createDiv({ text: description, cls: 'obsidian-gemini-ask-approval-desc' });
+    headerEl.createDiv({ text: description, cls: 'geminese-ask-approval-desc' });
 
     // Always include "Always allow" — SDK callback has no toggle
     const questionOptions = Object.keys(APPROVAL_OPTION_MAP);

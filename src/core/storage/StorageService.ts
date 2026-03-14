@@ -3,15 +3,15 @@
  *
  * Manages:
  * - Gemini CLI settings in .gemini/settings.json (Gemini CLI-compatible, shareable)
- * - Geminian settings in .gemini/obsidian-gemini-settings.json (Geminian-specific)
+ * - Geminese settings in .gemini/geminese-settings.json (Geminese-specific)
  * - Slash commands in .gemini/commands/*.md
  * - Chat sessions in .gemini/sessions/*.jsonl
  * - MCP configs in .gemini/mcp.json
  *
  * Handles migration from legacy formats:
- * - Old settings.json with Geminian fields → split into Gemini CLI + Geminian files
+ * - Old settings.json with Geminese fields → split into Gemini CLI + Geminese files
  * - Old permissions array → Gemini CLI permissions object
- * - data.json state → obsidian-gemini-settings.json
+ * - data.json state → geminese-settings.json
  */
 
 import type { App, Plugin } from 'obsidian';
@@ -34,9 +34,9 @@ import {
 import { AGENTS_PATH, AgentVaultStorage } from './AgentVaultStorage';
 import { GEMINI_CLI_SETTINGS_PATH, GeminiCLISettingsStorage, isLegacyPermissionsFormat } from './CCSettingsStorage';
 import {
-  GeminianSettingsStorage,
+  GemineseSettingsStorage,
   normalizeBlockedCommands,
-  type StoredGeminianSettings,
+  type StoredGemineseSettings,
 } from './ClaudianSettingsStorage';
 import { McpStorage } from './McpStorage';
 import {
@@ -49,7 +49,7 @@ import { SKILLS_PATH, SkillStorage } from './SkillStorage';
 import { COMMANDS_PATH, SlashCommandStorage } from './SlashCommandStorage';
 import { VaultFileAdapter } from './VaultFileAdapter';
 
-/** Base path for all Geminian storage. */
+/** Base path for all Geminese storage. */
 export const GEMINI_PATH = '.gemini';
 
 /** Legacy settings path (now Gemini CLI settings). */
@@ -57,18 +57,18 @@ export const SETTINGS_PATH = GEMINI_CLI_SETTINGS_PATH;
 
 /**
  * Combined settings for the application.
- * Merges Gemini CLI settings (permissions) with Geminian settings.
+ * Merges Gemini CLI settings (permissions) with Geminese settings.
  */
 export interface CombinedSettings {
   /** Gemini CLI-compatible settings (permissions, etc.) */
   geminiCli: GeminiCLISettings;
-  /** Geminian-specific settings */
-  geminian: StoredGeminianSettings;
+  /** Geminese-specific settings */
+  geminese: StoredGemineseSettings;
 }
 
 /** Legacy data format (pre-split migration). */
 interface LegacySettingsJson {
-  // Old Geminian fields that were in settings.json
+  // Old Geminese fields that were in settings.json
   userName?: string;
   enableBlocklist?: boolean;
   blockedCommands?: unknown;
@@ -109,7 +109,7 @@ interface LegacyDataJson {
 
 export class StorageService {
   readonly geminiCliSettings: GeminiCLISettingsStorage;
-  readonly geminianSettings: GeminianSettingsStorage;
+  readonly gemineseSettings: GemineseSettingsStorage;
   readonly commands: SlashCommandStorage;
   readonly skills: SkillStorage;
   readonly sessions: SessionStorage;
@@ -125,7 +125,7 @@ export class StorageService {
     this.app = plugin.app;
     this.adapter = new VaultFileAdapter(this.app);
     this.geminiCliSettings = new GeminiCLISettingsStorage(this.adapter);
-    this.geminianSettings = new GeminianSettingsStorage(this.adapter);
+    this.gemineseSettings = new GemineseSettingsStorage(this.adapter);
     this.commands = new SlashCommandStorage(this.adapter);
     this.skills = new SkillStorage(this.adapter);
     this.sessions = new SessionStorage(this.adapter);
@@ -138,18 +138,18 @@ export class StorageService {
     await this.runMigrations();
 
     const geminiCli = await this.geminiCliSettings.load();
-    const geminian = await this.geminianSettings.load();
+    const geminese = await this.gemineseSettings.load();
 
-    return { geminiCli, geminian };
+    return { geminiCli, geminese };
   }
 
   private async runMigrations(): Promise<void> {
     const geminiCliExists = await this.geminiCliSettings.exists();
-    const geminianExists = await this.geminianSettings.exists();
+    const gemineseExists = await this.gemineseSettings.exists();
     const dataJson = await this.loadDataJson();
 
-    // Check if old settings.json has Geminian fields that need migration
-    if (geminiCliExists && !geminianExists) {
+    // Check if old settings.json has Geminese fields that need migration
+    if (geminiCliExists && !gemineseExists) {
       await this.migrateFromOldSettingsJson();
     }
 
@@ -157,7 +157,7 @@ export class StorageService {
       const hasState = this.hasStateToMigrate(dataJson);
       const hasLegacyContent = this.hasLegacyContentToMigrate(dataJson);
 
-      // Migrate data.json state to obsidian-gemini-settings.json
+      // Migrate data.json state to geminese-settings.json
       if (hasState) {
         await this.migrateFromDataJson(dataJson);
       }
@@ -192,23 +192,23 @@ export class StorageService {
   }
 
   /**
-   * Migrate from old settings.json (with Geminian fields) to split format.
+   * Migrate from old settings.json (with Geminese fields) to split format.
    *
    * Handles:
-   * - Legacy Geminian fields (userName, model, etc.) → obsidian-gemini-settings.json
+   * - Legacy Geminese fields (userName, model, etc.) → geminese-settings.json
    * - Legacy permissions array → Gemini CLI permissions object
-   * - Gemini CLI env object → Geminian environmentVariables string
+   * - Gemini CLI env object → Geminese environmentVariables string
    * - Preserves existing permissions if already in Gemini CLI format
    */
   private async migrateFromOldSettingsJson(): Promise<void> {
     const content = await this.adapter.read(GEMINI_CLI_SETTINGS_PATH);
     const oldSettings = JSON.parse(content) as LegacySettingsJson;
 
-    const hasGeminianFields = Array.from(GEMINIAN_ONLY_FIELDS).some(
+    const hasGemineseFields = Array.from(GEMINIAN_ONLY_FIELDS).some(
       field => (oldSettings as Record<string, unknown>)[field] !== undefined
     );
 
-    if (!hasGeminianFields) {
+    if (!hasGemineseFields) {
       return;
     }
 
@@ -220,21 +220,21 @@ export class StorageService {
       }
     }
 
-    const geminianFields: Partial<StoredGeminianSettings> = {
+    const gemineseFields: Partial<StoredGemineseSettings> = {
       userName: oldSettings.userName ?? DEFAULT_SETTINGS.userName,
       enableBlocklist: oldSettings.enableBlocklist ?? DEFAULT_SETTINGS.enableBlocklist,
       blockedCommands: normalizeBlockedCommands(oldSettings.blockedCommands),
       model: (oldSettings.model as GeminiModel) ?? DEFAULT_SETTINGS.model,
-      thinkingBudget: (oldSettings.thinkingBudget as StoredGeminianSettings['thinkingBudget']) ?? DEFAULT_SETTINGS.thinkingBudget,
-      permissionMode: (oldSettings.permissionMode as StoredGeminianSettings['permissionMode']) ?? DEFAULT_SETTINGS.permissionMode,
+      thinkingBudget: (oldSettings.thinkingBudget as StoredGemineseSettings['thinkingBudget']) ?? DEFAULT_SETTINGS.thinkingBudget,
+      permissionMode: (oldSettings.permissionMode as StoredGemineseSettings['permissionMode']) ?? DEFAULT_SETTINGS.permissionMode,
       excludedTags: oldSettings.excludedTags ?? DEFAULT_SETTINGS.excludedTags,
       mediaFolder: oldSettings.mediaFolder ?? DEFAULT_SETTINGS.mediaFolder,
       environmentVariables,
-      envSnippets: oldSettings.envSnippets as StoredGeminianSettings['envSnippets'] ?? DEFAULT_SETTINGS.envSnippets,
+      envSnippets: oldSettings.envSnippets as StoredGemineseSettings['envSnippets'] ?? DEFAULT_SETTINGS.envSnippets,
       systemPrompt: oldSettings.systemPrompt ?? DEFAULT_SETTINGS.systemPrompt,
       allowedExportPaths: oldSettings.allowedExportPaths ?? DEFAULT_SETTINGS.allowedExportPaths,
       persistentExternalContextPaths: DEFAULT_SETTINGS.persistentExternalContextPaths,
-      keyboardNavigation: oldSettings.keyboardNavigation as StoredGeminianSettings['keyboardNavigation'] ?? DEFAULT_SETTINGS.keyboardNavigation,
+      keyboardNavigation: oldSettings.keyboardNavigation as StoredGemineseSettings['keyboardNavigation'] ?? DEFAULT_SETTINGS.keyboardNavigation,
       geminiCliPath: oldSettings.geminiCliPath ?? DEFAULT_SETTINGS.geminiCliPath,
       geminiCliPathsByHost: DEFAULT_SETTINGS.geminiCliPathsByHost,
       loadUserGeminiSettings: oldSettings.loadUserGeminiSettings ?? DEFAULT_SETTINGS.loadUserGeminiSettings,
@@ -245,11 +245,11 @@ export class StorageService {
       lastEnvHash: DEFAULT_SETTINGS.lastEnvHash,
     };
 
-    await this.geminianSettings.save(geminianFields as StoredGeminianSettings);
+    await this.gemineseSettings.save(gemineseFields as StoredGemineseSettings);
 
-    const savedGeminian = await this.geminianSettings.load();
-    if (!savedGeminian || savedGeminian.userName === undefined) {
-      throw new Error('Failed to verify obsidian-gemini-settings.json was saved correctly');
+    const savedGeminese = await this.gemineseSettings.load();
+    if (!savedGeminese || savedGeminese.userName === undefined) {
+      throw new Error('Failed to verify geminese-settings.json was saved correctly');
     }
 
     let geminiPermissions: GeminiPermissions;
@@ -277,19 +277,19 @@ export class StorageService {
   }
 
   private async migrateFromDataJson(dataJson: LegacyDataJson): Promise<void> {
-    const geminian = await this.geminianSettings.load();
+    const geminese = await this.gemineseSettings.load();
 
-    if (dataJson.lastEnvHash !== undefined && !geminian.lastEnvHash) {
-      geminian.lastEnvHash = dataJson.lastEnvHash;
+    if (dataJson.lastEnvHash !== undefined && !geminese.lastEnvHash) {
+      geminese.lastEnvHash = dataJson.lastEnvHash;
     }
-    if (dataJson.lastGeminiModel !== undefined && !geminian.lastGeminiModel) {
-      geminian.lastGeminiModel = dataJson.lastGeminiModel;
+    if (dataJson.lastGeminiModel !== undefined && !geminese.lastGeminiModel) {
+      geminese.lastGeminiModel = dataJson.lastGeminiModel;
     }
-    if (dataJson.lastCustomModel !== undefined && !geminian.lastCustomModel) {
-      geminian.lastCustomModel = dataJson.lastCustomModel;
+    if (dataJson.lastCustomModel !== undefined && !geminese.lastCustomModel) {
+      geminese.lastCustomModel = dataJson.lastCustomModel;
     }
 
-    await this.geminianSettings.save(geminian);
+    await this.gemineseSettings.save(geminese);
   }
 
   private async migrateLegacyDataJsonContent(dataJson: LegacyDataJson): Promise<{ hadErrors: boolean }> {
@@ -396,23 +396,23 @@ export class StorageService {
     return this.geminiCliSettings.removeRule(createPermissionRule(rule));
   }
 
-  async updateGeminianSettings(updates: Partial<StoredGeminianSettings>): Promise<void> {
-    return this.geminianSettings.update(updates);
+  async updateGemineseSettings(updates: Partial<StoredGemineseSettings>): Promise<void> {
+    return this.gemineseSettings.update(updates);
   }
 
-  async saveGeminianSettings(settings: StoredGeminianSettings): Promise<void> {
-    return this.geminianSettings.save(settings);
+  async saveGemineseSettings(settings: StoredGemineseSettings): Promise<void> {
+    return this.gemineseSettings.save(settings);
   }
 
-  async loadGeminianSettings(): Promise<StoredGeminianSettings> {
-    return this.geminianSettings.load();
+  async loadGemineseSettings(): Promise<StoredGemineseSettings> {
+    return this.gemineseSettings.load();
   }
 
   /**
-   * Get legacy activeConversationId from storage (obsidian-gemini-settings.json or data.json).
+   * Get legacy activeConversationId from storage (geminese-settings.json or data.json).
    */
   async getLegacyActiveConversationId(): Promise<string | null> {
-    const fromSettings = await this.geminianSettings.getLegacyActiveConversationId();
+    const fromSettings = await this.gemineseSettings.getLegacyActiveConversationId();
     if (fromSettings) {
       return fromSettings;
     }
@@ -429,7 +429,7 @@ export class StorageService {
    * Remove legacy activeConversationId from storage after migration.
    */
   async clearLegacyActiveConversationId(): Promise<void> {
-    await this.geminianSettings.clearLegacyActiveConversationId();
+    await this.gemineseSettings.clearLegacyActiveConversationId();
 
     const dataJson = await this.loadDataJson();
     if (!dataJson || !('activeConversationId' in dataJson)) {

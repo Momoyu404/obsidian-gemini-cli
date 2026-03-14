@@ -230,19 +230,19 @@ export interface KeyboardNavigationSettings {
 export type TabBarPosition = 'input' | 'header';
 
 /**
- * Geminian-specific settings stored in .claude/obsidian-gemini-settings.json.
+ * Geminese-specific settings stored in .claude/geminese-settings.json.
  * These settings are NOT shared with Gemini CLI.
  */
-export interface GeminianSettings {
+export interface GemineseSettings {
   // User preferences
   userName: string;
 
-  // Security (Geminian-specific, Gemini CLI uses permissions.deny instead)
+  // Security (Geminese-specific, Gemini CLI uses permissions.deny instead)
   enableBlocklist: boolean;
   blockedCommands: PlatformBlockedCommands;
   permissionMode: PermissionMode;
 
-  // Model & thinking (Geminian uses enum, Gemini CLI uses full model ID string)
+  // Model & thinking (Geminese uses enum, Gemini CLI uses full model ID string)
   model: GeminiModel;
   thinkingBudget: ThinkingBudget;
   enableAutoTitleGeneration: boolean;
@@ -296,8 +296,8 @@ export interface GeminianSettings {
   hiddenSlashCommands: string[];  // Command names to hide from dropdown (user preference)
 }
 
-/** Default Geminian-specific settings. */
-export const DEFAULT_SETTINGS: GeminianSettings = {
+/** Default Geminese-specific settings. */
+export const DEFAULT_SETTINGS: GemineseSettings = {
   // User preferences
   userName: '',
 

@@ -1,5 +1,5 @@
 /**
- * Geminian - Instruction modal
+ * Geminese - Instruction modal
  *
  * Unified modal that handles all instruction mode states:
  * - Loading (initial processing)
@@ -58,35 +58,35 @@ export class InstructionModal extends Modal {
 
   onOpen() {
     const { contentEl } = this;
-    contentEl.addClass('obsidian-gemini-instruction-modal');
+    contentEl.addClass('geminese-instruction-modal');
     this.setTitle('Add Custom Instruction');
 
     // User input section (always visible)
-    const inputSection = contentEl.createDiv({ cls: 'obsidian-gemini-instruction-section' });
-    const inputLabel = inputSection.createDiv({ cls: 'obsidian-gemini-instruction-label' });
+    const inputSection = contentEl.createDiv({ cls: 'geminese-instruction-section' });
+    const inputLabel = inputSection.createDiv({ cls: 'geminese-instruction-label' });
     inputLabel.setText('Your input:');
-    const inputText = inputSection.createDiv({ cls: 'obsidian-gemini-instruction-original' });
+    const inputText = inputSection.createDiv({ cls: 'geminese-instruction-original' });
     inputText.setText(this.rawInstruction);
 
     // Main content section (changes based on state)
-    this.contentSectionEl = contentEl.createDiv({ cls: 'obsidian-gemini-instruction-content-section' });
+    this.contentSectionEl = contentEl.createDiv({ cls: 'geminese-instruction-content-section' });
 
     // Loading state
-    this.loadingEl = this.contentSectionEl.createDiv({ cls: 'obsidian-gemini-instruction-loading' });
-    this.loadingEl.createDiv({ cls: 'obsidian-gemini-instruction-spinner' });
+    this.loadingEl = this.contentSectionEl.createDiv({ cls: 'geminese-instruction-loading' });
+    this.loadingEl.createDiv({ cls: 'geminese-instruction-spinner' });
     this.loadingEl.createSpan({ text: 'Processing your instruction...' });
 
     // Clarification state (hidden initially)
-    this.clarificationEl = this.contentSectionEl.createDiv({ cls: 'obsidian-gemini-instruction-clarification-section' });
+    this.clarificationEl = this.contentSectionEl.createDiv({ cls: 'geminese-instruction-clarification-section' });
     this.clarificationEl.style.display = 'none';
-    this.clarificationTextEl = this.clarificationEl.createDiv({ cls: 'obsidian-gemini-instruction-clarification' });
+    this.clarificationTextEl = this.clarificationEl.createDiv({ cls: 'geminese-instruction-clarification' });
 
-    const responseSection = this.clarificationEl.createDiv({ cls: 'obsidian-gemini-instruction-section' });
-    const responseLabel = responseSection.createDiv({ cls: 'obsidian-gemini-instruction-label' });
+    const responseSection = this.clarificationEl.createDiv({ cls: 'geminese-instruction-section' });
+    const responseLabel = responseSection.createDiv({ cls: 'geminese-instruction-label' });
     responseLabel.setText('Your response:');
 
     this.responseTextarea = new TextAreaComponent(responseSection);
-    this.responseTextarea.inputEl.addClass('obsidian-gemini-instruction-response-textarea');
+    this.responseTextarea.inputEl.addClass('geminese-instruction-response-textarea');
     this.responseTextarea.inputEl.rows = 3;
     this.responseTextarea.inputEl.placeholder = 'Provide more details...';
 
@@ -99,24 +99,24 @@ export class InstructionModal extends Modal {
     });
 
     // Confirmation state (hidden initially)
-    this.confirmationEl = this.contentSectionEl.createDiv({ cls: 'obsidian-gemini-instruction-confirmation-section' });
+    this.confirmationEl = this.contentSectionEl.createDiv({ cls: 'geminese-instruction-confirmation-section' });
     this.confirmationEl.style.display = 'none';
 
     // Refined instruction display/edit
-    const refinedSection = this.confirmationEl.createDiv({ cls: 'obsidian-gemini-instruction-section' });
-    const refinedLabel = refinedSection.createDiv({ cls: 'obsidian-gemini-instruction-label' });
+    const refinedSection = this.confirmationEl.createDiv({ cls: 'geminese-instruction-section' });
+    const refinedLabel = refinedSection.createDiv({ cls: 'geminese-instruction-label' });
     refinedLabel.setText('Refined snippet:');
 
-    this.refinedDisplayEl = refinedSection.createDiv({ cls: 'obsidian-gemini-instruction-refined' });
-    this.editContainerEl = refinedSection.createDiv({ cls: 'obsidian-gemini-instruction-edit-container' });
+    this.refinedDisplayEl = refinedSection.createDiv({ cls: 'geminese-instruction-refined' });
+    this.editContainerEl = refinedSection.createDiv({ cls: 'geminese-instruction-edit-container' });
     this.editContainerEl.style.display = 'none';
 
     this.editTextarea = new TextAreaComponent(this.editContainerEl);
-    this.editTextarea.inputEl.addClass('obsidian-gemini-instruction-edit-textarea');
+    this.editTextarea.inputEl.addClass('geminese-instruction-edit-textarea');
     this.editTextarea.inputEl.rows = 4;
 
     // Buttons (changes based on state)
-    this.buttonsEl = contentEl.createDiv({ cls: 'obsidian-gemini-instruction-buttons' });
+    this.buttonsEl = contentEl.createDiv({ cls: 'geminese-instruction-buttons' });
     this.updateButtons();
 
     this.showState('loading');
@@ -156,7 +156,7 @@ export class InstructionModal extends Modal {
   showClarificationLoading() {
     this.isSubmitting = true;
     if (this.loadingEl) {
-      this.loadingEl.querySelector('.obsidian-gemini-instruction-spinner');
+      this.loadingEl.querySelector('.geminese-instruction-spinner');
       const text = this.loadingEl.querySelector('span');
       if (text) text.textContent = 'Processing...';
     }
@@ -185,7 +185,7 @@ export class InstructionModal extends Modal {
 
     const cancelBtn = this.buttonsEl.createEl('button', {
       text: 'Cancel',
-      cls: 'obsidian-gemini-instruction-btn obsidian-gemini-instruction-reject-btn',
+      cls: 'geminese-instruction-btn geminese-instruction-reject-btn',
       attr: { 'aria-label': 'Cancel' }
     });
     cancelBtn.addEventListener('click', () => this.handleReject());
@@ -193,21 +193,21 @@ export class InstructionModal extends Modal {
     if (this.state === 'clarification') {
       const submitBtn = this.buttonsEl.createEl('button', {
         text: 'Submit',
-        cls: 'obsidian-gemini-instruction-btn obsidian-gemini-instruction-accept-btn',
+        cls: 'geminese-instruction-btn geminese-instruction-accept-btn',
         attr: { 'aria-label': 'Submit response' }
       });
       submitBtn.addEventListener('click', () => this.submitClarification());
     } else if (this.state === 'confirmation') {
       this.editBtnEl = this.buttonsEl.createEl('button', {
         text: 'Edit',
-        cls: 'obsidian-gemini-instruction-btn obsidian-gemini-instruction-edit-btn',
+        cls: 'geminese-instruction-btn geminese-instruction-edit-btn',
         attr: { 'aria-label': 'Edit instruction' }
       });
       this.editBtnEl.addEventListener('click', () => this.toggleEdit());
 
       const acceptBtn = this.buttonsEl.createEl('button', {
         text: 'Accept',
-        cls: 'obsidian-gemini-instruction-btn obsidian-gemini-instruction-accept-btn',
+        cls: 'geminese-instruction-btn geminese-instruction-accept-btn',
         attr: { 'aria-label': 'Accept instruction' }
       });
       acceptBtn.addEventListener('click', () => this.handleAccept());

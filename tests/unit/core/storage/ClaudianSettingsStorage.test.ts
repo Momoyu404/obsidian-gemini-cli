@@ -1,6 +1,6 @@
 import {
+  GemineseSettingsStorage,
   GEMINIAN_SETTINGS_PATH as CLAUDIAN_SETTINGS_PATH,
-  GeminianSettingsStorage,
   normalizeBlockedCommands,
 } from '@/core/storage/ClaudianSettingsStorage';
 import type { VaultFileAdapter } from '@/core/storage/VaultFileAdapter';
@@ -12,8 +12,8 @@ const mockAdapter = {
   write: jest.fn(),
 } as unknown as jest.Mocked<VaultFileAdapter>;
 
-describe('GeminianSettingsStorage', () => {
-  let storage: GeminianSettingsStorage;
+describe('GemineseSettingsStorage', () => {
+  let storage: GemineseSettingsStorage;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -21,7 +21,7 @@ describe('GeminianSettingsStorage', () => {
     mockAdapter.exists.mockResolvedValue(false);
     mockAdapter.read.mockResolvedValue('{}');
     mockAdapter.write.mockResolvedValue(undefined);
-    storage = new GeminianSettingsStorage(mockAdapter);
+    storage = new GemineseSettingsStorage(mockAdapter);
   });
 
   describe('load', () => {

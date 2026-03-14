@@ -53,10 +53,10 @@
     }
   },
   "settings": {
-    "title": "Geminian Settings",
+    "title": "Geminese Settings",
     "customization": "Customization",
     "userName": {
-      "name": "What should Geminian call you?",
+      "name": "What should Geminese call you?",
       "desc": "Your name for personalized greetings (leave empty for generic greetings)"
     },
     "excludedTags": {
@@ -126,7 +126,7 @@
     },
     "hiddenSlashCommands": {
       "name": "Hidden Commands",
-      "desc": "Hide specific slash commands from the dropdown. Useful for hiding Gemini CLI commands that are not relevant to Geminian. Enter command names without the leading slash, one per line.",
+      "desc": "Hide specific slash commands from the dropdown. Useful for hiding Gemini CLI commands that are not relevant to Geminese. Enter command names without the leading slash, one per line.",
       "placeholder": "commit\nbuild\ntest"
     },
     "mcpServers": {

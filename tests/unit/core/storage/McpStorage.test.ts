@@ -33,12 +33,12 @@ describe('McpStorage', () => {
       expect(servers).toEqual([]);
     });
 
-    it('loads servers with disabledTools from _geminian metadata', async () => {
+    it('loads servers with disabledTools from _geminese metadata', async () => {
       const config = {
         mcpServers: {
           alpha: { command: 'alpha-cmd', args: ['--arg'] },
         },
-        _geminian: {
+        _geminese: {
           servers: {
             alpha: {
               enabled: true,
@@ -70,7 +70,7 @@ describe('McpStorage', () => {
         mcpServers: {
           alpha: { command: 'alpha-cmd' },
         },
-        _geminian: {
+        _geminese: {
           servers: {
             alpha: {
               disabledTools: ['valid', 123, null, 'also_valid'],
@@ -93,7 +93,7 @@ describe('McpStorage', () => {
         mcpServers: {
           alpha: { command: 'alpha-cmd' },
         },
-        _geminian: {
+        _geminese: {
           servers: {
             alpha: {
               disabledTools: [],
@@ -156,7 +156,7 @@ describe('McpStorage', () => {
       expect(servers[0].name).toBe('valid');
     });
 
-    it('applies defaults when no _geminian metadata exists', async () => {
+    it('applies defaults when no _geminese metadata exists', async () => {
       const config = {
         mcpServers: {
           alpha: { command: 'alpha-cmd' },
@@ -176,10 +176,10 @@ describe('McpStorage', () => {
       });
     });
 
-    it('loads description from _geminian metadata', async () => {
+    it('loads description from _geminese metadata', async () => {
       const config = {
         mcpServers: { alpha: { command: 'cmd' } },
-        _geminian: {
+        _geminese: {
           servers: {
             alpha: { description: 'My server' },
           },
@@ -195,7 +195,7 @@ describe('McpStorage', () => {
   });
 
   describe('save', () => {
-    it('saves disabledTools to _geminian metadata', async () => {
+    it('saves disabledTools to _geminese metadata', async () => {
       const adapter = createMockAdapter();
       const storage = new McpStorage(adapter);
 
@@ -210,7 +210,7 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      expect(saved._geminian.servers.alpha.disabledTools).toEqual(['tool_a', 'tool_b']);
+      expect(saved._geminese.servers.alpha.disabledTools).toEqual(['tool_a', 'tool_b']);
     });
 
     it('trims and filters blank disabledTools on save', async () => {
@@ -228,7 +228,7 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      expect(saved._geminian.servers.alpha.disabledTools).toEqual(['tool_a', 'tool_b']);
+      expect(saved._geminese.servers.alpha.disabledTools).toEqual(['tool_a', 'tool_b']);
     });
 
     it('omits disabledTools from metadata when empty', async () => {
@@ -246,16 +246,16 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      // No _geminian since all fields are default
-      expect(saved._geminian).toBeUndefined();
+      // No _geminese since all fields are default
+      expect(saved._geminese).toBeUndefined();
     });
 
-    it('preserves existing _geminian metadata when saving', async () => {
+    it('preserves existing _geminese metadata when saving', async () => {
       const existing = {
         mcpServers: {
           alpha: { command: 'alpha-cmd' },
         },
-        _geminian: {
+        _geminese: {
           customField: 'should be preserved',
           servers: {
             alpha: { enabled: false },
@@ -279,8 +279,8 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      expect(saved._geminian.customField).toBe('should be preserved');
-      expect(saved._geminian.servers.alpha.disabledTools).toEqual(['tool_a']);
+      expect(saved._geminese.customField).toBe('should be preserved');
+      expect(saved._geminese.servers.alpha.disabledTools).toEqual(['tool_a']);
     });
 
     it('round-trips disabledTools correctly', async () => {
@@ -318,7 +318,7 @@ describe('McpStorage', () => {
       });
     });
 
-    it('saves description to _geminian metadata', async () => {
+    it('saves description to _geminese metadata', async () => {
       const adapter = createMockAdapter();
       const storage = new McpStorage(adapter);
 
@@ -333,10 +333,10 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      expect(saved._geminian.servers.alpha.description).toBe('A test server');
+      expect(saved._geminese.servers.alpha.description).toBe('A test server');
     });
 
-    it('stores enabled=false in _geminian when different from default', async () => {
+    it('stores enabled=false in _geminese when different from default', async () => {
       const adapter = createMockAdapter();
       const storage = new McpStorage(adapter);
 
@@ -350,10 +350,10 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      expect(saved._geminian.servers.alpha.enabled).toBe(false);
+      expect(saved._geminese.servers.alpha.enabled).toBe(false);
     });
 
-    it('stores contextSaving=false in _geminian when different from default', async () => {
+    it('stores contextSaving=false in _geminese when different from default', async () => {
       const adapter = createMockAdapter();
       const storage = new McpStorage(adapter);
 
@@ -367,13 +367,13 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      expect(saved._geminian.servers.alpha.contextSaving).toBe(false);
+      expect(saved._geminese.servers.alpha.contextSaving).toBe(false);
     });
 
-    it('removes _geminian.servers when all metadata is default', async () => {
+    it('removes _geminese.servers when all metadata is default', async () => {
       const existing = {
         mcpServers: { alpha: { command: 'cmd' } },
-        _geminian: { servers: { alpha: { enabled: false } } },
+        _geminese: { servers: { alpha: { enabled: false } } },
       };
       const adapter = createMockAdapter({
         '.claude/mcp.json': JSON.stringify(existing),
@@ -390,13 +390,13 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      expect(saved._geminian).toBeUndefined();
+      expect(saved._geminese).toBeUndefined();
     });
 
-    it('preserves non-servers _geminian fields when removing servers', async () => {
+    it('preserves non-servers _geminese fields when removing servers', async () => {
       const existing = {
         mcpServers: { alpha: { command: 'cmd' } },
-        _geminian: {
+        _geminese: {
           customField: 'keep',
           servers: { alpha: { enabled: false } },
         },
@@ -416,7 +416,7 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      expect(saved._geminian).toEqual({ customField: 'keep' });
+      expect(saved._geminese).toEqual({ customField: 'keep' });
     });
 
     it('handles corrupted existing file gracefully', async () => {

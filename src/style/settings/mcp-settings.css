@@ -1,13 +1,13 @@
 /* MCP Server Settings */
-.obsidian-gemini-mcp-settings-desc {
+.geminese-mcp-settings-desc {
   margin-bottom: 12px;
 }
 
-.obsidian-gemini-mcp-container {
+.geminese-mcp-container {
   margin-top: 8px;
 }
 
-.obsidian-gemini-mcp-header {
+.geminese-mcp-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -15,17 +15,17 @@
   padding: 0 12px;
 }
 
-.obsidian-gemini-mcp-label {
+.geminese-mcp-label {
   font-size: var(--font-ui-small);
   color: var(--text-muted);
   font-weight: var(--font-medium);
 }
 
-.obsidian-gemini-mcp-add-container {
+.geminese-mcp-add-container {
   position: relative;
 }
 
-.obsidian-gemini-add-mcp-btn {
+.geminese-add-mcp-btn {
   padding: 4px 12px;
   border-radius: 4px;
   background: var(--interactive-accent);
@@ -35,11 +35,11 @@
   border: none;
 }
 
-.obsidian-gemini-add-mcp-btn:hover {
+.geminese-add-mcp-btn:hover {
   background: var(--interactive-accent-hover);
 }
 
-.obsidian-gemini-mcp-add-dropdown {
+.geminese-mcp-add-dropdown {
   display: none;
   position: absolute;
   top: 100%;
@@ -54,11 +54,11 @@
   overflow: hidden;
 }
 
-.obsidian-gemini-mcp-add-dropdown.is-visible {
+.geminese-mcp-add-dropdown.is-visible {
   display: block;
 }
 
-.obsidian-gemini-mcp-add-option {
+.geminese-mcp-add-option {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -68,22 +68,22 @@
   color: var(--text-normal);
 }
 
-.obsidian-gemini-mcp-add-option:hover {
+.geminese-mcp-add-option:hover {
   background: var(--background-modifier-hover);
 }
 
-.obsidian-gemini-mcp-add-option-icon {
+.geminese-mcp-add-option-icon {
   display: flex;
   align-items: center;
   color: var(--text-muted);
 }
 
-.obsidian-gemini-mcp-add-option-icon svg {
+.geminese-mcp-add-option-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.obsidian-gemini-mcp-empty {
+.geminese-mcp-empty {
   padding: 16px;
   text-align: center;
   color: var(--text-muted);
@@ -92,13 +92,13 @@
   border-radius: 6px;
 }
 
-.obsidian-gemini-mcp-list {
+.geminese-mcp-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.obsidian-gemini-mcp-item {
+.geminese-mcp-item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -108,15 +108,15 @@
   transition: background 0.15s ease;
 }
 
-.obsidian-gemini-mcp-item:hover {
+.geminese-mcp-item:hover {
   background: var(--background-modifier-hover);
 }
 
-.obsidian-gemini-mcp-item-disabled {
+.geminese-mcp-item-disabled {
   opacity: 0.6;
 }
 
-.obsidian-gemini-mcp-status {
+.geminese-mcp-status {
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -124,31 +124,31 @@
   flex-shrink: 0;
 }
 
-.obsidian-gemini-mcp-status-enabled {
+.geminese-mcp-status-enabled {
   background: var(--color-green);
 }
 
-.obsidian-gemini-mcp-status-disabled {
+.geminese-mcp-status-disabled {
   background: var(--text-muted);
 }
 
-.obsidian-gemini-mcp-info {
+.geminese-mcp-info {
   flex: 1;
   min-width: 0;
 }
 
-.obsidian-gemini-mcp-name-row {
+.geminese-mcp-name-row {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.obsidian-gemini-mcp-name {
+.geminese-mcp-name {
   font-weight: 600;
 }
 
-.obsidian-gemini-mcp-type-badge {
+.geminese-mcp-type-badge {
   font-size: 10px;
   padding: 2px 6px;
   background: var(--background-modifier-border);
@@ -157,7 +157,7 @@
   text-transform: uppercase;
 }
 
-.obsidian-gemini-mcp-context-saving-badge {
+.geminese-mcp-context-saving-badge {
   font-size: 11px;
   padding: 2px 6px;
   background: var(--interactive-accent);
@@ -166,7 +166,7 @@
   font-weight: 600;
 }
 
-.obsidian-gemini-mcp-preview {
+.geminese-mcp-preview {
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 4px;
@@ -175,13 +175,13 @@
   white-space: nowrap;
 }
 
-.obsidian-gemini-mcp-actions {
+.geminese-mcp-actions {
   display: flex;
   gap: 4px;
   flex-shrink: 0;
 }
 
-.obsidian-gemini-mcp-action-btn {
+.geminese-mcp-action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -196,16 +196,16 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.obsidian-gemini-mcp-action-btn:hover {
+.geminese-mcp-action-btn:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-mcp-action-btn svg {
+.geminese-mcp-action-btn svg {
   width: 14px;
   height: 14px;
 }
 
-.obsidian-gemini-mcp-delete-btn:hover {
+.geminese-mcp-delete-btn:hover {
   color: var(--text-error);
 }

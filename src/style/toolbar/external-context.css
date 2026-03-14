@@ -1,12 +1,12 @@
 /* External Context Selector */
-.obsidian-gemini-external-context-selector {
+.geminese-external-context-selector {
   position: relative;
   display: flex;
   align-items: center;
   margin-left: 4px;
 }
 
-.obsidian-gemini-external-context-icon-wrapper {
+.geminese-external-context-icon-wrapper {
   position: relative;
   display: flex;
   align-items: center;
@@ -14,7 +14,7 @@
   cursor: pointer;
 }
 
-.obsidian-gemini-external-context-icon {
+.geminese-external-context-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,37 +24,37 @@
   transition: color 0.15s ease;
 }
 
-.obsidian-gemini-external-context-icon-wrapper:hover .obsidian-gemini-external-context-icon {
+.geminese-external-context-icon-wrapper:hover .geminese-external-context-icon {
   color: var(--text-normal);
 }
 
-.obsidian-gemini-external-context-icon.active {
-  color: var(--obsidian-gemini-brand);
+.geminese-external-context-icon.active {
+  color: var(--geminese-brand);
   animation: external-context-glow 2s ease-in-out infinite;
 }
 
-.obsidian-gemini-external-context-icon svg {
+.geminese-external-context-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.obsidian-gemini-external-context-badge {
+.geminese-external-context-badge {
   position: absolute;
   top: 0;
   right: 0;
   font-size: 9px;
   font-weight: 600;
-  color: var(--obsidian-gemini-brand);
+  color: var(--geminese-brand);
   opacity: 0;
   transition: opacity 0.15s ease;
   pointer-events: none;
 }
 
-.obsidian-gemini-external-context-badge.visible {
+.geminese-external-context-badge.visible {
   opacity: 1;
 }
 
-.obsidian-gemini-external-context-dropdown {
+.geminese-external-context-dropdown {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -72,12 +72,12 @@
   z-index: 100;
 }
 
-.obsidian-gemini-external-context-selector:hover .obsidian-gemini-external-context-dropdown {
+.geminese-external-context-selector:hover .geminese-external-context-dropdown {
   opacity: 1;
   visibility: visible;
 }
 
-.obsidian-gemini-external-context-header {
+.geminese-external-context-header {
   padding: 10px 12px;
   font-size: 12px;
   font-weight: 600;
@@ -85,12 +85,12 @@
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.obsidian-gemini-external-context-list {
+.geminese-external-context-list {
   max-height: 200px;
   overflow-y: auto;
 }
 
-.obsidian-gemini-external-context-empty {
+.geminese-external-context-empty {
   padding: 16px 12px;
   text-align: center;
   color: var(--text-muted);
@@ -98,7 +98,7 @@
   font-style: italic;
 }
 
-.obsidian-gemini-external-context-item {
+.geminese-external-context-item {
   display: flex;
   align-items: center;
   padding: 8px 12px;
@@ -106,11 +106,11 @@
   border-bottom: 1px solid var(--background-modifier-border-focus);
 }
 
-.obsidian-gemini-external-context-item:last-child {
+.geminese-external-context-item:last-child {
   border-bottom: none;
 }
 
-.obsidian-gemini-external-context-text {
+.geminese-external-context-text {
   flex: 1;
   font-size: 12px;
   font-family: var(--font-monospace);
@@ -120,7 +120,7 @@
   white-space: nowrap;
 }
 
-.obsidian-gemini-external-context-lock {
+.geminese-external-context-lock {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -133,26 +133,26 @@
   transition: all 0.15s ease;
 }
 
-.obsidian-gemini-external-context-lock:hover {
+.geminese-external-context-lock:hover {
   background: var(--background-modifier-hover);
   opacity: 0.8;
 }
 
-.obsidian-gemini-external-context-lock.locked {
-  color: var(--obsidian-gemini-brand);
+.geminese-external-context-lock.locked {
+  color: var(--geminese-brand);
   opacity: 0.9;
 }
 
-.obsidian-gemini-external-context-lock.locked:hover {
+.geminese-external-context-lock.locked:hover {
   opacity: 1;
 }
 
-.obsidian-gemini-external-context-lock svg {
+.geminese-external-context-lock svg {
   width: 12px;
   height: 12px;
 }
 
-.obsidian-gemini-external-context-remove {
+.geminese-external-context-remove {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -165,13 +165,13 @@
   transition: all 0.15s ease;
 }
 
-.obsidian-gemini-external-context-remove:hover {
-  background: rgba(var(--obsidian-gemini-error-rgb), 0.15);
-  color: var(--obsidian-gemini-error);
+.geminese-external-context-remove:hover {
+  background: rgba(var(--geminese-error-rgb), 0.15);
+  color: var(--geminese-error);
   opacity: 1;
 }
 
-.obsidian-gemini-external-context-remove svg {
+.geminese-external-context-remove svg {
   width: 14px;
   height: 14px;
 }

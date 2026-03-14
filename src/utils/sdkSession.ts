@@ -4,7 +4,7 @@
  * The SDK stores sessions in ~/.claude/projects/{vault-path-encoded}/{sessionId}.jsonl
  * Each line is a JSON object with message data.
  *
- * This utility converts SDK native messages to Geminian's ChatMessage format
+ * This utility converts SDK native messages to Geminese's ChatMessage format
  * for displaying conversation history from native sessions.
  */
 
@@ -365,7 +365,7 @@ export async function loadSubagentFinalResult(
 /**
  * Validates a session ID to prevent path traversal attacks.
  * Accepts alphanumeric strings with hyphens and underscores (max 128 chars).
- * Common formats: SDK UUIDs, Geminian IDs (conv-TIMESTAMP-RANDOM).
+ * Common formats: SDK UUIDs, Geminese IDs (conv-TIMESTAMP-RANDOM).
  */
 export function isValidSessionId(sessionId: string): boolean {
   if (!sessionId || sessionId.length === 0 || sessionId.length > 128) {

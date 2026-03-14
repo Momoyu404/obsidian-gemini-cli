@@ -1,24 +1,24 @@
-.obsidian-gemini-subagent-list {
+.geminese-subagent-list {
   margin: 8px 0;
 }
 
-.obsidian-gemini-text-block+.obsidian-gemini-subagent-list {
+.geminese-text-block+.geminese-subagent-list {
   margin-top: 8px;
 }
 
-.obsidian-gemini-subagent-list+.obsidian-gemini-text-block {
+.geminese-subagent-list+.geminese-text-block {
   margin-top: 8px;
 }
 
-.obsidian-gemini-tool-call+.obsidian-gemini-subagent-list {
+.geminese-tool-call+.geminese-subagent-list {
   margin-top: 8px;
 }
 
-.obsidian-gemini-subagent-list+.obsidian-gemini-tool-call {
+.geminese-subagent-list+.geminese-tool-call {
   margin-top: 8px;
 }
 
-.obsidian-gemini-subagent-header {
+.geminese-subagent-header {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -27,19 +27,19 @@
   overflow: hidden;
 }
 
-.obsidian-gemini-subagent-icon {
+.geminese-subagent-icon {
   display: flex;
   align-items: center;
   color: var(--interactive-accent);
   flex-shrink: 0;
 }
 
-.obsidian-gemini-subagent-icon svg {
+.geminese-subagent-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.obsidian-gemini-subagent-label {
+.geminese-subagent-label {
   flex: 1;
   font-family: var(--font-monospace);
   font-size: 13px;
@@ -47,47 +47,47 @@
   color: var(--text-normal);
 }
 
-.obsidian-gemini-subagent-count {
+.geminese-subagent-count {
   font-size: 11px;
   color: var(--text-muted);
   flex-shrink: 0;
 }
 
-.obsidian-gemini-subagent-status {
+.geminese-subagent-status {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-.obsidian-gemini-subagent-status svg {
+.geminese-subagent-status svg {
   width: 14px;
   height: 14px;
 }
 
-.obsidian-gemini-subagent-status.status-running {
+.geminese-subagent-status.status-running {
   color: var(--text-accent);
 }
 
-.obsidian-gemini-subagent-status.status-completed {
+.geminese-subagent-status.status-completed {
   color: var(--color-green);
 }
 
-.obsidian-gemini-subagent-status.status-error {
+.geminese-subagent-status.status-error {
   color: var(--color-red);
 }
 
-.obsidian-gemini-subagent-content {
+.geminese-subagent-content {
   padding: 4px 0;
   padding-inline-start: 16px;
   margin-inline-start: 7px;
   border-inline-start: 2px solid var(--background-modifier-border);
 }
 
-.obsidian-gemini-subagent-section {
+.geminese-subagent-section {
   margin: 2px 0 6px;
 }
 
-.obsidian-gemini-subagent-section-header {
+.geminese-subagent-section-header {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -99,21 +99,21 @@
   padding: 2px 0;
 }
 
-.obsidian-gemini-subagent-section-header:hover {
+.geminese-subagent-section-header:hover {
   color: var(--text-normal);
 }
 
-.obsidian-gemini-subagent-section-title {
+.geminese-subagent-section-title {
   flex: 1;
   min-width: 0;
 }
 
-.obsidian-gemini-subagent-section-body {
+.geminese-subagent-section-body {
   padding-inline-start: 6px;
 }
 
-.obsidian-gemini-subagent-prompt-text,
-.obsidian-gemini-subagent-result-output {
+.geminese-subagent-prompt-text,
+.geminese-subagent-result-output {
   font-family: var(--font-monospace);
   font-size: 12px;
   line-height: 1.4;
@@ -122,22 +122,22 @@
   word-break: break-word;
 }
 
-.obsidian-gemini-subagent-result-output {
+.geminese-subagent-result-output {
   max-height: 220px;
   overflow-y: auto;
 }
 
-.obsidian-gemini-subagent-tools {
+.geminese-subagent-tools {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.obsidian-gemini-subagent-tool-item {
+.geminese-subagent-tool-item {
   display: block;
 }
 
-.obsidian-gemini-subagent-tool-header {
+.geminese-subagent-tool-header {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -146,23 +146,23 @@
   padding: 2px 0;
 }
 
-.obsidian-gemini-subagent-tool-header:hover {
+.geminese-subagent-tool-header:hover {
   opacity: 0.85;
 }
 
-.obsidian-gemini-subagent-tool-icon {
+.geminese-subagent-tool-icon {
   display: flex;
   align-items: center;
   color: var(--text-accent);
   flex-shrink: 0;
 }
 
-.obsidian-gemini-subagent-tool-icon svg {
+.geminese-subagent-tool-icon svg {
   width: 13px;
   height: 13px;
 }
 
-.obsidian-gemini-subagent-tool-name {
+.geminese-subagent-tool-name {
   font-family: var(--font-monospace);
   font-size: 12px;
   color: var(--text-normal);
@@ -170,7 +170,7 @@
   flex-shrink: 0;
 }
 
-.obsidian-gemini-subagent-tool-summary {
+.geminese-subagent-tool-summary {
   font-family: var(--font-monospace);
   font-size: 12px;
   color: var(--text-muted);
@@ -181,35 +181,35 @@
   min-width: 0;
 }
 
-.obsidian-gemini-subagent-tool-status {
+.geminese-subagent-tool-status {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-.obsidian-gemini-subagent-tool-status svg {
+.geminese-subagent-tool-status svg {
   width: 12px;
   height: 12px;
 }
 
-.obsidian-gemini-subagent-tool-status.status-running {
+.geminese-subagent-tool-status.status-running {
   color: var(--text-accent);
 }
 
-.obsidian-gemini-subagent-tool-status.status-completed {
+.geminese-subagent-tool-status.status-completed {
   color: var(--color-green);
 }
 
-.obsidian-gemini-subagent-tool-status.status-error,
-.obsidian-gemini-subagent-tool-status.status-blocked {
+.geminese-subagent-tool-status.status-error,
+.geminese-subagent-tool-status.status-blocked {
   color: var(--color-red);
 }
 
-.obsidian-gemini-subagent-tool-content {
+.geminese-subagent-tool-content {
   padding: 2px 0 2px 16px;
 }
 
-.obsidian-gemini-subagent-tool-empty {
+.geminese-subagent-tool-empty {
   color: var(--text-faint);
   font-style: italic;
   font-family: var(--font-monospace);
@@ -217,7 +217,7 @@
   padding: 2px 0;
 }
 
-.obsidian-gemini-subagent-status-text {
+.geminese-subagent-status-text {
   font-size: 11px;
   font-family: var(--font-monospace);
   color: var(--text-muted);
@@ -225,30 +225,30 @@
   padding-inline-start: 8px;
 }
 
-.obsidian-gemini-subagent-list.async .obsidian-gemini-subagent-icon {
+.geminese-subagent-list.async .geminese-subagent-icon {
   color: var(--interactive-accent);
 }
 
-.obsidian-gemini-subagent-list.async.pending .obsidian-gemini-subagent-status-text {
+.geminese-subagent-list.async.pending .geminese-subagent-status-text {
   color: var(--text-muted);
 }
 
-.obsidian-gemini-subagent-list.async.running .obsidian-gemini-subagent-status-text {
+.geminese-subagent-list.async.running .geminese-subagent-status-text {
   color: var(--text-accent);
 }
 
-.obsidian-gemini-subagent-list.async.awaiting .obsidian-gemini-subagent-status-text {
+.geminese-subagent-list.async.awaiting .geminese-subagent-status-text {
   color: var(--color-yellow);
 }
 
-.obsidian-gemini-subagent-list.async.completed .obsidian-gemini-subagent-status-text {
+.geminese-subagent-list.async.completed .geminese-subagent-status-text {
   color: var(--color-green);
 }
 
-.obsidian-gemini-subagent-list.async.error .obsidian-gemini-subagent-status-text {
+.geminese-subagent-list.async.error .geminese-subagent-status-text {
   color: var(--color-red);
 }
 
-.obsidian-gemini-subagent-list.async.orphaned .obsidian-gemini-subagent-status-text {
+.geminese-subagent-list.async.orphaned .geminese-subagent-status-text {
   color: var(--color-orange);
 }

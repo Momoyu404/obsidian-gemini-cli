@@ -45,15 +45,15 @@ function createConversation(
 
 function getRenderedItems(containerEl: any): { title: string; isCurrent: boolean }[] {
   const dropdownEl = containerEl.children.find(
-    (c: any) => c.hasClass('geminian-resume-dropdown')
+    (c: any) => c.hasClass('geminese-resume-dropdown')
   );
   if (!dropdownEl) return [];
-  const items = dropdownEl.querySelectorAll('.geminian-resume-item');
+  const items = dropdownEl.querySelectorAll('.geminese-resume-item');
   return items.map((item: any) => {
     // Check direct children for content div, then find title inside
     let title = '';
     for (const child of item.children) {
-      const found = child.querySelector?.('.geminian-resume-item-title');
+      const found = child.querySelector?.('.geminese-resume-item-title');
       if (found) {
         title = found.textContent ?? '';
         break;
@@ -91,7 +91,7 @@ describe('ResumeSessionDropdown', () => {
       );
 
       const dropdownEl = containerEl.children.find(
-        (c: any) => c.hasClass('geminian-resume-dropdown')
+        (c: any) => c.hasClass('geminese-resume-dropdown')
       );
       expect(dropdownEl).toBeDefined();
       expect(dropdownEl.hasClass('visible')).toBe(true);
@@ -133,9 +133,9 @@ describe('ResumeSessionDropdown', () => {
       );
 
       const dropdownEl = containerEl.children.find(
-        (c: any) => c.hasClass('geminian-resume-dropdown')
+        (c: any) => c.hasClass('geminese-resume-dropdown')
       );
-      const emptyEl = dropdownEl?.querySelector('.geminian-resume-empty');
+      const emptyEl = dropdownEl?.querySelector('.geminese-resume-empty');
       expect(emptyEl).toBeDefined();
       expect(emptyEl?.textContent).toBe('No conversations');
 
@@ -161,7 +161,7 @@ describe('ResumeSessionDropdown', () => {
 
       // Hide it first
       const dropdownEl = containerEl.children.find(
-        (c: any) => c.hasClass('geminian-resume-dropdown')
+        (c: any) => c.hasClass('geminese-resume-dropdown')
       );
       dropdownEl.removeClass('visible');
 
@@ -321,9 +321,9 @@ describe('ResumeSessionDropdown', () => {
       );
 
       const dropdownEl = containerEl.children.find(
-        (c: any) => c.hasClass('geminian-resume-dropdown')
+        (c: any) => c.hasClass('geminese-resume-dropdown')
       );
-      const items = dropdownEl.querySelectorAll('.geminian-resume-item');
+      const items = dropdownEl.querySelectorAll('.geminese-resume-item');
       // Find a non-current item (conv-2 is first, conv-1 is current)
       const nonCurrentItem = items.find((i: any) => !i.hasClass('current'));
       nonCurrentItem?.dispatchEvent('click');
@@ -339,9 +339,9 @@ describe('ResumeSessionDropdown', () => {
       );
 
       const dropdownEl = containerEl.children.find(
-        (c: any) => c.hasClass('geminian-resume-dropdown')
+        (c: any) => c.hasClass('geminese-resume-dropdown')
       );
-      const items = dropdownEl.querySelectorAll('.geminian-resume-item');
+      const items = dropdownEl.querySelectorAll('.geminese-resume-item');
       // conv-2 is first after sorting and is current
       const currentItem = items.find((i: any) => i.hasClass('current'));
       currentItem?.dispatchEvent('click');

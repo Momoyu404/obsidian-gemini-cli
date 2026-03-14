@@ -61,9 +61,9 @@ function diffToHtml(ops: DiffOp[]): string {
       const escaped = op.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
       switch (op.type) {
         case 'delete':
-          return `<span class="geminian-diff-del">${escaped}</span>`;
+          return `<span class="geminese-diff-del">${escaped}</span>`;
         case 'insert':
-          return `<span class="geminian-diff-ins">${escaped}</span>`;
+          return `<span class="geminese-diff-ins">${escaped}</span>`;
         default:
           return escaped;
       }
@@ -287,7 +287,7 @@ describe('InlineEditModal - Word-level Diff', () => {
 
       const html = diffToHtml(ops);
 
-      expect(html).toContain('geminian-diff-del');
+      expect(html).toContain('geminese-diff-del');
       expect(html).toContain('removed');
     });
 
@@ -296,7 +296,7 @@ describe('InlineEditModal - Word-level Diff', () => {
 
       const html = diffToHtml(ops);
 
-      expect(html).toContain('geminian-diff-ins');
+      expect(html).toContain('geminese-diff-ins');
       expect(html).toContain('added');
     });
 
@@ -319,9 +319,9 @@ describe('InlineEditModal - Word-level Diff', () => {
       const html = diffToHtml(ops);
 
       expect(html).toContain('Hello ');
-      expect(html).toContain('geminian-diff-del');
+      expect(html).toContain('geminese-diff-del');
       expect(html).toContain('world');
-      expect(html).toContain('geminian-diff-ins');
+      expect(html).toContain('geminese-diff-ins');
       expect(html).toContain('universe');
     });
 
@@ -360,8 +360,8 @@ describe('InlineEditModal - Word-level Diff', () => {
       const html = diffToHtml(ops);
 
       // Should have both del and ins spans
-      expect(html).toContain('geminian-diff-del');
-      expect(html).toContain('geminian-diff-ins');
+      expect(html).toContain('geminese-diff-del');
+      expect(html).toContain('geminese-diff-ins');
     });
 
     it('should produce plain text for no changes', () => {

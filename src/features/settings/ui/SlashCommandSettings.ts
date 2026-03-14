@@ -3,7 +3,7 @@ import { Modal, Notice, setIcon, Setting } from 'obsidian';
 
 import type { SlashCommand } from '../../../core/types';
 import { t } from '../../../i18n';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { extractFirstParagraph, isSkill, normalizeArgumentHint, parseSlashCommandContent, validateCommandName } from '../../../utils/slashCommand';
 
 function resolveAllowedTools(inputValue: string, parsedTools?: string[]): string[] | undefined {
@@ -18,13 +18,13 @@ function resolveAllowedTools(inputValue: string, parsedTools?: string[]): string
 }
 
 export class SlashCommandModal extends Modal {
-  private plugin: GeminianPlugin;
+  private plugin: GeminesePlugin;
   private existingCmd: SlashCommand | null;
   private onSave: (cmd: SlashCommand) => Promise<void>;
 
   constructor(
     app: App,
-    plugin: GeminianPlugin,
+    plugin: GeminesePlugin,
     existingCmd: SlashCommand | null,
     onSave: (cmd: SlashCommand) => Promise<void>
   ) {
@@ -41,7 +41,7 @@ export class SlashCommandModal extends Modal {
     const typeLabel = () => selectedType === 'skill' ? 'Skill' : 'Slash Command';
 
     this.setTitle(this.existingCmd ? `Edit ${typeLabel()}` : `Add ${typeLabel()}`);
-    this.modalEl.addClass('obsidian-gemini-sp-modal');
+    this.modalEl.addClass('geminese-sp-modal');
 
     const { contentEl } = this;
 
@@ -104,10 +104,10 @@ export class SlashCommandModal extends Modal {
         text.setValue(this.existingCmd?.description || '');
       });
 
-    const details = contentEl.createEl('details', { cls: 'obsidian-gemini-sp-advanced-section' });
+    const details = contentEl.createEl('details', { cls: 'geminese-sp-advanced-section' });
     details.createEl('summary', {
       text: 'Advanced options',
-      cls: 'obsidian-gemini-sp-advanced-summary',
+      cls: 'geminese-sp-advanced-summary',
     });
     if (this.existingCmd?.argumentHint || this.existingCmd?.model || this.existingCmd?.allowedTools?.length ||
         this.existingCmd?.disableModelInvocation || this.existingCmd?.userInvocable === false ||
@@ -185,7 +185,7 @@ export class SlashCommandModal extends Modal {
       .setDesc('Use $ARGUMENTS, $1, $2, @file, !`bash`');
 
     const contentArea = contentEl.createEl('textarea', {
-      cls: 'obsidian-gemini-sp-content-area',
+      cls: 'geminese-sp-content-area',
       attr: {
         rows: '10',
         placeholder: 'Review this code for:\n$ARGUMENTS\n\n@$1',
@@ -196,17 +196,17 @@ export class SlashCommandModal extends Modal {
       : '';
     contentArea.value = initialContent;
 
-    const buttonContainer = contentEl.createDiv({ cls: 'obsidian-gemini-sp-modal-buttons' });
+    const buttonContainer = contentEl.createDiv({ cls: 'geminese-sp-modal-buttons' });
 
     const cancelBtn = buttonContainer.createEl('button', {
       text: 'Cancel',
-      cls: 'obsidian-gemini-cancel-btn',
+      cls: 'geminese-cancel-btn',
     });
     cancelBtn.addEventListener('click', () => this.close());
 
     const saveBtn = buttonContainer.createEl('button', {
       text: 'Save',
-      cls: 'obsidian-gemini-save-btn',
+      cls: 'geminese-save-btn',
     });
     saveBtn.addEventListener('click', async () => {
       const name = nameInput.value.trim();
@@ -281,9 +281,9 @@ export class SlashCommandModal extends Modal {
 
 export class SlashCommandSettings {
   private containerEl: HTMLElement;
-  private plugin: GeminianPlugin;
+  private plugin: GeminesePlugin;
 
-  constructor(containerEl: HTMLElement, plugin: GeminianPlugin) {
+  constructor(containerEl: HTMLElement, plugin: GeminesePlugin) {
     this.containerEl = containerEl;
     this.plugin = plugin;
     this.render();
@@ -292,13 +292,13 @@ export class SlashCommandSettings {
   private render(): void {
     this.containerEl.empty();
 
-    const headerEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-sp-header' });
-    headerEl.createSpan({ text: t('settings.slashCommands.name'), cls: 'obsidian-gemini-sp-label' });
+    const headerEl = this.containerEl.createDiv({ cls: 'geminese-sp-header' });
+    headerEl.createSpan({ text: t('settings.slashCommands.name'), cls: 'geminese-sp-label' });
 
-    const actionsEl = headerEl.createDiv({ cls: 'obsidian-gemini-sp-header-actions' });
+    const actionsEl = headerEl.createDiv({ cls: 'geminese-sp-header-actions' });
 
     const addBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-settings-action-btn',
+      cls: 'geminese-settings-action-btn',
       attr: { 'aria-label': 'Add' },
     });
     setIcon(addBtn, 'plus');
@@ -307,12 +307,12 @@ export class SlashCommandSettings {
     const commands = this.plugin.settings.slashCommands;
 
     if (commands.length === 0) {
-      const emptyEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-sp-empty-state' });
+      const emptyEl = this.containerEl.createDiv({ cls: 'geminese-sp-empty-state' });
       emptyEl.setText('No commands or skills configured. Click + to create one.');
       return;
     }
 
-    const listEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-sp-list' });
+    const listEl = this.containerEl.createDiv({ cls: 'geminese-sp-list' });
 
     for (const cmd of commands) {
       this.renderCommandItem(listEl, cmd);
@@ -320,33 +320,33 @@ export class SlashCommandSettings {
   }
 
   private renderCommandItem(listEl: HTMLElement, cmd: SlashCommand): void {
-    const itemEl = listEl.createDiv({ cls: 'obsidian-gemini-sp-item' });
+    const itemEl = listEl.createDiv({ cls: 'geminese-sp-item' });
 
-    const infoEl = itemEl.createDiv({ cls: 'obsidian-gemini-sp-info' });
+    const infoEl = itemEl.createDiv({ cls: 'geminese-sp-info' });
 
-    const headerRow = infoEl.createDiv({ cls: 'obsidian-gemini-sp-item-header' });
+    const headerRow = infoEl.createDiv({ cls: 'geminese-sp-item-header' });
 
-    const nameEl = headerRow.createSpan({ cls: 'obsidian-gemini-sp-item-name' });
+    const nameEl = headerRow.createSpan({ cls: 'geminese-sp-item-name' });
     nameEl.setText(`/${cmd.name}`);
 
     if (isSkill(cmd)) {
-      headerRow.createSpan({ text: 'skill', cls: 'obsidian-gemini-slash-item-badge' });
+      headerRow.createSpan({ text: 'skill', cls: 'geminese-slash-item-badge' });
     }
 
     if (cmd.argumentHint) {
-      const hintEl = headerRow.createSpan({ cls: 'obsidian-gemini-slash-item-hint' });
+      const hintEl = headerRow.createSpan({ cls: 'geminese-slash-item-hint' });
       hintEl.setText(cmd.argumentHint);
     }
 
     if (cmd.description) {
-      const descEl = infoEl.createDiv({ cls: 'obsidian-gemini-sp-item-desc' });
+      const descEl = infoEl.createDiv({ cls: 'geminese-sp-item-desc' });
       descEl.setText(cmd.description);
     }
 
-    const actionsEl = itemEl.createDiv({ cls: 'obsidian-gemini-sp-item-actions' });
+    const actionsEl = itemEl.createDiv({ cls: 'geminese-sp-item-actions' });
 
     const editBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-settings-action-btn',
+      cls: 'geminese-settings-action-btn',
       attr: { 'aria-label': 'Edit' },
     });
     setIcon(editBtn, 'pencil');
@@ -354,7 +354,7 @@ export class SlashCommandSettings {
 
     if (!isSkill(cmd)) {
       const convertBtn = actionsEl.createEl('button', {
-        cls: 'obsidian-gemini-settings-action-btn',
+        cls: 'geminese-settings-action-btn',
         attr: { 'aria-label': 'Convert to skill' },
       });
       setIcon(convertBtn, 'package');
@@ -368,7 +368,7 @@ export class SlashCommandSettings {
     }
 
     const deleteBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-settings-action-btn obsidian-gemini-settings-delete-btn',
+      cls: 'geminese-settings-action-btn geminese-settings-delete-btn',
       attr: { 'aria-label': 'Delete' },
     });
     setIcon(deleteBtn, 'trash-2');

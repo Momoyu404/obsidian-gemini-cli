@@ -9,7 +9,7 @@
  * - model (optional override)
  * - env (optional environment variables)
  *
- * Geminian-specific settings go in obsidian-gemini-settings.json.
+ * Geminese-specific settings go in geminese-settings.json.
  */
 
 import type {
@@ -32,12 +32,12 @@ export const GEMINI_CLI_SETTINGS_PATH = '.gemini/settings.json';
 /** Schema URL for Gemini CLI settings. */
 const GEMINI_CLI_SETTINGS_SCHEMA = 'https://json.schemastore.org/gemini-cli-settings.json';
 
-function hasGeminianOnlyFields(data: Record<string, unknown>): boolean {
+function hasGemineseOnlyFields(data: Record<string, unknown>): boolean {
   return Object.keys(data).some(key => GEMINIAN_ONLY_FIELDS.has(key));
 }
 
 /**
- * Check if a settings object uses the legacy Geminian permissions format.
+ * Check if a settings object uses the legacy Geminese permissions format.
  * Legacy format: permissions is an array of objects with toolName/pattern.
  */
 export function isLegacyPermissionsFormat(data: unknown): data is { permissions: LegacyPermission[] } {
@@ -125,16 +125,16 @@ export class GeminiCLISettingsStorage {
    * Save Gemini CLI settings to .gemini/settings.json.
    * Preserves unknown fields for Gemini CLI compatibility.
    *
-   * @param stripGeminianFields - If true, remove Geminian-only fields (only during migration)
+   * @param stripGemineseFields - If true, remove Geminese-only fields (only during migration)
    */
-  async save(settings: GeminiCLISettings, stripGeminianFields: boolean = false): Promise<void> {
+  async save(settings: GeminiCLISettings, stripGemineseFields: boolean = false): Promise<void> {
     let existing: Record<string, unknown> = {};
     if (await this.adapter.exists(GEMINI_CLI_SETTINGS_PATH)) {
       try {
         const content = await this.adapter.read(GEMINI_CLI_SETTINGS_PATH);
         const parsed = JSON.parse(content) as Record<string, unknown>;
 
-        if (stripGeminianFields && (isLegacyPermissionsFormat(parsed) || hasGeminianOnlyFields(parsed))) {
+        if (stripGemineseFields && (isLegacyPermissionsFormat(parsed) || hasGemineseOnlyFields(parsed))) {
           existing = {};
           for (const [key, value] of Object.entries(parsed)) {
             if (!GEMINIAN_ONLY_FIELDS.has(key)) {

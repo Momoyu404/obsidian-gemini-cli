@@ -4,7 +4,7 @@ import { Decoration, EditorView, WidgetType } from '@codemirror/view';
 import type { App, Editor, MarkdownView, TFile } from 'obsidian';
 import { Notice } from 'obsidian';
 
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { hideSelectionHighlight, showSelectionHighlight } from '../../../shared/components/SelectionHighlight';
 import { SlashCommandDropdown } from '../../../shared/components/SlashCommandDropdown';
 import { MentionDropdownController } from '../../../shared/mention/MentionDropdownController';
@@ -56,20 +56,20 @@ class DiffWidget extends WidgetType {
   }
   toDOM(): HTMLElement {
     const span = document.createElement('span');
-    span.className = 'obsidian-gemini-inline-diff-replace';
+    span.className = 'geminese-inline-diff-replace';
     span.innerHTML = this.diffHtml;
 
     const btns = document.createElement('span');
-    btns.className = 'obsidian-gemini-inline-diff-buttons';
+    btns.className = 'geminese-inline-diff-buttons';
 
     const rejectBtn = document.createElement('button');
-    rejectBtn.className = 'obsidian-gemini-inline-diff-btn reject';
+    rejectBtn.className = 'geminese-inline-diff-btn reject';
     rejectBtn.textContent = '✕';
     rejectBtn.title = 'Reject (Esc)';
     rejectBtn.onclick = () => this.controller.reject();
 
     const acceptBtn = document.createElement('button');
-    acceptBtn.className = 'obsidian-gemini-inline-diff-btn accept';
+    acceptBtn.className = 'geminese-inline-diff-btn accept';
     acceptBtn.textContent = '✓';
     acceptBtn.title = 'Accept (Enter)';
     acceptBtn.onclick = () => this.controller.accept();
@@ -190,8 +190,8 @@ function diffToHtml(ops: DiffOp[]): string {
   return ops.map(op => {
     const escaped = escapeHtml(op.text);
     switch (op.type) {
-      case 'delete': return `<span class="obsidian-gemini-diff-del">${escaped}</span>`;
-      case 'insert': return `<span class="obsidian-gemini-diff-ins">${escaped}</span>`;
+      case 'delete': return `<span class="geminese-diff-del">${escaped}</span>`;
+      case 'insert': return `<span class="geminese-diff-ins">${escaped}</span>`;
       default: return escaped;
     }
   }).join('');
@@ -204,7 +204,7 @@ export class InlineEditModal {
 
   constructor(
     private app: App,
-    private plugin: GeminianPlugin,
+    private plugin: GeminesePlugin,
     private editor: Editor,
     private view: MarkdownView,
     private editContext: InlineEditContext,
@@ -275,7 +275,7 @@ class InlineEditController {
 
   constructor(
     private app: App,
-    private plugin: GeminianPlugin,
+    private plugin: GeminesePlugin,
     private editorView: EditorView,
     private editor: Editor,
     editContext: InlineEditContext,
@@ -386,27 +386,27 @@ class InlineEditController {
 
   createInputDOM(): HTMLElement {
     const container = document.createElement('div');
-    container.className = 'obsidian-gemini-inline-input-container';
+    container.className = 'geminese-inline-input-container';
     this.containerEl = container;
 
     this.agentReplyEl = document.createElement('div');
-    this.agentReplyEl.className = 'obsidian-gemini-inline-agent-reply';
+    this.agentReplyEl.className = 'geminese-inline-agent-reply';
     this.agentReplyEl.style.display = 'none';
     container.appendChild(this.agentReplyEl);
 
     const inputWrap = document.createElement('div');
-    inputWrap.className = 'obsidian-gemini-inline-input-wrap';
+    inputWrap.className = 'geminese-inline-input-wrap';
     container.appendChild(inputWrap);
 
     this.inputEl = document.createElement('input');
     this.inputEl.type = 'text';
-    this.inputEl.className = 'obsidian-gemini-inline-input';
+    this.inputEl.className = 'geminese-inline-input';
     this.inputEl.placeholder = this.mode === 'cursor' ? 'Insert instructions...' : 'Edit instructions...';
     this.inputEl.spellcheck = false;
     inputWrap.appendChild(this.inputEl);
 
     this.spinnerEl = document.createElement('div');
-    this.spinnerEl.className = 'obsidian-gemini-inline-spinner';
+    this.spinnerEl.className = 'geminese-inline-spinner';
     this.spinnerEl.style.display = 'none';
     inputWrap.appendChild(this.spinnerEl);
 
@@ -571,7 +571,7 @@ class InlineEditController {
     this.insertedText = trimmedText;
 
     const escaped = escapeHtml(trimmedText);
-    const diffHtml = `<span class="obsidian-gemini-diff-ins">${escaped}</span>`;
+    const diffHtml = `<span class="geminese-diff-ins">${escaped}</span>`;
 
     this.editorView.dispatch({
       effects: showInsertion.of({

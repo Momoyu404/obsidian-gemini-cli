@@ -1,4 +1,4 @@
-import type { GeminianService } from '../../../core/agent';
+import type { GemineseService } from '../../../core/agent';
 import { extractResolvedAnswers, extractResolvedAnswersFromResultText, parseTodoInput } from '../../../core/tools';
 import {
   isSubagentToolName,
@@ -12,7 +12,7 @@ import {
 } from '../../../core/tools/toolNames';
 import type { ChatMessage, StreamChunk, SubagentInfo, ToolCallInfo } from '../../../core/types';
 import type { SDKToolUseResult } from '../../../core/types/diff';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { formatDurationMmSs } from '../../../utils/date';
 import { extractDiffData } from '../../../utils/diff';
 import { getVaultPath, normalizePathForVault } from '../../../utils/path';
@@ -37,7 +37,7 @@ import type { ChatState } from '../state/ChatState';
 import type { FileContextManager } from '../ui';
 
 export interface StreamControllerDeps {
-  plugin: GeminianPlugin;
+  plugin: GeminesePlugin;
   state: ChatState;
   renderer: MessageRenderer;
   subagentManager: SubagentManager;
@@ -45,7 +45,7 @@ export interface StreamControllerDeps {
   getFileContextManager: () => FileContextManager | null;
   updateQueueIndicator: () => void;
   /** Get the agent service from the tab. */
-  getAgentService?: () => GeminianService | null;
+  getAgentService?: () => GemineseService | null;
 }
 
 export class StreamController {
@@ -231,13 +231,13 @@ export class StreamController {
         // If already rendered, update the header name + summary
         const toolEl = state.toolCallElements.get(chunk.id);
         if (toolEl) {
-          const nameEl = toolEl.querySelector('.obsidian-gemini-tool-name') as HTMLElement | null
-            ?? toolEl.querySelector('.obsidian-gemini-write-edit-name') as HTMLElement | null;
+          const nameEl = toolEl.querySelector('.geminese-tool-name') as HTMLElement | null
+            ?? toolEl.querySelector('.geminese-write-edit-name') as HTMLElement | null;
           if (nameEl) {
             nameEl.setText(getToolName(existingToolCall.name, existingToolCall.input));
           }
-          const summaryEl = toolEl.querySelector('.obsidian-gemini-tool-summary') as HTMLElement | null
-            ?? toolEl.querySelector('.obsidian-gemini-write-edit-summary') as HTMLElement | null;
+          const summaryEl = toolEl.querySelector('.geminese-tool-summary') as HTMLElement | null
+            ?? toolEl.querySelector('.geminese-write-edit-summary') as HTMLElement | null;
           if (summaryEl) {
             summaryEl.setText(getToolSummary(existingToolCall.name, existingToolCall.input));
           }
@@ -448,7 +448,7 @@ export class StreamController {
     this.hideThinkingIndicator();
 
     if (!state.currentTextEl) {
-      state.currentTextEl = state.currentContentEl.createDiv({ cls: 'obsidian-gemini-text-block' });
+      state.currentTextEl = state.currentContentEl.createDiv({ cls: 'geminese-text-block' });
       state.currentTextContent = '';
     }
 
@@ -974,14 +974,14 @@ export class StreamController {
       if (!state.currentContentEl || state.thinkingEl || state.currentThinkingState) return;
 
       const cls = overrideCls
-        ? `obsidian-gemini-thinking ${overrideCls}`
-        : 'obsidian-gemini-thinking';
+        ? `geminese-thinking ${overrideCls}`
+        : 'geminese-thinking';
       state.thinkingEl = state.currentContentEl.createDiv({ cls });
       const text = overrideText || FLAVOR_TEXTS[Math.floor(Math.random() * FLAVOR_TEXTS.length)];
       state.thinkingEl.createSpan({ text });
 
       // Create timer span with initial value
-      const timerSpan = state.thinkingEl.createSpan({ cls: 'obsidian-gemini-thinking-hint' });
+      const timerSpan = state.thinkingEl.createSpan({ cls: 'geminese-thinking-hint' });
       const updateTimer = () => {
         if (!state.responseStartTime) return;
         // Check if element is still connected to DOM (prevents orphaned interval updates)
@@ -1004,7 +1004,7 @@ export class StreamController {
       state.flavorTimerInterval = setInterval(updateTimer, 1000);
 
       // Queue indicator line (initially hidden)
-      state.queueIndicatorEl = state.thinkingEl.createDiv({ cls: 'obsidian-gemini-queue-indicator' });
+      state.queueIndicatorEl = state.thinkingEl.createDiv({ cls: 'geminese-queue-indicator' });
       this.deps.updateQueueIndicator();
     }, StreamController.THINKING_INDICATOR_DELAY);
   }
@@ -1037,8 +1037,8 @@ export class StreamController {
     const { state } = this.deps;
     if (!state.currentContentEl) return;
     this.hideThinkingIndicator();
-    const el = state.currentContentEl.createDiv({ cls: 'obsidian-gemini-compact-boundary' });
-    el.createSpan({ cls: 'obsidian-gemini-compact-boundary-label', text: 'Conversation compacted' });
+    const el = state.currentContentEl.createDiv({ cls: 'geminese-compact-boundary' });
+    el.createSpan({ cls: 'geminese-compact-boundary-label', text: 'Conversation compacted' });
   }
 
   // ============================================

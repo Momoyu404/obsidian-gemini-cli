@@ -1,13 +1,13 @@
 import { Notice, setIcon } from 'obsidian';
 
-import type { GeminianPlugin as GeminianPluginType } from '../../../core/types';
-import type GeminianPlugin from '../../../main';
+import type { GeminesePlugin as GeminesePluginType } from '../../../core/types';
+import type GeminesePlugin from '../../../main';
 
 export class PluginSettingsManager {
   private containerEl: HTMLElement;
-  private plugin: GeminianPlugin;
+  private plugin: GeminesePlugin;
 
-  constructor(containerEl: HTMLElement, plugin: GeminianPlugin) {
+  constructor(containerEl: HTMLElement, plugin: GeminesePlugin) {
     this.containerEl = containerEl;
     this.plugin = plugin;
     this.render();
@@ -16,11 +16,11 @@ export class PluginSettingsManager {
   private render() {
     this.containerEl.empty();
 
-    const headerEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-plugin-header' });
-    headerEl.createSpan({ text: 'Gemini CLI Plugins', cls: 'obsidian-gemini-plugin-label' });
+    const headerEl = this.containerEl.createDiv({ cls: 'geminese-plugin-header' });
+    headerEl.createSpan({ text: 'Gemini CLI Plugins', cls: 'geminese-plugin-label' });
 
     const refreshBtn = headerEl.createEl('button', {
-      cls: 'obsidian-gemini-settings-action-btn',
+      cls: 'geminese-settings-action-btn',
       attr: { 'aria-label': 'Refresh' },
     });
     setIcon(refreshBtn, 'refresh-cw');
@@ -29,7 +29,7 @@ export class PluginSettingsManager {
     const plugins = this.plugin.pluginManager.getPlugins();
 
     if (plugins.length === 0) {
-      const emptyEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-plugin-empty' });
+      const emptyEl = this.containerEl.createDiv({ cls: 'geminese-plugin-empty' });
       emptyEl.setText('No Gemini CLI plugins found. Enable plugins via the Gemini CLI.');
       return;
     }
@@ -37,10 +37,10 @@ export class PluginSettingsManager {
     const projectPlugins = plugins.filter(p => p.scope === 'project');
     const userPlugins = plugins.filter(p => p.scope === 'user');
 
-    const listEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-plugin-list' });
+    const listEl = this.containerEl.createDiv({ cls: 'geminese-plugin-list' });
 
     if (projectPlugins.length > 0) {
-      const sectionHeader = listEl.createDiv({ cls: 'obsidian-gemini-plugin-section-header' });
+      const sectionHeader = listEl.createDiv({ cls: 'geminese-plugin-section-header' });
       sectionHeader.setText('Project Plugins');
 
       for (const plugin of projectPlugins) {
@@ -49,7 +49,7 @@ export class PluginSettingsManager {
     }
 
     if (userPlugins.length > 0) {
-      const sectionHeader = listEl.createDiv({ cls: 'obsidian-gemini-plugin-section-header' });
+      const sectionHeader = listEl.createDiv({ cls: 'geminese-plugin-section-header' });
       sectionHeader.setText('User Plugins');
 
       for (const plugin of userPlugins) {
@@ -58,30 +58,30 @@ export class PluginSettingsManager {
     }
   }
 
-  private renderPluginItem(listEl: HTMLElement, plugin: GeminianPluginType) {
-    const itemEl = listEl.createDiv({ cls: 'obsidian-gemini-plugin-item' });
+  private renderPluginItem(listEl: HTMLElement, plugin: GeminesePluginType) {
+    const itemEl = listEl.createDiv({ cls: 'geminese-plugin-item' });
     if (!plugin.enabled) {
-      itemEl.addClass('obsidian-gemini-plugin-item-disabled');
+      itemEl.addClass('geminese-plugin-item-disabled');
     }
 
-    const statusEl = itemEl.createDiv({ cls: 'obsidian-gemini-plugin-status' });
+    const statusEl = itemEl.createDiv({ cls: 'geminese-plugin-status' });
     if (plugin.enabled) {
-      statusEl.addClass('obsidian-gemini-plugin-status-enabled');
+      statusEl.addClass('geminese-plugin-status-enabled');
     } else {
-      statusEl.addClass('obsidian-gemini-plugin-status-disabled');
+      statusEl.addClass('geminese-plugin-status-disabled');
     }
 
-    const infoEl = itemEl.createDiv({ cls: 'obsidian-gemini-plugin-info' });
+    const infoEl = itemEl.createDiv({ cls: 'geminese-plugin-info' });
 
-    const nameRow = infoEl.createDiv({ cls: 'obsidian-gemini-plugin-name-row' });
+    const nameRow = infoEl.createDiv({ cls: 'geminese-plugin-name-row' });
 
-    const nameEl = nameRow.createSpan({ cls: 'obsidian-gemini-plugin-name' });
+    const nameEl = nameRow.createSpan({ cls: 'geminese-plugin-name' });
     nameEl.setText(plugin.name);
 
-    const actionsEl = itemEl.createDiv({ cls: 'obsidian-gemini-plugin-actions' });
+    const actionsEl = itemEl.createDiv({ cls: 'geminese-plugin-actions' });
 
     const toggleBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-plugin-action-btn',
+      cls: 'geminese-plugin-action-btn',
       attr: { 'aria-label': plugin.enabled ? 'Disable' : 'Enable' },
     });
     setIcon(toggleBtn, plugin.enabled ? 'toggle-right' : 'toggle-left');

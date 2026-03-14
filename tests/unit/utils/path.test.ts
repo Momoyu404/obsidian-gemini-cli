@@ -385,7 +385,7 @@ describe('getPathAccessType', () => {
     expect(getPathAccessType(path.join(os.homedir(), '.gemini', 'skills', 'skill'), [], [], vaultPath)).toBe('vault');
     expect(getPathAccessType(path.join(os.homedir(), '.gemini', 'plans', 'plan.md'), [], [], vaultPath)).toBe('vault');
     expect(getPathAccessType(path.join(os.homedir(), '.gemini', 'mcp.json'), [], [], vaultPath)).toBe('vault');
-    expect(getPathAccessType(path.join(os.homedir(), '.gemini', 'geminian-settings.json'), [], [], vaultPath)).toBe('vault');
+    expect(getPathAccessType(path.join(os.homedir(), '.gemini', 'geminese-settings.json'), [], [], vaultPath)).toBe('vault');
   });
 
   it('returns context (read-only) for unknown ~/.gemini paths', () => {

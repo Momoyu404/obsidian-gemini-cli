@@ -1,5 +1,5 @@
 /**
- * Geminian - Editor Context Utilities
+ * Geminese - Editor Context Utilities
  *
  * Editor cursor and selection context for inline editing.
  */

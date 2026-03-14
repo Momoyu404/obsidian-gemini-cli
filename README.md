@@ -1,6 +1,6 @@
-# obsidian-gemini-cli   
+# geminese-cli   
 
-obsidian-gemini-cli is an Obsidian plugin that embeds [Gemini CLI](https://github.com/google-gemini/gemini-cli) as an AI collaborator in your vault. Your vault becomes Gemini's working directory, giving it full agentic capabilities: file read/write, search, bash commands, and multi-step workflows.
+geminese-cli is an Obsidian plugin that embeds [Gemini CLI](https://github.com/google-gemini/gemini-cli) as an AI collaborator in your vault. Your vault becomes Gemini's working directory, giving it full agentic capabilities: file read/write, search, bash commands, and multi-step workflows.
 
 > **Based on [Claudian](https://github.com/YishenTu/claudian)** — converted from Claude Code CLI to Gemini CLI. Uses your Google account (no API key needed).
 
@@ -55,10 +55,10 @@ Follow the prompts to sign in with your Google account.
 
 ### Install the Plugin
 
-1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/Momoyu404/obsidian-gemini-cli/releases/latest)
-2. Create a folder called `obsidian-gemini-cli` in your vault's plugins folder:
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/Momoyu404/geminese-cli/releases/latest)
+2. Create a folder called `geminese-cli` in your vault's plugins folder:
    ```
-   /path/to/vault/.obsidian/plugins/obsidian-gemini-cli/
+   /path/to/vault/.obsidian/plugins/geminese-cli/
    ```
 3. Copy the downloaded files into the folder
 4. Enable the plugin in Obsidian Settings → Community plugins

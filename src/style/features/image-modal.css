@@ -1,5 +1,5 @@
 /* Full-size Image Modal */
-.obsidian-gemini-image-modal-overlay {
+.geminese-image-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,14 +13,14 @@
   cursor: pointer;
 }
 
-.obsidian-gemini-image-modal {
+.geminese-image-modal {
   position: relative;
   max-width: 90vw;
   max-height: 90vh;
   cursor: default;
 }
 
-.obsidian-gemini-image-modal img {
+.geminese-image-modal img {
   max-width: 90vw;
   max-height: 90vh;
   object-fit: contain;
@@ -28,7 +28,7 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-.obsidian-gemini-image-modal-close {
+.geminese-image-modal-close {
   position: absolute;
   top: -12px;
   right: -12px;
@@ -46,7 +46,7 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.obsidian-gemini-image-modal-close:hover {
+.geminese-image-modal-close:hover {
   background: var(--background-modifier-error);
   color: var(--text-on-accent);
 }

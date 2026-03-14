@@ -3,7 +3,7 @@ import { Modal, Notice, setIcon, Setting } from 'obsidian';
 
 import type { AgentDefinition } from '../../../core/types';
 import { t } from '../../../i18n';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { confirmDelete } from '../../../shared/modals/ConfirmModal';
 import { validateAgentName } from '../../../utils/agent';
 
@@ -15,13 +15,13 @@ const MODEL_OPTIONS = [
 ] as const;
 
 class AgentModal extends Modal {
-  private plugin: GeminianPlugin;
+  private plugin: GeminesePlugin;
   private existingAgent: AgentDefinition | null;
   private onSave: (agent: AgentDefinition) => Promise<void>;
 
   constructor(
     app: App,
-    plugin: GeminianPlugin,
+    plugin: GeminesePlugin,
     existingAgent: AgentDefinition | null,
     onSave: (agent: AgentDefinition) => Promise<void>
   ) {
@@ -37,7 +37,7 @@ class AgentModal extends Modal {
         ? t('settings.subagents.modal.titleEdit')
         : t('settings.subagents.modal.titleAdd')
     );
-    this.modalEl.addClass('obsidian-gemini-sp-modal');
+    this.modalEl.addClass('geminese-sp-modal');
 
     const { contentEl } = this;
 
@@ -66,10 +66,10 @@ class AgentModal extends Modal {
           .setPlaceholder(t('settings.subagents.modal.descriptionPlaceholder'));
       });
 
-    const details = contentEl.createEl('details', { cls: 'obsidian-gemini-sp-advanced-section' });
+    const details = contentEl.createEl('details', { cls: 'geminese-sp-advanced-section' });
     details.createEl('summary', {
       text: t('settings.subagents.modal.advancedOptions'),
-      cls: 'obsidian-gemini-sp-advanced-summary',
+      cls: 'geminese-sp-advanced-summary',
     });
     if ((this.existingAgent?.model && this.existingAgent.model !== 'inherit') ||
         this.existingAgent?.tools?.length ||
@@ -119,7 +119,7 @@ class AgentModal extends Modal {
       .setDesc(t('settings.subagents.modal.promptDesc'));
 
     const contentArea = contentEl.createEl('textarea', {
-      cls: 'obsidian-gemini-sp-content-area',
+      cls: 'geminese-sp-content-area',
       attr: {
         rows: '10',
         placeholder: t('settings.subagents.modal.promptPlaceholder'),
@@ -127,17 +127,17 @@ class AgentModal extends Modal {
     });
     contentArea.value = this.existingAgent?.prompt || '';
 
-    const buttonContainer = contentEl.createDiv({ cls: 'obsidian-gemini-sp-modal-buttons' });
+    const buttonContainer = contentEl.createDiv({ cls: 'geminese-sp-modal-buttons' });
 
     const cancelBtn = buttonContainer.createEl('button', {
       text: t('common.cancel'),
-      cls: 'obsidian-gemini-cancel-btn',
+      cls: 'geminese-cancel-btn',
     });
     cancelBtn.addEventListener('click', () => this.close());
 
     const saveBtn = buttonContainer.createEl('button', {
       text: t('common.save'),
-      cls: 'obsidian-gemini-save-btn',
+      cls: 'geminese-save-btn',
     });
     saveBtn.addEventListener('click', async () => {
       const name = nameInput.value.trim();
@@ -209,9 +209,9 @@ class AgentModal extends Modal {
 
 export class AgentSettings {
   private containerEl: HTMLElement;
-  private plugin: GeminianPlugin;
+  private plugin: GeminesePlugin;
 
-  constructor(containerEl: HTMLElement, plugin: GeminianPlugin) {
+  constructor(containerEl: HTMLElement, plugin: GeminesePlugin) {
     this.containerEl = containerEl;
     this.plugin = plugin;
     this.render();
@@ -220,20 +220,20 @@ export class AgentSettings {
   private render(): void {
     this.containerEl.empty();
 
-    const headerEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-sp-header' });
-    headerEl.createSpan({ text: t('settings.subagents.name'), cls: 'obsidian-gemini-sp-label' });
+    const headerEl = this.containerEl.createDiv({ cls: 'geminese-sp-header' });
+    headerEl.createSpan({ text: t('settings.subagents.name'), cls: 'geminese-sp-label' });
 
-    const actionsEl = headerEl.createDiv({ cls: 'obsidian-gemini-sp-header-actions' });
+    const actionsEl = headerEl.createDiv({ cls: 'geminese-sp-header-actions' });
 
     const refreshBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-settings-action-btn',
+      cls: 'geminese-settings-action-btn',
       attr: { 'aria-label': t('common.refresh') },
     });
     setIcon(refreshBtn, 'refresh-cw');
     refreshBtn.addEventListener('click', () => { void this.refreshAgents(); });
 
     const addBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-settings-action-btn',
+      cls: 'geminese-settings-action-btn',
       attr: { 'aria-label': t('common.add') },
     });
     setIcon(addBtn, 'plus');
@@ -243,12 +243,12 @@ export class AgentSettings {
     const vaultAgents = allAgents.filter(a => a.source === 'vault');
 
     if (vaultAgents.length === 0) {
-      const emptyEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-sp-empty-state' });
+      const emptyEl = this.containerEl.createDiv({ cls: 'geminese-sp-empty-state' });
       emptyEl.setText(t('settings.subagents.noAgents'));
       return;
     }
 
-    const listEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-sp-list' });
+    const listEl = this.containerEl.createDiv({ cls: 'geminese-sp-list' });
 
     for (const agent of vaultAgents) {
       this.renderAgentItem(listEl, agent);
@@ -256,31 +256,31 @@ export class AgentSettings {
   }
 
   private renderAgentItem(listEl: HTMLElement, agent: AgentDefinition): void {
-    const itemEl = listEl.createDiv({ cls: 'obsidian-gemini-sp-item' });
+    const itemEl = listEl.createDiv({ cls: 'geminese-sp-item' });
 
-    const infoEl = itemEl.createDiv({ cls: 'obsidian-gemini-sp-info' });
+    const infoEl = itemEl.createDiv({ cls: 'geminese-sp-info' });
 
-    const headerRow = infoEl.createDiv({ cls: 'obsidian-gemini-sp-item-header' });
+    const headerRow = infoEl.createDiv({ cls: 'geminese-sp-item-header' });
 
-    const nameEl = headerRow.createSpan({ cls: 'obsidian-gemini-sp-item-name' });
+    const nameEl = headerRow.createSpan({ cls: 'geminese-sp-item-name' });
     nameEl.setText(agent.name);
 
     if (agent.description) {
-      const descEl = infoEl.createDiv({ cls: 'obsidian-gemini-sp-item-desc' });
+      const descEl = infoEl.createDiv({ cls: 'geminese-sp-item-desc' });
       descEl.setText(agent.description);
     }
 
-    const actionsEl = itemEl.createDiv({ cls: 'obsidian-gemini-sp-item-actions' });
+    const actionsEl = itemEl.createDiv({ cls: 'geminese-sp-item-actions' });
 
     const editBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-settings-action-btn',
+      cls: 'geminese-settings-action-btn',
       attr: { 'aria-label': t('common.edit') },
     });
     setIcon(editBtn, 'pencil');
     editBtn.addEventListener('click', () => { void this.openAgentModal(agent); });
 
     const deleteBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-settings-action-btn obsidian-gemini-settings-delete-btn',
+      cls: 'geminese-settings-action-btn geminese-settings-delete-btn',
       attr: { 'aria-label': t('common.delete') },
     });
     setIcon(deleteBtn, 'trash-2');

@@ -1,5 +1,5 @@
 /**
- * Geminian - Context Utilities
+ * Geminese - Context Utilities
  *
  * Current note and context file formatting for prompts.
  */

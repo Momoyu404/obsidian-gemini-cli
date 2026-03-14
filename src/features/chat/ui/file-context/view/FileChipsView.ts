@@ -15,7 +15,7 @@ export class FileChipsView {
     this.callbacks = callbacks;
 
     const firstChild = this.containerEl.firstChild;
-    this.fileIndicatorEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-file-indicator' });
+    this.fileIndicatorEl = this.containerEl.createDiv({ cls: 'geminese-file-indicator' });
     if (firstChild) {
       this.containerEl.insertBefore(this.fileIndicatorEl, firstChild);
     }
@@ -40,23 +40,23 @@ export class FileChipsView {
   }
 
   private renderFileChip(filePath: string, onRemove: () => void): void {
-    const chipEl = this.fileIndicatorEl.createDiv({ cls: 'obsidian-gemini-file-chip' });
+    const chipEl = this.fileIndicatorEl.createDiv({ cls: 'geminese-file-chip' });
 
-    const iconEl = chipEl.createSpan({ cls: 'obsidian-gemini-file-chip-icon' });
+    const iconEl = chipEl.createSpan({ cls: 'geminese-file-chip-icon' });
     setIcon(iconEl, 'file-text');
 
     const normalizedPath = filePath.replace(/\\/g, '/');
     const filename = normalizedPath.split('/').pop() || filePath;
-    const nameEl = chipEl.createSpan({ cls: 'obsidian-gemini-file-chip-name' });
+    const nameEl = chipEl.createSpan({ cls: 'geminese-file-chip-name' });
     nameEl.setText(filename);
     nameEl.setAttribute('title', filePath);
 
-    const removeEl = chipEl.createSpan({ cls: 'obsidian-gemini-file-chip-remove' });
+    const removeEl = chipEl.createSpan({ cls: 'geminese-file-chip-remove' });
     removeEl.setText('\u00D7');
     removeEl.setAttribute('aria-label', 'Remove');
 
     chipEl.addEventListener('click', (e) => {
-      if (!(e.target as HTMLElement).closest('.obsidian-gemini-file-chip-remove')) {
+      if (!(e.target as HTMLElement).closest('.geminese-file-chip-remove')) {
         this.callbacks.onOpenFile(filePath);
       }
     });

@@ -1,5 +1,5 @@
 /**
- * Geminian - Date Utilities
+ * Geminese - Date Utilities
  *
  * Date formatting helpers for system prompts.
  */

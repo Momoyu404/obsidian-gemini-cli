@@ -6,11 +6,11 @@ function createContextRow(browserIndicator: HTMLElement | null): HTMLElement {
   const fileIndicator = { style: { display: 'none' } };
   const imagePreview = { style: { display: 'none' } };
   const lookup = new Map<string, unknown>([
-    ['.geminian-selection-indicator', editorIndicator],
-    ['.geminian-browser-selection-indicator', browserIndicator],
-    ['.geminian-canvas-indicator', canvasIndicator],
-    ['.geminian-file-indicator', fileIndicator],
-    ['.geminian-image-preview', imagePreview],
+    ['.geminese-selection-indicator', editorIndicator],
+    ['.geminese-browser-selection-indicator', browserIndicator],
+    ['.geminese-canvas-indicator', canvasIndicator],
+    ['.geminese-file-indicator', fileIndicator],
+    ['.geminese-image-preview', imagePreview],
   ]);
 
   return {

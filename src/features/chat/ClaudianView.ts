@@ -2,13 +2,13 @@ import type { EventRef, WorkspaceLeaf } from 'obsidian';
 import { ItemView, Notice, setIcon } from 'obsidian';
 
 import { VIEW_TYPE_GEMINIAN } from '../../core/types';
-import type GeminianPlugin from '../../main';
+import type GeminesePlugin from '../../main';
 import { LOGO_SVG } from './constants';
 import { TabBar, TabManager, updatePlanModeUI } from './tabs';
 import type { TabData, TabId } from './tabs/types';
 
-export class GeminianView extends ItemView {
-  private plugin: GeminianPlugin;
+export class GemineseView extends ItemView {
+  private plugin: GeminesePlugin;
 
   // Tab management
   private tabManager: TabManager | null = null;
@@ -38,12 +38,12 @@ export class GeminianView extends ItemView {
   // Debouncing for tab state persistence
   private pendingPersist: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(leaf: WorkspaceLeaf, plugin: GeminianPlugin) {
+  constructor(leaf: WorkspaceLeaf, plugin: GeminesePlugin) {
     super(leaf);
     this.plugin = plugin;
 
     // Hover Editor compatibility: Define load as an instance method that can't be
-    // overwritten by prototype patching. Hover Editor patches GeminianView.prototype.load
+    // overwritten by prototype patching. Hover Editor patches GemineseView.prototype.load
     // after our class is defined, but instance methods take precedence over prototype methods.
     const originalLoad = Object.getPrototypeOf(this).load.bind(this);
     Object.defineProperty(this, 'load', {
@@ -114,17 +114,17 @@ export class GeminianView extends ItemView {
 
     this.viewContainerEl = container;
     this.viewContainerEl.empty();
-    this.viewContainerEl.addClass('obsidian-gemini-container');
+    this.viewContainerEl.addClass('geminese-container');
 
     // Build header (logo only, tab bar and actions moved to nav row)
-    const header = this.viewContainerEl.createDiv({ cls: 'obsidian-gemini-header' });
+    const header = this.viewContainerEl.createDiv({ cls: 'geminese-header' });
     this.buildHeader(header);
 
     // Build nav row content (tab badges + header actions)
     this.navRowContent = this.buildNavRowContent();
 
     // Tab content container (TabManager will populate this)
-    this.tabContentEl = this.viewContainerEl.createDiv({ cls: 'obsidian-gemini-tab-content-container' });
+    this.tabContentEl = this.viewContainerEl.createDiv({ cls: 'geminese-tab-content-container' });
 
     // Initialize TabManager
     this.tabManager = new TabManager(
@@ -200,10 +200,10 @@ export class GeminianView extends ItemView {
     this.headerEl = header;
 
     // Title slot container (logo + title or tabs)
-    this.titleSlotEl = header.createDiv({ cls: 'obsidian-gemini-title-slot' });
+    this.titleSlotEl = header.createDiv({ cls: 'geminese-title-slot' });
 
     // Logo (hidden when 2+ tabs)
-    this.logoEl = this.titleSlotEl.createSpan({ cls: 'obsidian-gemini-logo' });
+    this.logoEl = this.titleSlotEl.createSpan({ cls: 'geminese-logo' });
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', LOGO_SVG.viewBox);
     svg.setAttribute('width', LOGO_SVG.width);
@@ -233,10 +233,10 @@ export class GeminianView extends ItemView {
     this.logoEl.appendChild(svg);
 
     // Title text (hidden in header mode when 2+ tabs)
-    this.titleTextEl = this.titleSlotEl.createEl('h4', { text: 'Obsidian Gemini', cls: 'obsidian-gemini-title-text' });
+    this.titleTextEl = this.titleSlotEl.createEl('h4', { text: 'Obsidian Gemini', cls: 'geminese-title-text' });
 
     // Header actions container (for header mode - initially hidden)
-    this.headerActionsEl = header.createDiv({ cls: 'obsidian-gemini-header-actions obsidian-gemini-header-actions-slot' });
+    this.headerActionsEl = header.createDiv({ cls: 'geminese-header-actions geminese-header-actions-slot' });
     this.headerActionsEl.style.display = 'none';
   }
 
@@ -250,7 +250,7 @@ export class GeminianView extends ItemView {
 
     // Tab badges (left side in nav row, or in title slot for header mode)
     this.tabBarContainerEl = document.createElement('div');
-    this.tabBarContainerEl.className = 'obsidian-gemini-tab-bar-container';
+    this.tabBarContainerEl.className = 'geminese-tab-bar-container';
     this.tabBar = new TabBar(this.tabBarContainerEl, {
       onTabClick: (tabId) => this.handleTabClick(tabId),
       onTabClose: (tabId) => this.handleTabClose(tabId),
@@ -260,10 +260,10 @@ export class GeminianView extends ItemView {
 
     // Header actions (right side)
     this.headerActionsContent = document.createElement('div');
-    this.headerActionsContent.className = 'obsidian-gemini-header-actions';
+    this.headerActionsContent.className = 'geminese-header-actions';
 
     // New tab button (plus icon)
-    const newTabBtn = this.headerActionsContent.createDiv({ cls: 'obsidian-gemini-header-btn obsidian-gemini-new-tab-btn' });
+    const newTabBtn = this.headerActionsContent.createDiv({ cls: 'geminese-header-btn geminese-new-tab-btn' });
     setIcon(newTabBtn, 'square-plus');
     newTabBtn.setAttribute('aria-label', 'New tab');
     newTabBtn.addEventListener('click', async () => {
@@ -271,7 +271,7 @@ export class GeminianView extends ItemView {
     });
 
     // New conversation button (square-pen icon - new conversation in current tab)
-    const newBtn = this.headerActionsContent.createDiv({ cls: 'obsidian-gemini-header-btn' });
+    const newBtn = this.headerActionsContent.createDiv({ cls: 'geminese-header-btn' });
     setIcon(newBtn, 'square-pen');
     newBtn.setAttribute('aria-label', 'New conversation');
     newBtn.addEventListener('click', async () => {
@@ -280,12 +280,12 @@ export class GeminianView extends ItemView {
     });
 
     // History dropdown
-    const historyContainer = this.headerActionsContent.createDiv({ cls: 'obsidian-gemini-history-container' });
-    const historyBtn = historyContainer.createDiv({ cls: 'obsidian-gemini-header-btn' });
+    const historyContainer = this.headerActionsContent.createDiv({ cls: 'geminese-history-container' });
+    const historyBtn = historyContainer.createDiv({ cls: 'geminese-header-btn' });
     setIcon(historyBtn, 'history');
     historyBtn.setAttribute('aria-label', 'Chat history');
 
-    this.historyDropdown = historyContainer.createDiv({ cls: 'obsidian-gemini-history-menu' });
+    this.historyDropdown = historyContainer.createDiv({ cls: 'geminese-history-menu' });
 
     historyBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -346,7 +346,7 @@ export class GeminianView extends ItemView {
     const isHeaderMode = this.plugin.settings.tabBarPosition === 'header';
 
     // Update container class for CSS styling
-    this.viewContainerEl.toggleClass('obsidian-gemini-container--header-mode', isHeaderMode);
+    this.viewContainerEl.toggleClass('geminese-container--header-mode', isHeaderMode);
 
     // Move nav content to appropriate location
     this.updateNavRowLocation();
@@ -506,7 +506,7 @@ export class GeminianView extends ItemView {
       }
     });
 
-    // View-scoped escape to cancel streaming (only when Geminian has focus)
+    // View-scoped escape to cancel streaming (only when Geminese has focus)
     this.registerDomEvent(this.containerEl, 'keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !e.isComposing) {
         const activeTab = this.tabManager?.getActiveTab();

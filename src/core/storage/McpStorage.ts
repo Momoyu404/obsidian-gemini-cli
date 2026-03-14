@@ -2,14 +2,14 @@
  * McpStorage - Handles .gemini/mcp.json read/write
  *
  * MCP server configurations are stored in Gemini CLI-compatible format
- * with optional Geminian-specific metadata in _geminian field.
+ * with optional Geminese-specific metadata in _geminese field.
  *
  * File format:
  * {
  *   "mcpServers": {
  *     "server-name": { "command": "...", "args": [...] }
  *   },
- *   "_geminian": {
+ *   "_geminese": {
  *     "servers": {
  *       "server-name": { "enabled": true, "contextSaving": true, "disabledTools": ["tool"], "description": "..." }
  *     }
@@ -18,8 +18,8 @@
  */
 
 import type {
-  GeminianMcpConfigFile,
-  GeminianMcpServer,
+  GemineseMcpConfigFile,
+  GemineseMcpServer,
   McpServerConfig,
   ParsedMcpConfig,
 } from '../types';
@@ -32,28 +32,28 @@ export const MCP_CONFIG_PATH = '.gemini/mcp.json';
 export class McpStorage {
   constructor(private adapter: VaultFileAdapter) {}
 
-  async load(): Promise<GeminianMcpServer[]> {
+  async load(): Promise<GemineseMcpServer[]> {
     try {
       if (!(await this.adapter.exists(MCP_CONFIG_PATH))) {
         return [];
       }
 
       const content = await this.adapter.read(MCP_CONFIG_PATH);
-      const file = JSON.parse(content) as GeminianMcpConfigFile;
+      const file = JSON.parse(content) as GemineseMcpConfigFile;
 
       if (!file.mcpServers || typeof file.mcpServers !== 'object') {
         return [];
       }
 
-      const geminianMeta = file._geminian?.servers ?? {};
-      const servers: GeminianMcpServer[] = [];
+      const gemineseMeta = file._geminese?.servers ?? {};
+      const servers: GemineseMcpServer[] = [];
 
       for (const [name, config] of Object.entries(file.mcpServers)) {
         if (!isValidMcpServerConfig(config)) {
           continue;
         }
 
-        const meta = geminianMeta[name] ?? {};
+        const meta = gemineseMeta[name] ?? {};
         const disabledTools = Array.isArray(meta.disabledTools)
           ? meta.disabledTools.filter((tool) => typeof tool === 'string')
           : undefined;
@@ -76,9 +76,9 @@ export class McpStorage {
     }
   }
 
-  async save(servers: GeminianMcpServer[]): Promise<void> {
+  async save(servers: GemineseMcpServer[]): Promise<void> {
     const mcpServers: Record<string, McpServerConfig> = {};
-    const geminianServers: Record<
+    const gemineseServers: Record<
       string,
       { enabled?: boolean; contextSaving?: boolean; disabledTools?: string[]; description?: string }
     > = {};
@@ -110,7 +110,7 @@ export class McpStorage {
       }
 
       if (Object.keys(meta).length > 0) {
-        geminianServers[server.name] = meta;
+        gemineseServers[server.name] = meta;
       }
     }
 
@@ -130,22 +130,22 @@ export class McpStorage {
     const file: Record<string, unknown> = existing ? { ...existing } : {};
     file.mcpServers = mcpServers;
 
-    const existingGeminian =
-      existing && typeof existing._geminian === 'object'
-        ? (existing._geminian as Record<string, unknown>)
+    const existingGeminese =
+      existing && typeof existing._geminese === 'object'
+        ? (existing._geminese as Record<string, unknown>)
         : null;
 
-    if (Object.keys(geminianServers).length > 0) {
-      file._geminian = { ...(existingGeminian ?? {}), servers: geminianServers };
-    } else if (existingGeminian) {
-      const { servers: _servers, ...rest } = existingGeminian;
+    if (Object.keys(gemineseServers).length > 0) {
+      file._geminese = { ...(existingGeminese ?? {}), servers: gemineseServers };
+    } else if (existingGeminese) {
+      const { servers: _servers, ...rest } = existingGeminese;
       if (Object.keys(rest).length > 0) {
-        file._geminian = rest;
+        file._geminese = rest;
       } else {
-        delete file._geminian;
+        delete file._geminese;
       }
     } else {
-      delete file._geminian;
+      delete file._geminese;
     }
 
     const content = JSON.stringify(file, null, 2);

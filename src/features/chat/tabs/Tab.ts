@@ -1,12 +1,12 @@
 import type { Component } from 'obsidian';
 import { Notice, setIcon } from 'obsidian';
 
-import { GeminianService } from '../../../core/agent';
+import { GemineseService } from '../../../core/agent';
 import type { McpServerManager } from '../../../core/mcp';
 import type { ChatMessage, Conversation, GeminiModel, PermissionMode, SlashCommand, ThinkingBudget } from '../../../core/types';
 import { DEFAULT_GEMINI_MODELS, DEFAULT_THINKING_BUDGET, getContextWindowSize } from '../../../core/types';
 import { t } from '../../../i18n';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { SlashCommandDropdown } from '../../../shared/components/SlashCommandDropdown';
 import { getEnhancedPath } from '../../../utils/env';
 import { getVaultPath } from '../../../utils/path';
@@ -38,7 +38,7 @@ import type { TabData, TabDOMElements, TabId } from './types';
 import { generateTabId, TEXTAREA_MAX_HEIGHT_PERCENT, TEXTAREA_MIN_MAX_HEIGHT } from './types';
 
 export interface TabCreateOptions {
-  plugin: GeminianPlugin;
+  plugin: GeminesePlugin;
   mcpManager: McpServerManager;
 
   containerEl: HTMLElement;
@@ -66,7 +66,7 @@ export function createTab(options: TabCreateOptions): TabData {
   const id = tabId ?? generateTabId();
 
   // Create per-tab content container (hidden by default)
-  const contentEl = containerEl.createDiv({ cls: 'obsidian-gemini-tab-content' });
+  const contentEl = containerEl.createDiv({ cls: 'geminese-tab-content' });
   contentEl.style.display = 'none';
 
   // Create ChatState with callbacks
@@ -149,7 +149,7 @@ function autoResizeTextarea(textarea: HTMLTextAreaElement): void {
   textarea.style.minHeight = '';
 
   // Calculate max height: 55% of view height, minimum 150px
-  const viewHeight = textarea.closest('.obsidian-gemini-container')?.clientHeight ?? window.innerHeight;
+  const viewHeight = textarea.closest('.geminese-container')?.clientHeight ?? window.innerHeight;
   const maxHeight = Math.max(TEXTAREA_MIN_MAX_HEIGHT, viewHeight * TEXTAREA_MAX_HEIGHT_PERCENT);
 
   // Get flex-allocated height (what flexbox gives the textarea)
@@ -173,37 +173,37 @@ function autoResizeTextarea(textarea: HTMLTextAreaElement): void {
  */
 function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
   // Messages wrapper (for scroll-to-bottom button positioning)
-  const messagesWrapperEl = contentEl.createDiv({ cls: 'obsidian-gemini-messages-wrapper' });
+  const messagesWrapperEl = contentEl.createDiv({ cls: 'geminese-messages-wrapper' });
 
   // Messages area (inside wrapper)
-  const messagesEl = messagesWrapperEl.createDiv({ cls: 'obsidian-gemini-messages' });
+  const messagesEl = messagesWrapperEl.createDiv({ cls: 'geminese-messages' });
 
   // Welcome message placeholder
-  const welcomeEl = messagesEl.createDiv({ cls: 'obsidian-gemini-welcome' });
+  const welcomeEl = messagesEl.createDiv({ cls: 'geminese-welcome' });
 
   // Status panel container (fixed between messages and input)
-  const statusPanelContainerEl = contentEl.createDiv({ cls: 'obsidian-gemini-status-panel-container' });
+  const statusPanelContainerEl = contentEl.createDiv({ cls: 'geminese-status-panel-container' });
 
   // Input container
-  const inputContainerEl = contentEl.createDiv({ cls: 'obsidian-gemini-input-container' });
+  const inputContainerEl = contentEl.createDiv({ cls: 'geminese-input-container' });
 
-  // Nav row (for tab badges and header icons, populated by GeminianView)
-  const navRowEl = inputContainerEl.createDiv({ cls: 'obsidian-gemini-input-nav-row' });
+  // Nav row (for tab badges and header icons, populated by GemineseView)
+  const navRowEl = inputContainerEl.createDiv({ cls: 'geminese-input-nav-row' });
 
-  const inputWrapper = inputContainerEl.createDiv({ cls: 'obsidian-gemini-input-wrapper' });
+  const inputWrapper = inputContainerEl.createDiv({ cls: 'geminese-input-wrapper' });
 
   // File context card (current note + attached files) inside input wrapper
-  const contextCardEl = inputWrapper.createDiv({ cls: 'obsidian-gemini-context-card' });
-  const contextHeaderEl = contextCardEl.createDiv({ cls: 'obsidian-gemini-context-card-header' });
-  contextHeaderEl.createSpan({ cls: 'obsidian-gemini-context-card-title', text: 'Context' });
-  const contextBodyEl = contextCardEl.createDiv({ cls: 'obsidian-gemini-context-card-body' });
+  const contextCardEl = inputWrapper.createDiv({ cls: 'geminese-context-card' });
+  const contextHeaderEl = contextCardEl.createDiv({ cls: 'geminese-context-card-header' });
+  contextHeaderEl.createSpan({ cls: 'geminese-context-card-title', text: 'Context' });
+  const contextBodyEl = contextCardEl.createDiv({ cls: 'geminese-context-card-body' });
 
   // Context row inside card body (file chips + selection / browser / canvas indicators)
-  const contextRowEl = contextBodyEl.createDiv({ cls: 'obsidian-gemini-context-row' });
+  const contextRowEl = contextBodyEl.createDiv({ cls: 'geminese-context-row' });
 
   // Input textarea
   const inputEl = inputWrapper.createEl('textarea', {
-    cls: 'obsidian-gemini-input',
+    cls: 'geminese-input',
     attr: {
       placeholder: 'How can I help you today?',
       rows: '3',
@@ -212,7 +212,7 @@ function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
   });
 
   // Send button (icon) overlayed in bottom-right of input wrapper
-  const sendBtnEl = inputWrapper.createDiv({ cls: 'obsidian-gemini-send-btn' });
+  const sendBtnEl = inputWrapper.createDiv({ cls: 'geminese-send-btn' });
   sendBtnEl.setAttribute('aria-label', 'Send message');
   setIcon(sendBtnEl, 'arrow-up');
 
@@ -236,7 +236,7 @@ function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
 }
 
 /**
- * Initializes the tab's GeminianService (lazy initialization).
+ * Initializes the tab's GemineseService (lazy initialization).
  * Call this when the tab becomes active or when the first message is sent.
  *
  * Session ID resolution:
@@ -250,19 +250,19 @@ function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
  */
 export async function initializeTabService(
   tab: TabData,
-  plugin: GeminianPlugin,
+  plugin: GeminesePlugin,
   mcpManager: McpServerManager
 ): Promise<void> {
   if (tab.serviceInitialized) {
     return;
   }
 
-  let service: GeminianService | null = null;
+  let service: GemineseService | null = null;
   let unsubscribeReadyState: (() => void) | null = null;
 
   try {
-    // Create per-tab GeminianService
-    service = new GeminianService(plugin, mcpManager);
+    // Create per-tab GemineseService
+    service = new GemineseService(plugin, mcpManager);
     unsubscribeReadyState = service.onReadyStateChange((ready) => {
       tab.ui.modelSelector?.setReady(ready);
     });
@@ -313,7 +313,7 @@ export async function initializeTabService(
 /**
  * Initializes file and image context managers for a tab.
  */
-function initializeContextManagers(tab: TabData, plugin: GeminianPlugin): void {
+function initializeContextManagers(tab: TabData, plugin: GeminesePlugin): void {
   const { dom } = tab;
   const app = plugin.app;
 
@@ -396,7 +396,7 @@ function initializeSlashCommands(
 /**
  * Initializes instruction mode and todo panel for a tab.
  */
-function initializeInstructionAndTodo(tab: TabData, plugin: GeminianPlugin): void {
+function initializeInstructionAndTodo(tab: TabData, plugin: GeminesePlugin): void {
   const { dom } = tab;
 
   tab.services.instructionRefineService = new InstructionRefineService(plugin);
@@ -446,10 +446,10 @@ function initializeInstructionAndTodo(tab: TabData, plugin: GeminianPlugin): voi
 /**
  * Creates and wires the input toolbar for a tab.
  */
-function initializeInputToolbar(tab: TabData, plugin: GeminianPlugin): void {
+function initializeInputToolbar(tab: TabData, plugin: GeminesePlugin): void {
   const { dom } = tab;
 
-  const inputToolbar = dom.inputWrapper.createDiv({ cls: 'obsidian-gemini-input-toolbar' });
+  const inputToolbar = dom.inputWrapper.createDiv({ cls: 'geminese-input-toolbar' });
   const toolbarComponents = createInputToolbar(inputToolbar, {
     getSettings: () => ({
       model: plugin.settings.model,
@@ -493,7 +493,7 @@ function initializeInputToolbar(tab: TabData, plugin: GeminianPlugin): void {
     onPermissionModeChange: async (mode) => {
       plugin.settings.permissionMode = mode;
       await plugin.saveSettings();
-      dom.inputWrapper.toggleClass('obsidian-gemini-input-plan-mode', mode === 'plan');
+      dom.inputWrapper.toggleClass('geminese-input-plan-mode', mode === 'plan');
     },
   });
 
@@ -527,7 +527,7 @@ function initializeInputToolbar(tab: TabData, plugin: GeminianPlugin): void {
     await plugin.saveSettings();
   });
 
-  dom.inputWrapper.toggleClass('obsidian-gemini-input-plan-mode', plugin.settings.permissionMode === 'plan');
+  dom.inputWrapper.toggleClass('geminese-input-plan-mode', plugin.settings.permissionMode === 'plan');
 }
 
 export interface InitializeTabUIOptions {
@@ -540,7 +540,7 @@ export interface InitializeTabUIOptions {
  */
 export function initializeTabUI(
   tab: TabData,
-  plugin: GeminianPlugin,
+  plugin: GeminesePlugin,
   options: InitializeTabUIOptions = {}
 ): void {
   const { dom, state } = tab;
@@ -549,15 +549,15 @@ export function initializeTabUI(
   initializeContextManagers(tab, plugin);
 
   // Selection indicator - add to contextRowEl
-  dom.selectionIndicatorEl = dom.contextRowEl.createDiv({ cls: 'obsidian-gemini-selection-indicator' });
+  dom.selectionIndicatorEl = dom.contextRowEl.createDiv({ cls: 'geminese-selection-indicator' });
   dom.selectionIndicatorEl.style.display = 'none';
 
   // Browser selection indicator
-  dom.browserIndicatorEl = dom.contextRowEl.createDiv({ cls: 'obsidian-gemini-browser-selection-indicator' });
+  dom.browserIndicatorEl = dom.contextRowEl.createDiv({ cls: 'geminese-browser-selection-indicator' });
   dom.browserIndicatorEl.style.display = 'none';
 
   // Canvas selection indicator
-  dom.canvasIndicatorEl = dom.contextRowEl.createDiv({ cls: 'obsidian-gemini-canvas-indicator' });
+  dom.canvasIndicatorEl = dom.contextRowEl.createDiv({ cls: 'geminese-canvas-indicator' });
   dom.canvasIndicatorEl.style.display = 'none';
 
   // Initialize slash commands with shared SDK commands callback and hidden commands
@@ -631,7 +631,7 @@ interface ForkSource {
  * Prefers the live service session ID; falls back to persisted conversation metadata.
  * Shows a notice and returns null when no session can be resolved.
  */
-function resolveForkSource(tab: TabData, plugin: GeminianPlugin): ForkSource | null {
+function resolveForkSource(tab: TabData, plugin: GeminesePlugin): ForkSource | null {
   let sourceSessionId = tab.service?.getSessionId() ?? null;
 
   if (!sourceSessionId && tab.conversationId) {
@@ -657,7 +657,7 @@ function resolveForkSource(tab: TabData, plugin: GeminianPlugin): ForkSource | n
 
 async function handleForkRequest(
   tab: TabData,
-  plugin: GeminianPlugin,
+  plugin: GeminesePlugin,
   userMessageId: string,
   forkRequestCallback: (forkContext: ForkContext) => Promise<void>,
 ): Promise<void> {
@@ -717,7 +717,7 @@ async function handleForkRequest(
 
 async function handleForkAll(
   tab: TabData,
-  plugin: GeminianPlugin,
+  plugin: GeminesePlugin,
   forkRequestCallback: (forkContext: ForkContext) => Promise<void>,
 ): Promise<void> {
   const { state } = tab;
@@ -761,7 +761,7 @@ async function handleForkAll(
 
 export function initializeTabControllers(
   tab: TabData,
-  plugin: GeminianPlugin,
+  plugin: GeminesePlugin,
   component: Component,
   mcpManager: McpServerManager,
   forkRequestCallback?: (forkContext: ForkContext) => Promise<void>,
@@ -960,7 +960,7 @@ export function initializeTabControllers(
  * Call this after controllers are initialized.
  * Stores cleanup functions in dom.eventCleanups for proper memory management.
  */
-export function wireTabInputEvents(tab: TabData, plugin: GeminianPlugin): void {
+export function wireTabInputEvents(tab: TabData, plugin: GeminesePlugin): void {
   const { dom, ui, state, controllers } = tab;
 
   let wasBangBashActive = ui.bangBashModeManager?.isActive() ?? false;
@@ -1195,7 +1195,7 @@ export async function destroyTab(tab: TabData): Promise<void> {
  * Gets the display title for a tab.
  * Uses synchronous access since we only need the title, not messages.
  */
-export function getTabTitle(tab: TabData, plugin: GeminianPlugin): string {
+export function getTabTitle(tab: TabData, plugin: GeminesePlugin): string {
   if (tab.conversationId) {
     const conversation = plugin.getConversationSync(tab.conversationId);
     if (conversation?.title) {
@@ -1206,7 +1206,7 @@ export function getTabTitle(tab: TabData, plugin: GeminianPlugin): string {
 }
 
 /** Shared between Tab.ts and TabManager.ts to avoid duplication. */
-export function setupServiceCallbacks(tab: TabData, plugin: GeminianPlugin): void {
+export function setupServiceCallbacks(tab: TabData, plugin: GeminesePlugin): void {
   if (tab.service && tab.controllers.inputController) {
     tab.service.setApprovalCallback(
       async (toolName, input, description, options) =>
@@ -1244,9 +1244,9 @@ export function setupServiceCallbacks(tab: TabData, plugin: GeminianPlugin): voi
   }
 }
 
-export function updatePlanModeUI(tab: TabData, plugin: GeminianPlugin, mode: PermissionMode): void {
+export function updatePlanModeUI(tab: TabData, plugin: GeminesePlugin, mode: PermissionMode): void {
   plugin.settings.permissionMode = mode;
   void plugin.saveSettings();
   tab.ui.permissionToggle?.updateDisplay();
-  tab.dom.inputWrapper.toggleClass('obsidian-gemini-input-plan-mode', mode === 'plan');
+  tab.dom.inputWrapper.toggleClass('geminese-input-plan-mode', mode === 'plan');
 }

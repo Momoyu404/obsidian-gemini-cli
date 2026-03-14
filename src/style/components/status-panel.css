@@ -1,56 +1,56 @@
 /* Status Panel - persistent bottom panel for async subagents and todos */
 
-.obsidian-gemini-status-panel-container {
+.geminese-status-panel-container {
   flex-shrink: 0;
   padding: 0 14px;
 }
 
-.obsidian-gemini-status-panel {
+.geminese-status-panel {
   padding-top: 12px;
 }
 
 /* Async Subagent Section */
 
-.obsidian-gemini-status-panel-subagents {
+.geminese-status-panel-subagents {
   margin-bottom: 4px;
 }
 
-.obsidian-gemini-status-panel-done-row {
+.geminese-status-panel-done-row {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 2px 0;
 }
 
-.obsidian-gemini-status-panel-combined-row {
+.geminese-status-panel-combined-row {
   justify-content: flex-start;
 }
 
-.obsidian-gemini-status-panel-combined-row .obsidian-gemini-status-panel-done-text {
+.geminese-status-panel-combined-row .geminese-status-panel-done-text {
   flex: 1;
 }
 
-.obsidian-gemini-status-panel-icon.obsidian-gemini-status-panel-done-icon {
+.geminese-status-panel-icon.geminese-status-panel-done-icon {
   color: var(--color-green);
 }
 
-.obsidian-gemini-status-panel-icon.obsidian-gemini-status-panel-bot-icon {
+.geminese-status-panel-icon.geminese-status-panel-bot-icon {
   color: var(--interactive-accent);
 }
 
-.obsidian-gemini-status-panel-done-text {
+.geminese-status-panel-done-text {
   font-family: var(--font-monospace);
   font-size: 13px;
   color: var(--text-normal);
 }
 
-.obsidian-gemini-status-panel-running-row {
+.geminese-status-panel-running-row {
   display: flex;
   justify-content: flex-end;
   padding: 2px 0;
 }
 
-.obsidian-gemini-status-panel-running-text {
+.geminese-status-panel-running-text {
   font-family: var(--font-monospace);
   font-size: 13px;
   color: var(--color-cyan);
@@ -58,11 +58,11 @@
 
 /* Todo Section */
 
-.obsidian-gemini-status-panel-todos {
+.geminese-status-panel-todos {
   margin-top: 4px;
 }
 
-.obsidian-gemini-status-panel-header {
+.geminese-status-panel-header {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -73,35 +73,35 @@
   overflow: hidden;
 }
 
-.obsidian-gemini-status-panel-header:hover {
+.geminese-status-panel-header:hover {
   background: var(--background-modifier-hover);
 }
 
-.obsidian-gemini-status-panel-header:focus-visible {
+.geminese-status-panel-header:focus-visible {
   outline: 2px solid var(--interactive-accent);
   outline-offset: 2px;
 }
 
-.obsidian-gemini-status-panel-icon {
+.geminese-status-panel-icon {
   display: flex;
   align-items: center;
   color: var(--text-accent);
   flex-shrink: 0;
 }
 
-.obsidian-gemini-status-panel-icon svg {
+.geminese-status-panel-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.obsidian-gemini-status-panel-label {
+.geminese-status-panel-label {
   font-family: var(--font-monospace);
   font-size: 13px;
   font-weight: 500;
   color: var(--text-normal);
 }
 
-.obsidian-gemini-status-panel-current {
+.geminese-status-panel-current {
   flex: 1;
   font-family: var(--font-monospace);
   font-size: 13px;
@@ -111,44 +111,44 @@
   white-space: nowrap;
 }
 
-.obsidian-gemini-status-panel-status {
+.geminese-status-panel-status {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-.obsidian-gemini-status-panel-status svg {
+.geminese-status-panel-status svg {
   width: 14px;
   height: 14px;
 }
 
-.obsidian-gemini-status-panel-status.status-completed {
+.geminese-status-panel-status.status-completed {
   color: var(--color-green);
 }
 
-.obsidian-gemini-status-panel-content {
+.geminese-status-panel-content {
   padding: 2px 0;
 }
 
-/* Individual todo item - shared by status panel and inline tool via .obsidian-gemini-todo-list-container */
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-item {
+/* Individual todo item - shared by status panel and inline tool via .geminese-todo-list-container */
+.geminese-todo-list-container .geminese-todo-item {
   display: flex;
   align-items: flex-start;
   padding: 1px 0;
 }
 
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-status-icon {
+.geminese-todo-list-container .geminese-todo-status-icon {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-status-icon svg {
+.geminese-todo-list-container .geminese-todo-status-icon svg {
   width: 12px;
   height: 12px;
 }
 
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-text {
+.geminese-todo-list-container .geminese-todo-text {
   font-family: var(--font-monospace);
   font-size: 12px;
   line-height: 1.4;
@@ -156,55 +156,55 @@
   padding-left: 12px;
 }
 
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-pending .obsidian-gemini-todo-status-icon {
+.geminese-todo-list-container .geminese-todo-pending .geminese-todo-status-icon {
   color: var(--text-normal);
 }
 
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-pending .obsidian-gemini-todo-status-icon svg {
+.geminese-todo-list-container .geminese-todo-pending .geminese-todo-status-icon svg {
   transform: scale(2);
 }
 
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-pending .obsidian-gemini-todo-text {
+.geminese-todo-list-container .geminese-todo-pending .geminese-todo-text {
   color: var(--text-normal);
 }
 
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-in_progress .obsidian-gemini-todo-status-icon {
+.geminese-todo-list-container .geminese-todo-in_progress .geminese-todo-status-icon {
   color: var(--interactive-accent);
 }
 
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-in_progress .obsidian-gemini-todo-status-icon svg {
+.geminese-todo-list-container .geminese-todo-in_progress .geminese-todo-status-icon svg {
   transform: scale(2);
 }
 
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-in_progress .obsidian-gemini-todo-text {
+.geminese-todo-list-container .geminese-todo-in_progress .geminese-todo-text {
   color: var(--text-normal);
 }
 
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-completed .obsidian-gemini-todo-status-icon {
+.geminese-todo-list-container .geminese-todo-completed .geminese-todo-status-icon {
   color: var(--color-green);
 }
 
-.obsidian-gemini-todo-list-container .obsidian-gemini-todo-completed .obsidian-gemini-todo-text {
+.geminese-todo-list-container .geminese-todo-completed .geminese-todo-text {
   color: var(--text-muted);
 }
 
 /* Bash Output Section */
 
-.obsidian-gemini-status-panel-bash {
+.geminese-status-panel-bash {
   margin-bottom: 4px;
 }
 
-.obsidian-gemini-status-panel-bash-header {
+.geminese-status-panel-bash-header {
   padding: 4px 0;
 }
 
-.obsidian-gemini-status-panel-bash-actions {
+.geminese-status-panel-bash-actions {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.obsidian-gemini-status-panel-bash-action {
+.geminese-status-panel-bash-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -214,12 +214,12 @@
   color: var(--text-muted);
 }
 
-.obsidian-gemini-status-panel-bash-action:hover {
+.geminese-status-panel-bash-action:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-status-panel-bash-content {
+.geminese-status-panel-bash-content {
   padding-top: 2px;
   max-height: 320px;
   max-height: min(40vh, 320px);
@@ -227,23 +227,23 @@
   overscroll-behavior: contain;
 }
 
-.obsidian-gemini-status-panel-bash-entry {
+.geminese-status-panel-bash-entry {
   margin: 4px 0;
 }
 
-.obsidian-gemini-status-panel-bash-entry .obsidian-gemini-tool-icon svg {
+.geminese-status-panel-bash-entry .geminese-tool-icon svg {
   width: 14px;
   height: 14px;
   position: relative;
   top: -1px;
 }
 
-.obsidian-gemini-status-panel-bash-entry .obsidian-gemini-tool-call {
+.geminese-status-panel-bash-entry .geminese-tool-call {
   margin: 0;
 }
 
 /* Keep bash output blocks from growing without bound */
-.obsidian-gemini-status-panel-bash-entry .obsidian-gemini-tool-result-text {
+.geminese-status-panel-bash-entry .geminese-tool-result-text {
   max-height: 200px;
   overflow-y: auto;
   word-break: break-word;

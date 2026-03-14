@@ -1,5 +1,5 @@
 /**
- * Geminian - Title Generation System Prompt
+ * Geminese - Title Generation System Prompt
  *
  * System prompt for generating conversation titles.
  */

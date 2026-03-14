@@ -38,8 +38,8 @@ export class ImageContextManager {
     this.callbacks = callbacks;
 
     // Create image preview in previewContainerEl, before file indicator if present
-    const fileIndicator = this.previewContainerEl.querySelector('.obsidian-gemini-file-indicator');
-    this.imagePreviewEl = this.previewContainerEl.createDiv({ cls: 'obsidian-gemini-image-preview' });
+    const fileIndicator = this.previewContainerEl.querySelector('.geminese-file-indicator');
+    this.imagePreviewEl = this.previewContainerEl.createDiv({ cls: 'geminese-image-preview' });
     if (fileIndicator && fileIndicator.parentElement === this.previewContainerEl) {
       this.previewContainerEl.insertBefore(this.imagePreviewEl, fileIndicator);
     }
@@ -73,11 +73,11 @@ export class ImageContextManager {
   }
 
   private setupDragAndDrop() {
-    const inputWrapper = this.containerEl.querySelector('.obsidian-gemini-input-wrapper') as HTMLElement;
+    const inputWrapper = this.containerEl.querySelector('.geminese-input-wrapper') as HTMLElement;
     if (!inputWrapper) return;
 
-    this.dropOverlay = inputWrapper.createDiv({ cls: 'obsidian-gemini-drop-overlay' });
-    const dropContent = this.dropOverlay.createDiv({ cls: 'obsidian-gemini-drop-content' });
+    this.dropOverlay = inputWrapper.createDiv({ cls: 'geminese-drop-overlay' });
+    const dropContent = this.dropOverlay.createDiv({ cls: 'geminese-drop-content' });
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('width', '32');
@@ -126,7 +126,7 @@ export class ImageContextManager {
     e.preventDefault();
     e.stopPropagation();
 
-    const inputWrapper = this.containerEl.querySelector('.obsidian-gemini-input-wrapper');
+    const inputWrapper = this.containerEl.querySelector('.geminese-input-wrapper');
     if (!inputWrapper) {
       this.dropOverlay?.removeClass('visible');
       return;
@@ -247,9 +247,9 @@ export class ImageContextManager {
   }
 
   private renderImagePreview(id: string, image: ImageAttachment) {
-    const previewEl = this.imagePreviewEl.createDiv({ cls: 'obsidian-gemini-image-chip' });
+    const previewEl = this.imagePreviewEl.createDiv({ cls: 'geminese-image-chip' });
 
-    const thumbEl = previewEl.createDiv({ cls: 'obsidian-gemini-image-thumb' });
+    const thumbEl = previewEl.createDiv({ cls: 'geminese-image-thumb' });
     thumbEl.createEl('img', {
       attr: {
         src: `data:${image.mediaType};base64,${image.data}`,
@@ -257,15 +257,15 @@ export class ImageContextManager {
       },
     });
 
-    const infoEl = previewEl.createDiv({ cls: 'obsidian-gemini-image-info' });
-    const nameEl = infoEl.createSpan({ cls: 'obsidian-gemini-image-name' });
+    const infoEl = previewEl.createDiv({ cls: 'geminese-image-info' });
+    const nameEl = infoEl.createSpan({ cls: 'geminese-image-name' });
     nameEl.setText(this.truncateName(image.name, 20));
     nameEl.setAttribute('title', image.name);
 
-    const sizeEl = infoEl.createSpan({ cls: 'obsidian-gemini-image-size' });
+    const sizeEl = infoEl.createSpan({ cls: 'geminese-image-size' });
     sizeEl.setText(this.formatSize(image.size));
 
-    const removeEl = previewEl.createSpan({ cls: 'obsidian-gemini-image-remove' });
+    const removeEl = previewEl.createSpan({ cls: 'geminese-image-remove' });
     removeEl.setText('\u00D7');
     removeEl.setAttribute('aria-label', 'Remove image');
 
@@ -282,8 +282,8 @@ export class ImageContextManager {
   }
 
   private showFullImage(image: ImageAttachment) {
-    const overlay = document.body.createDiv({ cls: 'obsidian-gemini-image-modal-overlay' });
-    const modal = overlay.createDiv({ cls: 'obsidian-gemini-image-modal' });
+    const overlay = document.body.createDiv({ cls: 'geminese-image-modal-overlay' });
+    const modal = overlay.createDiv({ cls: 'geminese-image-modal' });
 
     modal.createEl('img', {
       attr: {
@@ -292,7 +292,7 @@ export class ImageContextManager {
       },
     });
 
-    const closeBtn = modal.createDiv({ cls: 'obsidian-gemini-image-modal-close' });
+    const closeBtn = modal.createDiv({ cls: 'geminese-image-modal-close' });
     closeBtn.setText('\u00D7');
 
     const handleEsc = (e: KeyboardEvent) => {

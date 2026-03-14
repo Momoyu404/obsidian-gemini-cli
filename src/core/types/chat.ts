@@ -12,7 +12,7 @@ export interface ForkSource {
 }
 
 /** View type identifier for Obsidian. */
-export const VIEW_TYPE_GEMINIAN = 'obsidian-gemini-view';
+export const VIEW_TYPE_GEMINIAN = 'geminese-view';
 
 /** Supported image media types for attachments. */
 export type ImageMediaType = 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
@@ -162,7 +162,7 @@ export interface SessionMetadata {
   /**
    * Subagent data for Task tool operations.
    * Maps toolUseId to subagent info (tool count, status, result).
-   * Stored here because SDK session files don't preserve this Geminian-specific data.
+   * Stored here because SDK session files don't preserve this Geminese-specific data.
    */
   subagentData?: Record<string, SubagentInfo>;
   /** Assistant UUID for resumeSessionAt after fork. */

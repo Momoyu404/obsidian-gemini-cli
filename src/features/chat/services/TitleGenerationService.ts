@@ -4,7 +4,7 @@ import { spawnGeminiCli } from '../../../core/agent/customSpawn';
 import { QueryOptionsBuilder } from '../../../core/agent/QueryOptionsBuilder';
 import { TITLE_GENERATION_SYSTEM_PROMPT } from '../../../core/prompts/titleGeneration';
 import { parseGeminiJsonLine } from '../../../core/sdk/transformSDKMessage';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { getEnhancedPath, getMissingNodeError, parseEnvironmentVariables } from '../../../utils/env';
 import { getVaultPath } from '../../../utils/path';
 
@@ -18,10 +18,10 @@ export type TitleGenerationCallback = (
 ) => Promise<void>;
 
 export class TitleGenerationService {
-  private plugin: GeminianPlugin;
+  private plugin: GeminesePlugin;
   private activeGenerations: Map<string, AbortController> = new Map();
 
-  constructor(plugin: GeminianPlugin) {
+  constructor(plugin: GeminesePlugin) {
     this.plugin = plugin;
   }
 

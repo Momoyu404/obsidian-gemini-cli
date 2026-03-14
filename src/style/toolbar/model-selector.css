@@ -1,10 +1,10 @@
 /* Model selector */
-.obsidian-gemini-model-selector {
+.geminese-model-selector {
   position: relative;
   min-width: 0;
 }
 
-.obsidian-gemini-model-btn {
+.geminese-model-btn {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -18,18 +18,18 @@
   overflow: hidden;
 }
 
-.obsidian-gemini-model-btn.ready {
-  color: var(--obsidian-gemini-brand);
+.geminese-model-btn.ready {
+  color: var(--geminese-brand);
 }
 
-.obsidian-gemini-model-label {
+.geminese-model-label {
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.obsidian-gemini-model-resolved {
+.geminese-model-resolved {
   font-size: 10px;
   color: var(--text-muted);
   font-weight: normal;
@@ -38,23 +38,23 @@
   text-overflow: ellipsis;
 }
 
-.obsidian-gemini-model-option-resolved {
+.geminese-model-option-resolved {
   font-size: 10px;
   color: var(--text-muted);
   margin-left: 4px;
 }
 
-.obsidian-gemini-model-chevron {
+.geminese-model-chevron {
   display: flex;
   align-items: center;
 }
 
-.obsidian-gemini-model-chevron svg {
+.geminese-model-chevron svg {
   width: 12px;
   height: 12px;
 }
 
-.obsidian-gemini-model-dropdown {
+.geminese-model-dropdown {
   position: absolute;
   bottom: 100%;
   left: 0;
@@ -74,12 +74,12 @@
   transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 
-.obsidian-gemini-model-selector:hover .obsidian-gemini-model-dropdown {
+.geminese-model-selector:hover .geminese-model-dropdown {
   opacity: 1;
   visibility: visible;
 }
 
-.obsidian-gemini-model-option {
+.geminese-model-option {
   padding: 4px 8px;
   cursor: pointer;
   font-size: 12px;
@@ -89,13 +89,13 @@
   white-space: nowrap;
 }
 
-.obsidian-gemini-model-option:hover {
+.geminese-model-option:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-model-option.selected {
-  background: rgba(var(--obsidian-gemini-brand-rgb), 0.15);
-  color: var(--obsidian-gemini-brand);
+.geminese-model-option.selected {
+  background: rgba(var(--geminese-brand-rgb), 0.15);
+  color: var(--geminese-brand);
   font-weight: 500;
 }

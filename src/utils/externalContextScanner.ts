@@ -1,5 +1,5 @@
 /**
- * Geminian - External Context Scanner
+ * Geminese - External Context Scanner
  *
  * Scans configured external context paths for files to include in @-mention dropdown.
  * Features: recursive scanning, caching, and error handling.

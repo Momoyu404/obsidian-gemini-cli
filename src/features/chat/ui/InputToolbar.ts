@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import type { McpServerManager } from '../../../core/mcp';
 import type {
-  GeminianMcpServer,
+  GemineseMcpServer,
   GeminiModel,
   PermissionMode,
   ThinkingBudget,
@@ -43,7 +43,7 @@ export class ModelSelector {
 
   constructor(parentEl: HTMLElement, callbacks: ToolbarCallbacks) {
     this.callbacks = callbacks;
-    this.container = parentEl.createDiv({ cls: 'obsidian-gemini-model-selector' });
+    this.container = parentEl.createDiv({ cls: 'geminese-model-selector' });
     this.render();
   }
 
@@ -70,11 +70,11 @@ export class ModelSelector {
   private render() {
     this.container.empty();
 
-    this.buttonEl = this.container.createDiv({ cls: 'obsidian-gemini-model-btn' });
+    this.buttonEl = this.container.createDiv({ cls: 'geminese-model-btn' });
     this.setReady(this.isReady);
     this.updateDisplay();
 
-    this.dropdownEl = this.container.createDiv({ cls: 'obsidian-gemini-model-dropdown' });
+    this.dropdownEl = this.container.createDiv({ cls: 'geminese-model-dropdown' });
     this.renderOptions();
   }
 
@@ -88,11 +88,11 @@ export class ModelSelector {
 
     this.buttonEl.empty();
 
-    const labelEl = this.buttonEl.createSpan({ cls: 'obsidian-gemini-model-label' });
+    const labelEl = this.buttonEl.createSpan({ cls: 'geminese-model-label' });
     labelEl.setText(displayModel?.label || 'Unknown');
     if (resolved) {
       labelEl.setAttribute('title', resolved);
-      const sub = this.buttonEl.createSpan({ cls: 'obsidian-gemini-model-resolved' });
+      const sub = this.buttonEl.createSpan({ cls: 'geminese-model-resolved' });
       sub.setText(` (${resolved})`);
     }
   }
@@ -110,7 +110,7 @@ export class ModelSelector {
     const models = this.getAvailableModels();
 
     for (const model of [...models].reverse()) {
-      const option = this.dropdownEl.createDiv({ cls: 'obsidian-gemini-model-option' });
+      const option = this.dropdownEl.createDiv({ cls: 'geminese-model-option' });
       if (model.value === currentModel) {
         option.addClass('selected');
       }
@@ -120,7 +120,7 @@ export class ModelSelector {
       const title = model.value === currentModel && resolved ? resolved : (model.description ?? '');
       if (title) option.setAttribute('title', title);
       if (model.value === currentModel && resolved) {
-        const sub = option.createSpan({ cls: 'obsidian-gemini-model-option-resolved' });
+        const sub = option.createSpan({ cls: 'geminese-model-option-resolved' });
         sub.setText(` — ${resolved}`);
       }
 
@@ -141,17 +141,17 @@ export class ThinkingBudgetSelector {
 
   constructor(parentEl: HTMLElement, callbacks: ToolbarCallbacks) {
     this.callbacks = callbacks;
-    this.container = parentEl.createDiv({ cls: 'obsidian-gemini-thinking-selector' });
+    this.container = parentEl.createDiv({ cls: 'geminese-thinking-selector' });
     this.render();
   }
 
   private render() {
     this.container.empty();
 
-    const labelEl = this.container.createSpan({ cls: 'obsidian-gemini-thinking-label-text' });
+    const labelEl = this.container.createSpan({ cls: 'geminese-thinking-label-text' });
     labelEl.setText('Thinking:');
 
-    this.gearsEl = this.container.createDiv({ cls: 'obsidian-gemini-thinking-gears' });
+    this.gearsEl = this.container.createDiv({ cls: 'geminese-thinking-gears' });
     this.renderGears();
   }
 
@@ -162,13 +162,13 @@ export class ThinkingBudgetSelector {
     const currentBudget = this.callbacks.getSettings().thinkingBudget;
     const currentBudgetInfo = THINKING_BUDGETS.find(b => b.value === currentBudget);
 
-    const currentEl = this.gearsEl.createDiv({ cls: 'obsidian-gemini-thinking-current' });
+    const currentEl = this.gearsEl.createDiv({ cls: 'geminese-thinking-current' });
     currentEl.setText(currentBudgetInfo?.label || 'Off');
 
-    const optionsEl = this.gearsEl.createDiv({ cls: 'obsidian-gemini-thinking-options' });
+    const optionsEl = this.gearsEl.createDiv({ cls: 'geminese-thinking-options' });
 
     for (const budget of [...THINKING_BUDGETS].reverse()) {
-      const gearEl = optionsEl.createDiv({ cls: 'obsidian-gemini-thinking-gear' });
+      const gearEl = optionsEl.createDiv({ cls: 'geminese-thinking-gear' });
       gearEl.setText(budget.label);
       gearEl.setAttribute('title', budget.tokens > 0 ? `${budget.tokens.toLocaleString()} tokens` : 'Disabled');
 
@@ -202,17 +202,17 @@ export class PermissionToggle {
 
   constructor(parentEl: HTMLElement, callbacks: ToolbarCallbacks) {
     this.callbacks = callbacks;
-    this.container = parentEl.createDiv({ cls: 'obsidian-gemini-permission-selector' });
+    this.container = parentEl.createDiv({ cls: 'geminese-permission-selector' });
     this.render();
   }
 
   private render() {
     this.container.empty();
 
-    this.buttonEl = this.container.createDiv({ cls: 'obsidian-gemini-permission-btn' });
+    this.buttonEl = this.container.createDiv({ cls: 'geminese-permission-btn' });
     this.updateDisplay();
 
-    this.dropdownEl = this.container.createDiv({ cls: 'obsidian-gemini-permission-dropdown' });
+    this.dropdownEl = this.container.createDiv({ cls: 'geminese-permission-dropdown' });
     this.renderOptions();
   }
 
@@ -223,7 +223,7 @@ export class PermissionToggle {
     const mode = this.callbacks.getSettings().permissionMode;
     const modeInfo = PermissionToggle.MODES.find(m => m.value === mode) ?? PermissionToggle.MODES[0];
 
-    const labelEl = this.buttonEl.createSpan({ cls: 'obsidian-gemini-permission-label' });
+    const labelEl = this.buttonEl.createSpan({ cls: 'geminese-permission-label' });
     labelEl.setText(modeInfo.label);
 
     // Apply mode-specific color styling
@@ -239,7 +239,7 @@ export class PermissionToggle {
     const currentMode = this.callbacks.getSettings().permissionMode;
 
     for (const mode of PermissionToggle.MODES) {
-      const option = this.dropdownEl.createDiv({ cls: 'obsidian-gemini-permission-option' });
+      const option = this.dropdownEl.createDiv({ cls: 'geminese-permission-option' });
       if (mode.value === currentMode) {
         option.addClass('selected');
       }
@@ -280,7 +280,7 @@ export class ExternalContextSelector {
 
   constructor(parentEl: HTMLElement, callbacks: ToolbarCallbacks) {
     this.callbacks = callbacks;
-    this.container = parentEl.createDiv({ cls: 'obsidian-gemini-external-context-selector' });
+    this.container = parentEl.createDiv({ cls: 'geminese-external-context-selector' });
     this.render();
   }
 
@@ -442,12 +442,12 @@ export class ExternalContextSelector {
   private render() {
     this.container.empty();
 
-    const iconWrapper = this.container.createDiv({ cls: 'obsidian-gemini-external-context-icon-wrapper' });
+    const iconWrapper = this.container.createDiv({ cls: 'geminese-external-context-icon-wrapper' });
 
-    this.iconEl = iconWrapper.createDiv({ cls: 'obsidian-gemini-external-context-icon' });
+    this.iconEl = iconWrapper.createDiv({ cls: 'geminese-external-context-icon' });
     setIcon(this.iconEl, 'file-plus');
 
-    this.badgeEl = iconWrapper.createDiv({ cls: 'obsidian-gemini-external-context-badge' });
+    this.badgeEl = iconWrapper.createDiv({ cls: 'geminese-external-context-badge' });
 
     this.updateDisplay();
 
@@ -457,7 +457,7 @@ export class ExternalContextSelector {
       this.openFilePicker();
     });
 
-    this.dropdownEl = this.container.createDiv({ cls: 'obsidian-gemini-external-context-dropdown' });
+    this.dropdownEl = this.container.createDiv({ cls: 'geminese-external-context-dropdown' });
     this.renderDropdown();
   }
 
@@ -511,20 +511,20 @@ export class ExternalContextSelector {
     this.dropdownEl.empty();
 
     // Header
-    const headerEl = this.dropdownEl.createDiv({ cls: 'obsidian-gemini-external-context-header' });
+    const headerEl = this.dropdownEl.createDiv({ cls: 'geminese-external-context-header' });
     headerEl.setText('External Contexts');
 
     // Path list
-    const listEl = this.dropdownEl.createDiv({ cls: 'obsidian-gemini-external-context-list' });
+    const listEl = this.dropdownEl.createDiv({ cls: 'geminese-external-context-list' });
 
     if (this.externalContextPaths.length === 0) {
-      const emptyEl = listEl.createDiv({ cls: 'obsidian-gemini-external-context-empty' });
+      const emptyEl = listEl.createDiv({ cls: 'geminese-external-context-empty' });
       emptyEl.setText('Click folder icon to add');
     } else {
       for (const pathStr of this.externalContextPaths) {
-        const itemEl = listEl.createDiv({ cls: 'obsidian-gemini-external-context-item' });
+        const itemEl = listEl.createDiv({ cls: 'geminese-external-context-item' });
 
-        const pathTextEl = itemEl.createSpan({ cls: 'obsidian-gemini-external-context-text' });
+        const pathTextEl = itemEl.createSpan({ cls: 'geminese-external-context-text' });
         // Show shortened path for display
         const displayPath = this.shortenPath(pathStr);
         pathTextEl.setText(displayPath);
@@ -532,7 +532,7 @@ export class ExternalContextSelector {
 
         // Lock toggle button
         const isPersistent = this.persistentPaths.has(pathStr);
-        const lockBtn = itemEl.createSpan({ cls: 'obsidian-gemini-external-context-lock' });
+        const lockBtn = itemEl.createSpan({ cls: 'geminese-external-context-lock' });
         if (isPersistent) {
           lockBtn.addClass('locked');
         }
@@ -543,7 +543,7 @@ export class ExternalContextSelector {
           this.togglePersistence(pathStr);
         });
 
-        const removeBtn = itemEl.createSpan({ cls: 'obsidian-gemini-external-context-remove' });
+        const removeBtn = itemEl.createSpan({ cls: 'geminese-external-context-remove' });
         setIcon(removeBtn, 'x');
         removeBtn.setAttribute('title', 'Remove path');
         removeBtn.addEventListener('click', (e) => {
@@ -614,7 +614,7 @@ export class McpServerSelector {
   private onChangeCallback: ((enabled: Set<string>) => void) | null = null;
 
   constructor(parentEl: HTMLElement) {
-    this.container = parentEl.createDiv({ cls: 'obsidian-gemini-mcp-selector' });
+    this.container = parentEl.createDiv({ cls: 'geminese-mcp-selector' });
     this.render();
   }
 
@@ -678,16 +678,16 @@ export class McpServerSelector {
   private render() {
     this.container.empty();
 
-    const iconWrapper = this.container.createDiv({ cls: 'obsidian-gemini-mcp-selector-icon-wrapper' });
+    const iconWrapper = this.container.createDiv({ cls: 'geminese-mcp-selector-icon-wrapper' });
 
-    this.iconEl = iconWrapper.createDiv({ cls: 'obsidian-gemini-mcp-selector-icon' });
+    this.iconEl = iconWrapper.createDiv({ cls: 'geminese-mcp-selector-icon' });
     this.iconEl.innerHTML = MCP_ICON_SVG;
 
-    this.badgeEl = iconWrapper.createDiv({ cls: 'obsidian-gemini-mcp-selector-badge' });
+    this.badgeEl = iconWrapper.createDiv({ cls: 'geminese-mcp-selector-badge' });
 
     this.updateDisplay();
 
-    this.dropdownEl = this.container.createDiv({ cls: 'obsidian-gemini-mcp-selector-dropdown' });
+    this.dropdownEl = this.container.createDiv({ cls: 'geminese-mcp-selector-dropdown' });
     this.renderDropdown();
 
     // Re-render dropdown content on hover (CSS handles visibility)
@@ -702,17 +702,17 @@ export class McpServerSelector {
     this.dropdownEl.empty();
 
     // Header
-    const headerEl = this.dropdownEl.createDiv({ cls: 'obsidian-gemini-mcp-selector-header' });
+    const headerEl = this.dropdownEl.createDiv({ cls: 'geminese-mcp-selector-header' });
     headerEl.setText('MCP Servers');
 
     // Server list
-    const listEl = this.dropdownEl.createDiv({ cls: 'obsidian-gemini-mcp-selector-list' });
+    const listEl = this.dropdownEl.createDiv({ cls: 'geminese-mcp-selector-list' });
 
     const allServers = this.mcpManager?.getServers() || [];
     const servers = allServers.filter(s => s.enabled);
 
     if (servers.length === 0) {
-      const emptyEl = listEl.createDiv({ cls: 'obsidian-gemini-mcp-selector-empty' });
+      const emptyEl = listEl.createDiv({ cls: 'geminese-mcp-selector-empty' });
       emptyEl.setText(allServers.length === 0 ? 'No MCP servers configured' : 'All MCP servers disabled');
       return;
     }
@@ -722,8 +722,8 @@ export class McpServerSelector {
     }
   }
 
-  private renderServerItem(listEl: HTMLElement, server: GeminianMcpServer) {
-    const itemEl = listEl.createDiv({ cls: 'obsidian-gemini-mcp-selector-item' });
+  private renderServerItem(listEl: HTMLElement, server: GemineseMcpServer) {
+    const itemEl = listEl.createDiv({ cls: 'geminese-mcp-selector-item' });
     itemEl.dataset.serverName = server.name;
 
     const isEnabled = this.enabledServers.has(server.name);
@@ -732,20 +732,20 @@ export class McpServerSelector {
     }
 
     // Checkbox
-    const checkEl = itemEl.createDiv({ cls: 'obsidian-gemini-mcp-selector-check' });
+    const checkEl = itemEl.createDiv({ cls: 'geminese-mcp-selector-check' });
     if (isEnabled) {
       checkEl.innerHTML = CHECK_ICON_SVG;
     }
 
     // Info
-    const infoEl = itemEl.createDiv({ cls: 'obsidian-gemini-mcp-selector-item-info' });
+    const infoEl = itemEl.createDiv({ cls: 'geminese-mcp-selector-item-info' });
 
-    const nameEl = infoEl.createSpan({ cls: 'obsidian-gemini-mcp-selector-item-name' });
+    const nameEl = infoEl.createSpan({ cls: 'geminese-mcp-selector-item-name' });
     nameEl.setText(server.name);
 
     // Badges
     if (server.contextSaving) {
-      const csEl = infoEl.createSpan({ cls: 'obsidian-gemini-mcp-selector-cs-badge' });
+      const csEl = infoEl.createSpan({ cls: 'geminese-mcp-selector-cs-badge' });
       csEl.setText('@');
       csEl.setAttribute('title', 'Context-saving: can also enable via @' + server.name);
     }
@@ -767,7 +767,7 @@ export class McpServerSelector {
 
     // Update item visually in-place (immediate feedback)
     const isEnabled = this.enabledServers.has(name);
-    const checkEl = itemEl.querySelector('.obsidian-gemini-mcp-selector-check') as HTMLElement | null;
+    const checkEl = itemEl.querySelector('.geminese-mcp-selector-check') as HTMLElement | null;
 
     if (isEnabled) {
       itemEl.addClass('enabled');
@@ -821,7 +821,7 @@ export class ContextUsageMeter {
   private circumference: number = 0;
 
   constructor(parentEl: HTMLElement) {
-    this.container = parentEl.createDiv({ cls: 'obsidian-gemini-context-meter' });
+    this.container = parentEl.createDiv({ cls: 'geminese-context-meter' });
     this.render();
     // Initially hidden
     this.container.style.display = 'none';
@@ -848,21 +848,21 @@ export class ContextUsageMeter {
     const x2 = cx + radius * Math.cos(endRad);
     const y2 = cy + radius * Math.sin(endRad);
 
-    const gaugeEl = this.container.createDiv({ cls: 'obsidian-gemini-context-meter-gauge' });
+    const gaugeEl = this.container.createDiv({ cls: 'geminese-context-meter-gauge' });
     gaugeEl.innerHTML = `
       <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-        <path class="obsidian-gemini-meter-bg"
+        <path class="geminese-meter-bg"
           d="M ${x1} ${y1} A ${radius} ${radius} 0 1 1 ${x2} ${y2}"
           fill="none" stroke-width="${strokeWidth}" stroke-linecap="round"/>
-        <path class="obsidian-gemini-meter-fill"
+        <path class="geminese-meter-fill"
           d="M ${x1} ${y1} A ${radius} ${radius} 0 1 1 ${x2} ${y2}"
           fill="none" stroke-width="${strokeWidth}" stroke-linecap="round"
           stroke-dasharray="${this.circumference}" stroke-dashoffset="${this.circumference}"/>
       </svg>
     `;
-    this.fillPath = gaugeEl.querySelector('.obsidian-gemini-meter-fill');
+    this.fillPath = gaugeEl.querySelector('.geminese-meter-fill');
 
-    this.percentEl = this.container.createSpan({ cls: 'obsidian-gemini-context-meter-percent' });
+    this.percentEl = this.container.createSpan({ cls: 'geminese-context-meter-percent' });
   }
 
   update(usage: UsageInfo | null): void {

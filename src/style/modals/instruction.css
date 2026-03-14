@@ -1,22 +1,22 @@
 /* Instruction Mode */
 
 /* Instruction Confirm Modal */
-.obsidian-gemini-instruction-modal {
+.geminese-instruction-modal {
   max-width: 500px;
 }
 
-.obsidian-gemini-instruction-section {
+.geminese-instruction-section {
   margin-bottom: 16px;
 }
 
-.obsidian-gemini-instruction-label {
+.geminese-instruction-label {
   font-size: 12px;
   font-weight: 500;
   color: var(--text-muted);
   margin-bottom: 6px;
 }
 
-.obsidian-gemini-instruction-original {
+.geminese-instruction-original {
   padding: 10px 12px;
   background: var(--background-secondary);
   border-radius: 6px;
@@ -26,7 +26,7 @@
   white-space: pre-wrap;
 }
 
-.obsidian-gemini-instruction-refined {
+.geminese-instruction-refined {
   padding: 12px;
   background: var(--background-primary-alt);
   border: 1px solid var(--background-modifier-border);
@@ -37,7 +37,7 @@
   white-space: pre-wrap;
 }
 
-.obsidian-gemini-instruction-clarification {
+.geminese-instruction-clarification {
   padding: 12px;
   background: var(--background-primary-alt);
   border: 1px solid var(--background-modifier-border);
@@ -48,11 +48,11 @@
   white-space: pre-wrap;
 }
 
-.obsidian-gemini-instruction-edit-container {
+.geminese-instruction-edit-container {
   margin-top: 6px;
 }
 
-.obsidian-gemini-instruction-edit-textarea {
+.geminese-instruction-edit-textarea {
   width: 100%;
   padding: 10px 12px;
   font-size: 14px;
@@ -65,12 +65,12 @@
   min-height: 80px;
 }
 
-.obsidian-gemini-instruction-edit-textarea:focus {
+.geminese-instruction-edit-textarea:focus {
   outline: none;
   border-color: var(--interactive-accent);
 }
 
-.obsidian-gemini-instruction-response-textarea {
+.geminese-instruction-response-textarea {
   width: 100%;
   padding: 10px 12px;
   font-size: 14px;
@@ -83,19 +83,19 @@
   min-height: 60px;
 }
 
-.obsidian-gemini-instruction-response-textarea:focus {
+.geminese-instruction-response-textarea:focus {
   outline: none;
   border-color: var(--interactive-accent);
 }
 
-.obsidian-gemini-instruction-buttons {
+.geminese-instruction-buttons {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
   margin-top: 16px;
 }
 
-.obsidian-gemini-instruction-btn {
+.geminese-instruction-btn {
   padding: 8px 16px;
   font-size: 13px;
   border: none;
@@ -104,35 +104,35 @@
   font-weight: 500;
 }
 
-.obsidian-gemini-instruction-reject-btn {
+.geminese-instruction-reject-btn {
   background: var(--background-modifier-border);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-instruction-reject-btn:hover {
+.geminese-instruction-reject-btn:hover {
   background: var(--background-modifier-border-hover);
 }
 
-.obsidian-gemini-instruction-edit-btn {
+.geminese-instruction-edit-btn {
   background: var(--background-modifier-border);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-instruction-edit-btn:hover {
+.geminese-instruction-edit-btn:hover {
   background: var(--background-modifier-border-hover);
 }
 
-.obsidian-gemini-instruction-accept-btn {
+.geminese-instruction-accept-btn {
   background: var(--interactive-accent);
   color: var(--text-on-accent);
 }
 
-.obsidian-gemini-instruction-accept-btn:hover {
+.geminese-instruction-accept-btn:hover {
   opacity: 0.9;
 }
 
 /* Instruction loading state */
-.obsidian-gemini-instruction-loading {
+.geminese-instruction-loading {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -141,21 +141,21 @@
   color: var(--text-muted);
 }
 
-.obsidian-gemini-instruction-spinner {
+.geminese-instruction-spinner {
   width: 18px;
   height: 18px;
   border: 2px solid var(--background-modifier-border);
   border-top-color: var(--interactive-accent);
   border-radius: 50%;
-  animation: obsidian-gemini-spin 0.8s linear infinite;
+  animation: geminese-spin 0.8s linear infinite;
 }
 
 /* Instruction modal content sections */
-.obsidian-gemini-instruction-content-section {
+.geminese-instruction-content-section {
   margin: 8px 0;
 }
 
-.obsidian-gemini-instruction-clarification-section,
-.obsidian-gemini-instruction-confirmation-section {
+.geminese-instruction-clarification-section,
+.geminese-instruction-confirmation-section {
   margin-top: 8px;
 }

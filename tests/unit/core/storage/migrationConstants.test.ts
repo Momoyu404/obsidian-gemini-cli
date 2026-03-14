@@ -429,10 +429,10 @@ NEW_FEATURE=true`;
         DEFAULT_MODEL: 'claude-sonnet-4-5',
         THINKING_BUDGET: '20000',
       };
-      const geminianEnv = 'CLAUDE_CLI_PATH=/usr/local/bin/claude\nENABLE_FEATURE=true';
+      const gemineseEnv = 'CLAUDE_CLI_PATH=/usr/local/bin/claude\nENABLE_FEATURE=true';
 
       const ccEnvStr = convertEnvObjectToString(ccEnv);
-      const merged = mergeEnvironmentVariables(ccEnvStr, geminianEnv);
+      const merged = mergeEnvironmentVariables(ccEnvStr, gemineseEnv);
 
       expect(merged).toContain('ANTHROPIC_API_KEY=sk-ant-api-key');
       expect(merged).toContain('DEFAULT_MODEL=claude-sonnet-4-5');

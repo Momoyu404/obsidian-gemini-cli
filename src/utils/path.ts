@@ -1,5 +1,5 @@
 /**
- * Geminian - Path Utilities
+ * Geminese - Path Utilities
  *
  * Path resolution, validation, and access control for vault operations.
  */
@@ -713,7 +713,7 @@ export function getPathAccessType(
   const geminiDir = normalizePathForComparison(resolveRealPath(path.join(os.homedir(), '.gemini')));
   if (resolvedCandidate === geminiDir || resolvedCandidate.startsWith(geminiDir + '/')) {
     const safeSubdirs = ['sessions', 'projects', 'commands', 'agents', 'skills', 'plans'];
-    const safeFiles = ['mcp.json', 'settings.json', 'settings.local.json', 'obsidian-gemini-settings.json'];
+    const safeFiles = ['mcp.json', 'settings.json', 'settings.local.json', 'geminese-settings.json'];
     const relativeToGemini = resolvedCandidate.slice(geminiDir.length + 1);
 
     if (!relativeToGemini) {

@@ -1,5 +1,5 @@
 /**
- * Geminian - Session Utilities
+ * Geminese - Session Utilities
  *
  * Session recovery and history reconstruction.
  */

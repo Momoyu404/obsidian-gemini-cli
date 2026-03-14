@@ -69,7 +69,7 @@ describe('StorageService convenience methods', () => {
     },
   });
 
-  const geminianSettingsJson = JSON.stringify({
+  const gemineseSettingsJson = JSON.stringify({
     userName: 'Test',
     model: 'haiku',
     permissionMode: 'yolo',
@@ -171,53 +171,53 @@ describe('StorageService convenience methods', () => {
     });
   });
 
-  describe('updateGeminianSettings', () => {
-    it('updates partial geminian settings', async () => {
+  describe('updateGemineseSettings', () => {
+    it('updates partial geminese settings', async () => {
       const { plugin, files } = createMockPlugin({
         initialFiles: {
-          '.claude/geminian-settings.json': geminianSettingsJson,
+          '.claude/geminese-settings.json': gemineseSettingsJson,
         },
       });
       const storage = new StorageService(plugin);
       await storage.initialize();
 
-      await storage.updateGeminianSettings({ userName: 'NewUser' });
+      await storage.updateGemineseSettings({ userName: 'NewUser' });
 
-      const saved = JSON.parse(files.get('.claude/geminian-settings.json')!) as Record<string, unknown>;
+      const saved = JSON.parse(files.get('.claude/geminese-settings.json')!) as Record<string, unknown>;
       expect(saved.userName).toBe('NewUser');
     });
   });
 
-  describe('saveGeminianSettings', () => {
-    it('saves full geminian settings', async () => {
+  describe('saveGemineseSettings', () => {
+    it('saves full geminese settings', async () => {
       const { plugin, files } = createMockPlugin({
         initialFiles: {
-          '.claude/geminian-settings.json': geminianSettingsJson,
+          '.claude/geminese-settings.json': gemineseSettingsJson,
         },
       });
       const storage = new StorageService(plugin);
       await storage.initialize();
 
-      const existing = await storage.loadGeminianSettings();
+      const existing = await storage.loadGemineseSettings();
       existing.userName = 'FullSave';
-      await storage.saveGeminianSettings(existing);
+      await storage.saveGemineseSettings(existing);
 
-      const saved = JSON.parse(files.get('.claude/geminian-settings.json')!) as Record<string, unknown>;
+      const saved = JSON.parse(files.get('.claude/geminese-settings.json')!) as Record<string, unknown>;
       expect(saved.userName).toBe('FullSave');
     });
   });
 
-  describe('loadGeminianSettings', () => {
-    it('loads geminian settings', async () => {
+  describe('loadGemineseSettings', () => {
+    it('loads geminese settings', async () => {
       const { plugin } = createMockPlugin({
         initialFiles: {
-          '.claude/geminian-settings.json': geminianSettingsJson,
+          '.claude/geminese-settings.json': gemineseSettingsJson,
         },
       });
       const storage = new StorageService(plugin);
       await storage.initialize();
 
-      const settings = await storage.loadGeminianSettings();
+      const settings = await storage.loadGemineseSettings();
       expect(settings.userName).toBe('Test');
       expect(settings.model).toBe('haiku');
     });
@@ -272,14 +272,14 @@ describe('StorageService convenience methods', () => {
   });
 
   describe('getLegacyActiveConversationId', () => {
-    it('returns id from geminian settings', async () => {
+    it('returns id from geminese settings', async () => {
       const settings = JSON.stringify({
         userName: 'Test',
         activeConversationId: 'conv-from-settings',
       });
       const { plugin } = createMockPlugin({
         initialFiles: {
-          '.claude/geminian-settings.json': settings,
+          '.claude/geminese-settings.json': settings,
         },
       });
       const storage = new StorageService(plugin);
@@ -289,11 +289,11 @@ describe('StorageService convenience methods', () => {
       expect(id).toBe('conv-from-settings');
     });
 
-    it('falls back to data.json when not in geminian settings', async () => {
+    it('falls back to data.json when not in geminese settings', async () => {
       const { plugin } = createMockPlugin({
         dataJson: { activeConversationId: 'conv-from-data' },
         initialFiles: {
-          '.claude/geminian-settings.json': JSON.stringify({ userName: 'Test' }),
+          '.claude/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
         },
       });
       const storage = new StorageService(plugin);
@@ -307,7 +307,7 @@ describe('StorageService convenience methods', () => {
       const { plugin } = createMockPlugin({
         dataJson: {},
         initialFiles: {
-          '.claude/geminian-settings.json': JSON.stringify({ userName: 'Test' }),
+          '.claude/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
         },
       });
       const storage = new StorageService(plugin);
@@ -323,7 +323,7 @@ describe('StorageService convenience methods', () => {
       const { plugin } = createMockPlugin({
         dataJson: { activeConversationId: 'conv-1', otherField: 'keep' },
         initialFiles: {
-          '.claude/geminian-settings.json': JSON.stringify({ userName: 'Test' }),
+          '.claude/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
         },
       });
       const storage = new StorageService(plugin);
@@ -347,7 +347,7 @@ describe('StorageService convenience methods', () => {
       const { plugin } = createMockPlugin({
         dataJson: { otherField: 'keep' },
         initialFiles: {
-          '.claude/geminian-settings.json': JSON.stringify({ userName: 'Test' }),
+          '.claude/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
         },
       });
       const storage = new StorageService(plugin);

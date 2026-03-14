@@ -34,11 +34,11 @@ function createMockInput() {
 
 function createMockContextRow() {
   const elements: Record<string, any> = {
-    '.obsidian-gemini-selection-indicator': { style: { display: 'none' } },
-    '.obsidian-gemini-browser-selection-indicator': null,
-    '.obsidian-gemini-canvas-indicator': { style: { display: 'none' } },
-    '.obsidian-gemini-file-indicator': null,
-    '.obsidian-gemini-image-preview': null,
+    '.geminese-selection-indicator': { style: { display: 'none' } },
+    '.geminese-browser-selection-indicator': null,
+    '.geminese-canvas-indicator': { style: { display: 'none' } },
+    '.geminese-file-indicator': null,
+    '.geminese-image-preview': null,
   };
 
   return {
@@ -182,7 +182,7 @@ describe('SelectionController', () => {
   it('keeps context row visible when canvas selection indicator is visible', () => {
     const canvasIndicator = { style: { display: 'block' } };
     contextRowEl.querySelector.mockImplementation((selector: string) => {
-      if (selector === '.obsidian-gemini-canvas-indicator') return canvasIndicator;
+      if (selector === '.geminese-canvas-indicator') return canvasIndicator;
       return null;
     });
 

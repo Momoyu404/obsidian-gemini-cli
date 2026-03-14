@@ -1,12 +1,12 @@
 /* Plan Mode - inline cards for EnterPlanMode / ExitPlanMode */
 
-.obsidian-gemini-plan-approval-inline {
+.geminese-plan-approval-inline {
   font-family: var(--font-monospace);
   font-size: 12px;
   outline: none;
 }
 
-.obsidian-gemini-plan-inline-title {
+.geminese-plan-inline-title {
   font-weight: 700;
   color: var(--text-muted);
   padding: 6px 10px 0;
@@ -14,7 +14,7 @@
 
 /* ── Plan content preview ────────────────────────── */
 
-.obsidian-gemini-plan-content-preview {
+.geminese-plan-content-preview {
   max-height: 300px;
   overflow-y: auto;
   margin: 6px 10px 8px;
@@ -27,46 +27,46 @@
   color: var(--text-normal);
 }
 
-.obsidian-gemini-plan-content-preview::-webkit-scrollbar {
+.geminese-plan-content-preview::-webkit-scrollbar {
   width: 4px;
 }
 
-.obsidian-gemini-plan-content-preview::-webkit-scrollbar-thumb {
+.geminese-plan-content-preview::-webkit-scrollbar-thumb {
   background: var(--background-modifier-border);
   border-radius: 2px;
 }
 
-.obsidian-gemini-plan-content-preview p {
+.geminese-plan-content-preview p {
   margin: 0 0 6px;
 }
 
-.obsidian-gemini-plan-content-preview p:last-child {
+.geminese-plan-content-preview p:last-child {
   margin-bottom: 0;
 }
 
-.obsidian-gemini-plan-content-preview h1,
-.obsidian-gemini-plan-content-preview h2,
-.obsidian-gemini-plan-content-preview h3,
-.obsidian-gemini-plan-content-preview h4 {
+.geminese-plan-content-preview h1,
+.geminese-plan-content-preview h2,
+.geminese-plan-content-preview h3,
+.geminese-plan-content-preview h4 {
   margin: 8px 0 4px;
   font-size: 13px;
 }
 
-.obsidian-gemini-plan-content-preview ul,
-.obsidian-gemini-plan-content-preview ol {
+.geminese-plan-content-preview ul,
+.geminese-plan-content-preview ol {
   margin: 2px 0 6px;
   padding-left: 18px;
 }
 
-.obsidian-gemini-plan-content-preview li {
+.geminese-plan-content-preview li {
   margin: 0;
 }
 
-.obsidian-gemini-plan-content-preview code {
+.geminese-plan-content-preview code {
   font-size: 11px;
 }
 
-.obsidian-gemini-plan-content-text {
+.geminese-plan-content-text {
   white-space: pre-wrap;
   word-break: break-word;
   font-family: var(--font-monospace);
@@ -74,30 +74,30 @@
 
 /* ── Permissions list ──────────────────────────── */
 
-.obsidian-gemini-plan-permissions {
+.geminese-plan-permissions {
   padding: 4px 10px 8px;
 }
 
-.obsidian-gemini-plan-permissions-label {
+.geminese-plan-permissions-label {
   color: var(--text-muted);
   font-weight: 600;
   margin-bottom: 4px;
 }
 
-.obsidian-gemini-plan-permissions-list {
+.geminese-plan-permissions-list {
   margin: 0;
   padding-left: 18px;
   color: var(--text-normal);
   line-height: 1.5;
 }
 
-.obsidian-gemini-plan-permissions-list li {
+.geminese-plan-permissions-list li {
   margin: 0;
 }
 
 /* ── Plan mode input border ──────────────────────── */
 
-.obsidian-gemini-input-wrapper.obsidian-gemini-input-plan-mode {
+.geminese-input-wrapper.geminese-input-plan-mode {
   border-color: rgb(92, 148, 140) !important;
   box-shadow: 0 0 0 1px rgb(92, 148, 140);
 }

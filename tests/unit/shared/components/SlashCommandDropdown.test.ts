@@ -35,18 +35,18 @@ function createMockCallbacks(overrides: Partial<SlashCommandDropdownCallbacks> =
 
 /**
  * Query the rendered dropdown DOM to extract displayed command items.
- * Each rendered item has a `.geminian-slash-name` span (text: `/{name}`)
- * and an optional `.geminian-slash-desc` div.
+ * Each rendered item has a `.geminese-slash-name` span (text: `/{name}`)
+ * and an optional `.geminese-slash-desc` div.
  */
 function getRenderedItems(containerEl: any): { name: string; description: string }[] {
   const dropdownEl = containerEl.children.find(
-    (c: any) => c.hasClass('geminian-slash-dropdown')
+    (c: any) => c.hasClass('geminese-slash-dropdown')
   );
   if (!dropdownEl) return [];
-  const items = dropdownEl.querySelectorAll('.geminian-slash-item');
+  const items = dropdownEl.querySelectorAll('.geminese-slash-item');
   return items.map((item: any) => {
-    const nameSpan = item.children.find((c: any) => c.hasClass('geminian-slash-name'));
-    const descDiv = item.children.find((c: any) => c.hasClass('geminian-slash-desc'));
+    const nameSpan = item.children.find((c: any) => c.hasClass('geminese-slash-name'));
+    const descDiv = item.children.find((c: any) => c.hasClass('geminese-slash-desc'));
     return {
       name: nameSpan?.textContent?.replace(/^\//, '') ?? '',
       description: descDiv?.textContent ?? '',
@@ -67,7 +67,7 @@ const SDK_COMMANDS: SlashCommand[] = [
   { id: 'sdk:compact', name: 'compact', description: 'Compact context', content: '', source: 'sdk' },
 ];
 
-// Commands that should be filtered out (not shown in Geminian)
+// Commands that should be filtered out (not shown in Geminese)
 const FILTERED_SDK_COMMANDS_LIST: SlashCommand[] = [
   { id: 'sdk:context', name: 'context', description: 'Show context', content: '', source: 'sdk' },
   { id: 'sdk:cost', name: 'cost', description: 'Show cost', content: '', source: 'sdk' },

@@ -2,7 +2,7 @@
  * Bash Path Validator
  *
  * Pure functions for parsing bash commands and validating path access.
- * Extracted from GeminianService for better testability and separation of concerns.
+ * Extracted from GemineseService for better testability and separation of concerns.
  */
 
 import * as path from 'path';

@@ -4,14 +4,14 @@ import { TOOL_SUBAGENT } from '@/core/tools';
 import { DEFAULT_SETTINGS, VIEW_TYPE_GEMINIAN as VIEW_TYPE_CLAUDIAN } from '@/core/types';
 import * as sdkSession from '@/utils/sdkSession';
 
-// Mock fs for GeminianService
+// Mock fs for GemineseService
 jest.mock('fs');
 
 // Now import the plugin after mocking
-import GeminianPlugin from '@/main';
+import GeminesePlugin from '@/main';
 
-describe('GeminianPlugin', () => {
-  let plugin: GeminianPlugin;
+describe('GeminesePlugin', () => {
+  let plugin: GeminesePlugin;
   let mockApp: any;
   let mockManifest: any;
 
@@ -46,13 +46,13 @@ describe('GeminianPlugin', () => {
     };
 
     mockManifest = {
-      id: 'geminian',
-      name: 'Geminian',
+      id: 'geminese',
+      name: 'Geminese',
       version: '0.1.0',
     };
 
     // Create plugin instance with mocked app
-    plugin = new GeminianPlugin(mockApp, mockManifest);
+    plugin = new GeminesePlugin(mockApp, mockManifest);
     (plugin.loadData as jest.Mock).mockResolvedValue({});
   });
 
@@ -81,7 +81,7 @@ describe('GeminianPlugin', () => {
 
       expect((plugin.addRibbonIcon as jest.Mock)).toHaveBeenCalledWith(
         'bot',
-        'Open Geminian',
+        'Open Geminese',
         expect.any(Function)
       );
     });
@@ -99,11 +99,11 @@ describe('GeminianPlugin', () => {
     it('should migrate legacy cli path to hostname-based paths and clear old field', async () => {
       const legacyPath = '/legacy/claude';
       mockApp.vault.adapter.exists.mockImplementation(async (path: string) => {
-        // geminiCliPath is now in geminian-settings.json
-        return path === '.claude/geminian-settings.json';
+        // geminiCliPath is now in geminese-settings.json
+        return path === '.claude/geminese-settings.json';
       });
       mockApp.vault.adapter.read.mockImplementation(async (path: string) => {
-        if (path === '.claude/geminian-settings.json') {
+        if (path === '.claude/geminese-settings.json') {
           return JSON.stringify({ geminiCliPath: legacyPath });
         }
         return '';
@@ -119,7 +119,7 @@ describe('GeminianPlugin', () => {
       // Should save settings with migrated path and cleared legacy field
       expect(mockApp.vault.adapter.write).toHaveBeenCalled();
       const settingsWrite = (mockApp.vault.adapter.write as jest.Mock).mock.calls.find(
-        ([path]) => path === '.claude/geminian-settings.json'
+        ([path]) => path === '.claude/geminese-settings.json'
       );
       expect(settingsWrite).toBeDefined();
       const savedSettings = JSON.parse(settingsWrite[1]);
@@ -129,7 +129,7 @@ describe('GeminianPlugin', () => {
   });
 
   describe('onunload', () => {
-    // Note: With multi-tab, cleanup is handled per-tab via GeminianView.onClose()
+    // Note: With multi-tab, cleanup is handled per-tab via GemineseView.onClose()
     it('should complete without error', async () => {
       await plugin.onload();
 
@@ -207,12 +207,12 @@ describe('GeminianPlugin', () => {
 
   describe('loadSettings', () => {
     it('should merge saved data with defaults', async () => {
-      // Mock geminian-settings.json exists with custom values (Geminian-specific settings)
+      // Mock geminese-settings.json exists with custom values (Geminese-specific settings)
       mockApp.vault.adapter.exists.mockImplementation(async (path: string) => {
-        return path === '.claude/geminian-settings.json';
+        return path === '.claude/geminese-settings.json';
       });
       mockApp.vault.adapter.read.mockImplementation(async (path: string) => {
-        if (path === '.claude/geminian-settings.json') {
+        if (path === '.claude/geminese-settings.json') {
           return JSON.stringify({
             enableBlocklist: false,
           });
@@ -228,12 +228,12 @@ describe('GeminianPlugin', () => {
     });
 
     it('should normalize blockedCommands when stored value is partial', async () => {
-      // Mock geminian-settings.json exists with partial blockedCommands
+      // Mock geminese-settings.json exists with partial blockedCommands
       mockApp.vault.adapter.exists.mockImplementation(async (path: string) => {
-        return path === '.claude/geminian-settings.json';
+        return path === '.claude/geminese-settings.json';
       });
       mockApp.vault.adapter.read.mockImplementation(async (path: string) => {
-        if (path === '.claude/geminian-settings.json') {
+        if (path === '.claude/geminese-settings.json') {
           return JSON.stringify({
             blockedCommands: { unix: ['rm -rf', '  '] },
           });
@@ -268,12 +268,12 @@ describe('GeminianPlugin', () => {
     });
 
     it('should reconcile model from environment and persist when changed', async () => {
-      // Mock geminian-settings.json with environment variables
+      // Mock geminese-settings.json with environment variables
       mockApp.vault.adapter.exists.mockImplementation(async (path: string) => {
-        return path === '.claude/geminian-settings.json';
+        return path === '.claude/geminese-settings.json';
       });
       mockApp.vault.adapter.read.mockImplementation(async (path: string) => {
-        if (path === '.claude/geminian-settings.json') {
+        if (path === '.claude/geminese-settings.json') {
           return JSON.stringify({
             environmentVariables: 'ANTHROPIC_MODEL=custom-model',
             lastEnvHash: '',
@@ -298,15 +298,15 @@ describe('GeminianPlugin', () => {
 
       await plugin.saveSettings();
 
-      // Geminian-specific settings should be written to .claude/geminian-settings.json
+      // Geminese-specific settings should be written to .claude/geminese-settings.json
       expect(mockApp.vault.adapter.write).toHaveBeenCalledWith(
-        '.claude/geminian-settings.json',
+        '.claude/geminese-settings.json',
         expect.stringContaining('"enableBlocklist": false')
       );
 
       // The written content should include state fields
       const writeCall = (mockApp.vault.adapter.write as jest.Mock).mock.calls.find(
-        ([path]) => path === '.claude/geminian-settings.json'
+        ([path]) => path === '.claude/geminese-settings.json'
       );
       expect(writeCall).toBeDefined();
       const content = JSON.parse(writeCall[1]);
@@ -314,7 +314,7 @@ describe('GeminianPlugin', () => {
       expect(content).toHaveProperty('lastEnvHash');
       expect(content).toHaveProperty('lastGeminiModel');
       expect(content).toHaveProperty('lastCustomModel');
-      // Permissions are now in .claude/settings.json (CC format), not geminian-settings.json
+      // Permissions are now in .claude/settings.json (CC format), not geminese-settings.json
       expect(content).not.toHaveProperty('permissions');
     });
   });
@@ -601,8 +601,8 @@ describe('GeminianPlugin', () => {
         if (path === '.claude/sessions' || path === '.claude/sessions/conv-saved-1.jsonl') {
           return true;
         }
-        // geminian-settings.json exists
-        if (path === '.claude/geminian-settings.json') {
+        // geminese-settings.json exists
+        if (path === '.claude/geminese-settings.json') {
           return true;
         }
         return false;
@@ -617,7 +617,7 @@ describe('GeminianPlugin', () => {
         if (path === '.claude/sessions/conv-saved-1.jsonl') {
           return sessionJsonl;
         }
-        if (path === '.claude/geminian-settings.json') {
+        if (path === '.claude/geminese-settings.json') {
           return JSON.stringify({});
         }
         return '';
@@ -645,7 +645,7 @@ describe('GeminianPlugin', () => {
       });
 
       mockApp.vault.adapter.exists.mockImplementation(async (path: string) => {
-        return path === '.claude/geminian-settings.json' ||
+        return path === '.claude/geminese-settings.json' ||
           path === '.claude/sessions' ||
           path === '.claude/sessions/conv-saved-1.jsonl';
       });
@@ -656,8 +656,8 @@ describe('GeminianPlugin', () => {
         return { files: [], folders: [] };
       });
       mockApp.vault.adapter.read.mockImplementation(async (path: string) => {
-        if (path === '.claude/geminian-settings.json') {
-          // All these fields are now in geminian-settings.json
+        if (path === '.claude/geminese-settings.json') {
+          // All these fields are now in geminese-settings.json
           return JSON.stringify({
             lastEnvHash: 'old-hash',
             environmentVariables: 'ANTHROPIC_BASE_URL=https://api.example.com',
@@ -719,7 +719,7 @@ describe('GeminianPlugin', () => {
       });
 
       mockApp.vault.adapter.exists.mockImplementation(async (path: string) => {
-        return path === '.claude/geminian-settings.json' ||
+        return path === '.claude/geminese-settings.json' ||
           path === '.claude/sessions' ||
           path === '.claude/sessions/conv-multi-session.meta.json';
       });
@@ -733,7 +733,7 @@ describe('GeminianPlugin', () => {
         if (path === '.claude/sessions/conv-multi-session.meta.json') {
           return sessionMeta;
         }
-        if (path === '.claude/geminian-settings.json') {
+        if (path === '.claude/geminese-settings.json') {
           return JSON.stringify({});
         }
         return '';

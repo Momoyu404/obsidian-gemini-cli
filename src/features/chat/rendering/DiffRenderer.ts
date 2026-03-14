@@ -71,16 +71,16 @@ export function renderDiffContent(
   // New file creation: all lines are inserts — cap display to avoid large DOM
   const allInserts = diffLines.length > 0 && diffLines.every(l => l.type === 'insert');
   if (allInserts && diffLines.length > NEW_FILE_DISPLAY_CAP) {
-    const hunkEl = containerEl.createDiv({ cls: 'obsidian-gemini-diff-hunk' });
+    const hunkEl = containerEl.createDiv({ cls: 'geminese-diff-hunk' });
     for (const line of diffLines.slice(0, NEW_FILE_DISPLAY_CAP)) {
-      const lineEl = hunkEl.createDiv({ cls: 'obsidian-gemini-diff-line obsidian-gemini-diff-insert' });
-      const prefixEl = lineEl.createSpan({ cls: 'obsidian-gemini-diff-prefix' });
+      const lineEl = hunkEl.createDiv({ cls: 'geminese-diff-line geminese-diff-insert' });
+      const prefixEl = lineEl.createSpan({ cls: 'geminese-diff-prefix' });
       prefixEl.setText('+');
-      const contentEl = lineEl.createSpan({ cls: 'obsidian-gemini-diff-text' });
+      const contentEl = lineEl.createSpan({ cls: 'geminese-diff-text' });
       contentEl.setText(line.text || ' ');
     }
     const remaining = diffLines.length - NEW_FILE_DISPLAY_CAP;
-    const separator = containerEl.createDiv({ cls: 'obsidian-gemini-diff-separator' });
+    const separator = containerEl.createDiv({ cls: 'geminese-diff-separator' });
     separator.setText(`... ${remaining} more lines`);
     return;
   }
@@ -89,7 +89,7 @@ export function renderDiffContent(
 
   if (hunks.length === 0) {
     // No changes
-    const noChanges = containerEl.createDiv({ cls: 'obsidian-gemini-diff-no-changes' });
+    const noChanges = containerEl.createDiv({ cls: 'geminese-diff-no-changes' });
     noChanges.setText('No changes');
     return;
   }
@@ -97,23 +97,23 @@ export function renderDiffContent(
   hunks.forEach((hunk, hunkIndex) => {
     // Add separator between hunks
     if (hunkIndex > 0) {
-      const separator = containerEl.createDiv({ cls: 'obsidian-gemini-diff-separator' });
+      const separator = containerEl.createDiv({ cls: 'geminese-diff-separator' });
       separator.setText('...');
     }
 
     // Render hunk lines
-    const hunkEl = containerEl.createDiv({ cls: 'obsidian-gemini-diff-hunk' });
+    const hunkEl = containerEl.createDiv({ cls: 'geminese-diff-hunk' });
 
     for (const line of hunk.lines) {
-      const lineEl = hunkEl.createDiv({ cls: `obsidian-gemini-diff-line obsidian-gemini-diff-${line.type}` });
+      const lineEl = hunkEl.createDiv({ cls: `geminese-diff-line geminese-diff-${line.type}` });
 
       // Line prefix
       const prefix = line.type === 'insert' ? '+' : line.type === 'delete' ? '-' : ' ';
-      const prefixEl = lineEl.createSpan({ cls: 'obsidian-gemini-diff-prefix' });
+      const prefixEl = lineEl.createSpan({ cls: 'geminese-diff-prefix' });
       prefixEl.setText(prefix);
 
       // Line content
-      const contentEl = lineEl.createSpan({ cls: 'obsidian-gemini-diff-text' });
+      const contentEl = lineEl.createSpan({ cls: 'geminese-diff-text' });
       contentEl.setText(line.text || ' '); // Show space for empty lines
     }
   });

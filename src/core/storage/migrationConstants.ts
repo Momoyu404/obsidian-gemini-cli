@@ -2,14 +2,14 @@
  * Migration Constants - Shared constants for storage migration.
  *
  * Single source of truth for fields that need to be migrated
- * from settings.json to obsidian-gemini-settings.json.
+ * from settings.json to geminese-settings.json.
  */
 
 /**
- * Fields that are Geminian-specific and should NOT be in Gemini CLI settings.json.
- * These are migrated to obsidian-gemini-settings.json and stripped from settings.json.
+ * Fields that are Geminese-specific and should NOT be in Gemini CLI settings.json.
+ * These are migrated to geminese-settings.json and stripped from settings.json.
  *
- * IMPORTANT: Keep this list updated when adding new Geminian settings!
+ * IMPORTANT: Keep this list updated when adding new Geminese settings!
  */
 export const GEMINIAN_ONLY_FIELDS = new Set([
   // User preferences
@@ -34,7 +34,7 @@ export const GEMINIAN_ONLY_FIELDS = new Set([
   'allowedExportPaths',
   'persistentExternalContextPaths',
 
-  // Environment (Geminian uses string format + snippets)
+  // Environment (Geminese uses string format + snippets)
   'environmentVariables',
   'envSnippets',
 
@@ -53,7 +53,7 @@ export const GEMINIAN_ONLY_FIELDS = new Set([
 ]);
 
 /**
- * Fields that are Geminian-specific and should be migrated.
+ * Fields that are Geminese-specific and should be migrated.
  * Excludes deprecated fields which are just removed.
  */
 export const MIGRATABLE_GEMINIAN_FIELDS = new Set([
@@ -90,7 +90,7 @@ export const DEPRECATED_FIELDS = new Set([
 ]);
 
 /**
- * Convert Gemini CLI env object format to Geminian environmentVariables string format.
+ * Convert Gemini CLI env object format to Geminese environmentVariables string format.
  *
  * @example
  * { ANTHROPIC_API_KEY: "xxx", MY_VAR: "value" }

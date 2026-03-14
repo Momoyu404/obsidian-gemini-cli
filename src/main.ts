@@ -1,5 +1,5 @@
 /**
- * Geminian - Obsidian plugin entry point
+ * Geminese - Obsidian plugin entry point
  *
  * Registers the sidebar chat view, settings tab, and commands.
  * Manages conversation persistence and environment variable configuration.
@@ -17,7 +17,7 @@ import type {
   ChatMessage,
   Conversation,
   ConversationMeta,
-  GeminianSettings,
+  GemineseSettings,
   SlashCommand,
   SubagentInfo,
 } from './core/types';
@@ -28,10 +28,10 @@ import {
   getHostnameKey,
   VIEW_TYPE_GEMINIAN,
 } from './core/types';
-import { GeminianView } from './features/chat/ClaudianView';
+import { GemineseView } from './features/chat/ClaudianView';
 import { GEMINI_LOGO_SVG } from './features/chat/constants';
 import { type InlineEditContext, InlineEditModal } from './features/inline-edit/ui/InlineEditModal';
-import { GeminianSettingTab } from './features/settings/ClaudianSettings';
+import { GemineseSettingTab } from './features/settings/ClaudianSettings';
 import { setLocale } from './i18n';
 import { buildCursorContext } from './utils/editor';
 import { getCurrentModelFromEnvironment, getModelsFromEnvironment, parseEnvironmentVariables } from './utils/env';
@@ -46,11 +46,11 @@ import {
 } from './utils/sdkSession';
 
 /**
- * Main plugin class for Geminian.
+ * Main plugin class for Geminese.
  * Handles plugin lifecycle, settings persistence, and conversation management.
  */
-export default class GeminianPlugin extends Plugin {
-  settings: GeminianSettings;
+export default class GeminesePlugin extends Plugin {
+  settings: GemineseSettings;
   mcpManager: McpServerManager;
   pluginManager: PluginManager;
   agentManager: AgentManager;
@@ -79,10 +79,10 @@ export default class GeminianPlugin extends Plugin {
 
     this.registerView(
       VIEW_TYPE_GEMINIAN,
-      (leaf) => new GeminianView(leaf, this)
+      (leaf) => new GemineseView(leaf, this)
     );
 
-    const ribbonEl = this.addRibbonIcon('bot', 'Open Geminian', () => {
+    const ribbonEl = this.addRibbonIcon('bot', 'Open Geminese', () => {
       this.activateView();
     });
     const iconWrap = ribbonEl?.querySelector('.svg-icon') ?? ribbonEl?.firstElementChild;
@@ -141,7 +141,7 @@ export default class GeminianPlugin extends Plugin {
         const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE_GEMINIAN)[0];
         if (!leaf) return false;
 
-        const view = leaf.view as GeminianView;
+        const view = leaf.view as GemineseView;
         const tabManager = view.getTabManager();
         if (!tabManager) return false;
 
@@ -161,7 +161,7 @@ export default class GeminianPlugin extends Plugin {
         const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE_GEMINIAN)[0];
         if (!leaf) return false;
 
-        const view = leaf.view as GeminianView;
+        const view = leaf.view as GemineseView;
         const tabManager = view.getTabManager();
         if (!tabManager) return false;
 
@@ -184,7 +184,7 @@ export default class GeminianPlugin extends Plugin {
         const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE_GEMINIAN)[0];
         if (!leaf) return false;
 
-        const view = leaf.view as GeminianView;
+        const view = leaf.view as GemineseView;
         const tabManager = view.getTabManager();
         if (!tabManager) return false;
 
@@ -199,7 +199,7 @@ export default class GeminianPlugin extends Plugin {
       },
     });
 
-    this.addSettingTab(new GeminianSettingTab(this.app, this));
+    this.addSettingTab(new GemineseSettingTab(this.app, this));
   }
 
   async onunload() {
@@ -239,13 +239,13 @@ export default class GeminianPlugin extends Plugin {
   async loadSettings() {
     // Initialize storage service (handles migration if needed)
     this.storage = new StorageService(this);
-    const { geminian } = await this.storage.initialize();
+    const { geminese } = await this.storage.initialize();
 
     const slashCommands = await this.storage.loadAllSlashCommands();
 
     this.settings = {
       ...DEFAULT_SETTINGS,
-      ...geminian,
+      ...geminese,
       slashCommands,
     };
 
@@ -401,7 +401,7 @@ export default class GeminianPlugin extends Plugin {
       ...settingsToSave
     } = this.settings;
 
-    await this.storage.saveGeminianSettings(settingsToSave);
+    await this.storage.saveGemineseSettings(settingsToSave);
   }
 
   /** Updates and persists environment variables, restarting processes to apply changes. */
@@ -1085,26 +1085,26 @@ export default class GeminianPlugin extends Plugin {
     }));
   }
 
-  /** Returns the active Geminian view from workspace, if open. */
-  getView(): GeminianView | null {
+  /** Returns the active Geminese view from workspace, if open. */
+  getView(): GemineseView | null {
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_GEMINIAN);
     if (leaves.length > 0) {
-      return leaves[0].view as GeminianView;
+      return leaves[0].view as GemineseView;
     }
     return null;
   }
 
-  /** Returns all open Geminian views in the workspace. */
-  getAllViews(): GeminianView[] {
+  /** Returns all open Geminese views in the workspace. */
+  getAllViews(): GemineseView[] {
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_GEMINIAN);
-    return leaves.map(leaf => leaf.view as GeminianView);
+    return leaves.map(leaf => leaf.view as GemineseView);
   }
 
   /**
-   * Checks if a conversation is open in any Geminian view.
+   * Checks if a conversation is open in any Geminese view.
    * Returns the view and tab if found, null otherwise.
    */
-  findConversationAcrossViews(conversationId: string): { view: GeminianView; tabId: string } | null {
+  findConversationAcrossViews(conversationId: string): { view: GemineseView; tabId: string } | null {
     for (const view of this.getAllViews()) {
       const tabManager = view.getTabManager();
       if (!tabManager) continue;

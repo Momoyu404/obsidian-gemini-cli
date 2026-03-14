@@ -1,7 +1,7 @@
 /**
- * GeminianSettingsStorage - Handles obsidian-gemini-settings.json read/write.
+ * GemineseSettingsStorage - Handles geminese-settings.json read/write.
  *
- * Manages the .gemini/obsidian-gemini-settings.json file for Geminian-specific settings.
+ * Manages the .gemini/geminese-settings.json file for Geminese-specific settings.
  * These settings are NOT shared with Gemini CLI.
  *
  * Includes:
@@ -15,18 +15,18 @@
  * - State (merged from data.json)
  */
 
-import type { GeminianSettings, GeminiModel, PlatformBlockedCommands } from '../types';
+import type { GemineseSettings, GeminiModel, PlatformBlockedCommands } from '../types';
 import { DEFAULT_SETTINGS, getDefaultBlockedCommands } from '../types';
 import type { VaultFileAdapter } from './VaultFileAdapter';
 
-/** Path to Geminian settings file relative to vault root. */
-export const GEMINIAN_SETTINGS_PATH = '.gemini/obsidian-gemini-settings.json';
+/** Path to Geminese settings file relative to vault root. */
+export const GEMINIAN_SETTINGS_PATH = '.gemini/geminese-settings.json';
 
 /** Fields that are loaded separately (slash commands from .gemini/commands/). */
 type SeparatelyLoadedFields = 'slashCommands';
 
-/** Settings stored in .gemini/obsidian-gemini-settings.json. */
-export type StoredGeminianSettings = Omit<GeminianSettings, SeparatelyLoadedFields>;
+/** Settings stored in .gemini/geminese-settings.json. */
+export type StoredGemineseSettings = Omit<GemineseSettings, SeparatelyLoadedFields>;
 
 function normalizeCommandList(value: unknown, fallback: string[]): string[] {
   if (!Array.isArray(value)) {
@@ -75,15 +75,15 @@ function normalizeHostnameCliPaths(value: unknown): Record<string, string> {
   return result;
 }
 
-export class GeminianSettingsStorage {
+export class GemineseSettingsStorage {
   constructor(private adapter: VaultFileAdapter) { }
 
   /**
-  * Load Geminian settings from .gemini/obsidian-gemini-settings.json.
+  * Load Geminese settings from .gemini/geminese-settings.json.
   * Returns default settings if file doesn't exist.
   * Throws if file exists but cannot be read or parsed.
   */
-  async load(): Promise<StoredGeminianSettings> {
+  async load(): Promise<StoredGemineseSettings> {
     if (!(await this.adapter.exists(GEMINIAN_SETTINGS_PATH))) {
       return this.getDefaults();
     }
@@ -102,10 +102,10 @@ export class GeminianSettingsStorage {
       blockedCommands,
       geminiCliPath: legacyCliPath,
       geminiCliPathsByHost: hostnameCliPaths,
-    } as StoredGeminianSettings;
+    } as StoredGemineseSettings;
   }
 
-  async save(settings: StoredGeminianSettings): Promise<void> {
+  async save(settings: StoredGemineseSettings): Promise<void> {
     const content = JSON.stringify(settings, null, 2);
     await this.adapter.write(GEMINIAN_SETTINGS_PATH, content);
   }
@@ -114,13 +114,13 @@ export class GeminianSettingsStorage {
     return this.adapter.exists(GEMINIAN_SETTINGS_PATH);
   }
 
-  async update(updates: Partial<StoredGeminianSettings>): Promise<void> {
+  async update(updates: Partial<StoredGemineseSettings>): Promise<void> {
     const current = await this.load();
     await this.save({ ...current, ...updates });
   }
 
   /**
-   * Read legacy activeConversationId from obsidian-gemini-settings.json, if present.
+   * Read legacy activeConversationId from geminese-settings.json, if present.
    * Used only for one-time migration to tabManagerState.
    */
   async getLegacyActiveConversationId(): Promise<string | null> {
@@ -140,7 +140,7 @@ export class GeminianSettingsStorage {
   }
 
   /**
-   * Remove legacy activeConversationId from obsidian-gemini-settings.json.
+   * Remove legacy activeConversationId from geminese-settings.json.
    */
   async clearLegacyActiveConversationId(): Promise<void> {
     if (!(await this.adapter.exists(GEMINIAN_SETTINGS_PATH))) {
@@ -174,7 +174,7 @@ export class GeminianSettingsStorage {
   /**
    * Get default settings (excluding separately loaded fields).
    */
-  private getDefaults(): StoredGeminianSettings {
+  private getDefaults(): StoredGemineseSettings {
     const {
       slashCommands: _,
       ...defaults

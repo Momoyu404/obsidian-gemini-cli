@@ -1,12 +1,12 @@
 /* Permission Mode Selector (dropdown, mirrors model-selector pattern) */
-.obsidian-gemini-permission-selector {
+.geminese-permission-selector {
   position: relative;
   margin-left: auto;
   padding-left: 8px;
   flex-shrink: 0;
 }
 
-.obsidian-gemini-permission-btn {
+.geminese-permission-btn {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -18,22 +18,22 @@
   min-width: 0;
 }
 
-.obsidian-gemini-permission-label {
+.geminese-permission-label {
   font-weight: 500;
   white-space: nowrap;
 }
 
 /* Mode-specific colors on the button */
-.obsidian-gemini-permission-selector.mode-plan .obsidian-gemini-permission-btn {
+.geminese-permission-selector.mode-plan .geminese-permission-btn {
   color: rgb(92, 148, 140);
 }
 
-.obsidian-gemini-permission-selector.mode-build .obsidian-gemini-permission-btn {
-  color: var(--obsidian-gemini-brand, #8a58ff);
+.geminese-permission-selector.mode-build .geminese-permission-btn {
+  color: var(--geminese-brand, #8a58ff);
 }
 
 /* Dropdown (hover to show, like model selector) */
-.obsidian-gemini-permission-dropdown {
+.geminese-permission-dropdown {
   position: absolute;
   bottom: 100%;
   right: 0;
@@ -53,12 +53,12 @@
   transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 
-.obsidian-gemini-permission-selector:hover .obsidian-gemini-permission-dropdown {
+.geminese-permission-selector:hover .geminese-permission-dropdown {
   opacity: 1;
   visibility: visible;
 }
 
-.obsidian-gemini-permission-option {
+.geminese-permission-option {
   padding: 4px 8px;
   cursor: pointer;
   font-size: 12px;
@@ -68,19 +68,19 @@
   white-space: nowrap;
 }
 
-.obsidian-gemini-permission-option:hover {
+.geminese-permission-option:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-permission-option.selected {
-  background: rgba(var(--obsidian-gemini-brand-rgb, 138, 88, 255), 0.15);
-  color: var(--obsidian-gemini-brand, #8a58ff);
+.geminese-permission-option.selected {
+  background: rgba(var(--geminese-brand-rgb, 138, 88, 255), 0.15);
+  color: var(--geminese-brand, #8a58ff);
   font-weight: 500;
 }
 
 /* Plan mode selected option gets teal highlight */
-.obsidian-gemini-permission-selector.mode-plan .obsidian-gemini-permission-option.selected {
+.geminese-permission-selector.mode-plan .geminese-permission-option.selected {
   background: rgba(92, 148, 140, 0.15);
   color: rgb(92, 148, 140);
 }

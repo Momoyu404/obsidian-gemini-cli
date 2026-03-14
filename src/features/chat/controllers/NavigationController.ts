@@ -42,7 +42,7 @@ export class NavigationController {
 
     // Make messages panel focusable (focus style handled in CSS)
     messagesEl.setAttribute('tabindex', '0');
-    messagesEl.addClass('obsidian-gemini-messages-focusable');
+    messagesEl.addClass('geminese-messages-focusable');
 
     // Attach event listeners
     messagesEl.addEventListener('keydown', this.boundMessagesKeydown);
@@ -67,7 +67,7 @@ export class NavigationController {
     // Element cleanup - may already be destroyed during view teardown
     const messagesEl = this.deps.getMessagesEl();
     messagesEl?.removeEventListener('keydown', this.boundMessagesKeydown);
-    messagesEl?.removeClass('obsidian-gemini-messages-focusable');
+    messagesEl?.removeClass('geminese-messages-focusable');
 
     const inputEl = this.deps.getInputEl();
     inputEl?.removeEventListener('keydown', this.boundInputKeydown, { capture: true });

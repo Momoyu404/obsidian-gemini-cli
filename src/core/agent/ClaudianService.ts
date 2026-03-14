@@ -1,5 +1,5 @@
 /**
- * Geminian - Gemini CLI Service
+ * Geminese - Gemini CLI Service
  *
  * Handles communication with Gemini via direct CLI subprocess spawning.
  * Each query spawns a new `gemini` process with --output-format stream-json.
@@ -13,7 +13,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as readline from 'readline';
 
-import type GeminianPlugin from '../../main';
+import type GeminesePlugin from '../../main';
 import { stripCurrentNoteContext } from '../../utils/context';
 import { getEnhancedPath, getMissingNodeError, parseEnvironmentVariables } from '../../utils/env';
 import { getVaultPath } from '../../utils/path';
@@ -76,8 +76,8 @@ export interface EnsureReadyOptions {
   preserveHandlers?: boolean;
 }
 
-export class GeminianService {
-  private plugin: GeminianPlugin;
+export class GemineseService {
+  private plugin: GeminesePlugin;
   private abortController: AbortController | null = null;
   private approvalCallback: ApprovalCallback | null = null;
   private approvalDismisser: (() => void) | null = null;
@@ -93,7 +93,7 @@ export class GeminianService {
   private ready = false;
   private lastResolvedModel: string | null = null;
 
-  constructor(plugin: GeminianPlugin, mcpManager: McpServerManager) {
+  constructor(plugin: GeminesePlugin, mcpManager: McpServerManager) {
     this.plugin = plugin;
     this.mcpManager = mcpManager;
   }
@@ -236,7 +236,7 @@ export class GeminianService {
       const imagePromptParts: string[] = [];
       for (const image of images) {
         const ext = image.mediaType.split('/')[1] || 'png';
-        const tmpFile = path.join(os.tmpdir(), `obsidian-gemini-${randomUUID()}.${ext}`);
+        const tmpFile = path.join(os.tmpdir(), `geminese-${randomUUID()}.${ext}`);
         const buffer = Buffer.from(image.data, 'base64');
         await fs.promises.writeFile(tmpFile, buffer);
         imagePromptParts.push(`[Image: ${tmpFile}]`);

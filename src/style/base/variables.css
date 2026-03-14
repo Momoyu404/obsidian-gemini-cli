@@ -1,8 +1,8 @@
 /* Brand & semantic color tokens */
-.obsidian-gemini-container {
-  --obsidian-gemini-brand: #4285F4;
-  --obsidian-gemini-brand-rgb: 66, 133, 244;
-  --obsidian-gemini-error: #dc3545;
-  --obsidian-gemini-error-rgb: 220, 53, 69;
-  --obsidian-gemini-compact: #5bc0de;
+.geminese-container {
+  --geminese-brand: #4285F4;
+  --geminese-brand-rgb: 66, 133, 244;
+  --geminese-error: #dc3545;
+  --geminese-error-rgb: 220, 53, 69;
+  --geminese-compact: #5bc0de;
 }

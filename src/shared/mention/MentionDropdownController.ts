@@ -63,11 +63,11 @@ export class MentionDropdownController {
     this.fixed = options.fixed ?? false;
 
     this.dropdown = new SelectableDropdown<MentionItem>(this.containerEl, {
-      listClassName: 'obsidian-gemini-mention-dropdown',
-      itemClassName: 'obsidian-gemini-mention-item',
-      emptyClassName: 'obsidian-gemini-mention-empty',
+      listClassName: 'geminese-mention-dropdown',
+      itemClassName: 'geminese-mention-item',
+      emptyClassName: 'geminese-mention-empty',
       fixed: this.fixed,
-      fixedClassName: 'obsidian-gemini-mention-dropdown-fixed',
+      fixedClassName: 'geminese-mention-dropdown-fixed',
     });
   }
 
@@ -409,7 +409,7 @@ export class MentionDropdownController {
         return undefined;
       },
       renderItem: (item, itemEl) => {
-        const iconEl = itemEl.createSpan({ cls: 'obsidian-gemini-mention-icon' });
+        const iconEl = itemEl.createSpan({ cls: 'geminese-mention-icon' });
         if (item.type === 'mcp-server') {
           iconEl.innerHTML = MCP_ICON_SVG;
         } else if (item.type === 'folder') {
@@ -424,41 +424,41 @@ export class MentionDropdownController {
           setIcon(iconEl, 'file-text');
         }
 
-        const textEl = itemEl.createSpan({ cls: 'obsidian-gemini-mention-text' });
+        const textEl = itemEl.createSpan({ cls: 'geminese-mention-text' });
 
         if (item.type === 'mcp-server') {
-          const nameEl = textEl.createSpan({ cls: 'obsidian-gemini-mention-name' });
+          const nameEl = textEl.createSpan({ cls: 'geminese-mention-name' });
           nameEl.setText(`@${item.name}`);
         } else if (item.type === 'agent-folder') {
           const nameEl = textEl.createSpan({
-            cls: 'obsidian-gemini-mention-name obsidian-gemini-mention-name-agent-folder',
+            cls: 'geminese-mention-name geminese-mention-name-agent-folder',
           });
           nameEl.setText(`@${item.name}/`);
         } else if (item.type === 'agent') {
-          const nameEl = textEl.createSpan({ cls: 'obsidian-gemini-mention-name obsidian-gemini-mention-name-agent' });
+          const nameEl = textEl.createSpan({ cls: 'geminese-mention-name geminese-mention-name-agent' });
           // Show ID (which is namespaced for plugin agents) for consistency with inserted text
           nameEl.setText(`@${item.id}`);
           if (item.description) {
-            const descEl = textEl.createSpan({ cls: 'obsidian-gemini-mention-agent-desc' });
+            const descEl = textEl.createSpan({ cls: 'geminese-mention-agent-desc' });
             descEl.setText(item.description);
           }
         } else if (item.type === 'context-folder') {
           const nameEl = textEl.createSpan({
-            cls: 'obsidian-gemini-mention-name obsidian-gemini-mention-name-folder',
+            cls: 'geminese-mention-name geminese-mention-name-folder',
           });
           nameEl.setText(`@${item.name}/`);
         } else if (item.type === 'context-file') {
           const nameEl = textEl.createSpan({
-            cls: 'obsidian-gemini-mention-name obsidian-gemini-mention-name-context',
+            cls: 'geminese-mention-name geminese-mention-name-context',
           });
           nameEl.setText(item.name);
         } else if (item.type === 'folder') {
           const nameEl = textEl.createSpan({
-            cls: 'obsidian-gemini-mention-name obsidian-gemini-mention-name-folder',
+            cls: 'geminese-mention-name geminese-mention-name-folder',
           });
           nameEl.setText(`@${item.path}/`);
         } else {
-          const pathEl = textEl.createSpan({ cls: 'obsidian-gemini-mention-path' });
+          const pathEl = textEl.createSpan({ cls: 'geminese-mention-path' });
           pathEl.setText(item.path || item.name);
         }
       },

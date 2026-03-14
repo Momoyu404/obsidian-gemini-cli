@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-obsidian-gemini-cli — An Obsidian plugin that embeds Gemini CLI as a sidebar chat interface. The vault directory becomes Gemini's working directory, giving it full agentic capabilities: file read/write, bash commands, and multi-step workflows.
+geminese-cli — An Obsidian plugin that embeds Gemini CLI as a sidebar chat interface. The vault directory becomes Gemini's working directory, giving it full agentic capabilities: file read/write, bash commands, and multi-step workflows.
 
 ## Commands
 
@@ -44,7 +44,7 @@ Tests mirror `src/` structure in `tests/unit/` and `tests/integration/`.
 | File | Contents |
 |------|----------|
 | `.claude/settings.json` | CC-compatible: permissions, env, enabledPlugins |
-| `.claude/geminian-settings.json` | Geminian-specific settings (model, UI, etc.) |
+| `.claude/geminese-settings.json` | Geminese-specific settings (model, UI, etc.) |
 | `.claude/settings.local.json` | Local overrides (gitignored) |
 | `.claude/mcp.json` | MCP server configs |
 | `.claude/commands/*.md` | Slash commands (YAML frontmatter) |

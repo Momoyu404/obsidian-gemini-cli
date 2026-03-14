@@ -2,19 +2,19 @@ import { Notice, setIcon } from 'obsidian';
 
 import { testMcpServer } from '../../../core/mcp/McpTester';
 import { McpStorage } from '../../../core/storage';
-import type { GeminianMcpServer, McpServerConfig, McpServerType } from '../../../core/types';
+import type { GemineseMcpServer, McpServerConfig, McpServerType } from '../../../core/types';
 import { DEFAULT_MCP_SERVER, getMcpServerType } from '../../../core/types';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { McpServerModal } from './McpServerModal';
 import { McpTestModal } from './McpTestModal';
 
 export class McpSettingsManager {
   private containerEl: HTMLElement;
-  private plugin: GeminianPlugin;
-  private servers: GeminianMcpServer[] = [];
+  private plugin: GeminesePlugin;
+  private servers: GemineseMcpServer[] = [];
 
   /**
-   * Broadcasts MCP reload to all open Geminian views.
+   * Broadcasts MCP reload to all open Geminese views.
    * With multiple views open (split workspace), each view's tabs need to reload MCP config.
    */
   private async broadcastMcpReloadToAllViews(): Promise<void> {
@@ -26,7 +26,7 @@ export class McpSettingsManager {
     }
   }
 
-  constructor(containerEl: HTMLElement, plugin: GeminianPlugin) {
+  constructor(containerEl: HTMLElement, plugin: GeminesePlugin) {
     this.containerEl = containerEl;
     this.plugin = plugin;
     this.loadAndRender();
@@ -40,36 +40,36 @@ export class McpSettingsManager {
   private render() {
     this.containerEl.empty();
 
-    const headerEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-mcp-header' });
-    headerEl.createSpan({ text: 'MCP Servers', cls: 'obsidian-gemini-mcp-label' });
+    const headerEl = this.containerEl.createDiv({ cls: 'geminese-mcp-header' });
+    headerEl.createSpan({ text: 'MCP Servers', cls: 'geminese-mcp-label' });
 
-    const addContainer = headerEl.createDiv({ cls: 'obsidian-gemini-mcp-add-container' });
+    const addContainer = headerEl.createDiv({ cls: 'geminese-mcp-add-container' });
     const addBtn = addContainer.createEl('button', {
-      cls: 'obsidian-gemini-settings-action-btn',
+      cls: 'geminese-settings-action-btn',
       attr: { 'aria-label': 'Add' },
     });
     setIcon(addBtn, 'plus');
 
-    const dropdown = addContainer.createDiv({ cls: 'obsidian-gemini-mcp-add-dropdown' });
+    const dropdown = addContainer.createDiv({ cls: 'geminese-mcp-add-dropdown' });
 
-    const stdioOption = dropdown.createDiv({ cls: 'obsidian-gemini-mcp-add-option' });
-    setIcon(stdioOption.createSpan({ cls: 'obsidian-gemini-mcp-add-option-icon' }), 'terminal');
+    const stdioOption = dropdown.createDiv({ cls: 'geminese-mcp-add-option' });
+    setIcon(stdioOption.createSpan({ cls: 'geminese-mcp-add-option-icon' }), 'terminal');
     stdioOption.createSpan({ text: 'stdio (local command)' });
     stdioOption.addEventListener('click', () => {
       dropdown.removeClass('is-visible');
       this.openModal(null, 'stdio');
     });
 
-    const httpOption = dropdown.createDiv({ cls: 'obsidian-gemini-mcp-add-option' });
-    setIcon(httpOption.createSpan({ cls: 'obsidian-gemini-mcp-add-option-icon' }), 'globe');
+    const httpOption = dropdown.createDiv({ cls: 'geminese-mcp-add-option' });
+    setIcon(httpOption.createSpan({ cls: 'geminese-mcp-add-option-icon' }), 'globe');
     httpOption.createSpan({ text: 'http / sse (remote)' });
     httpOption.addEventListener('click', () => {
       dropdown.removeClass('is-visible');
       this.openModal(null, 'http');
     });
 
-    const importOption = dropdown.createDiv({ cls: 'obsidian-gemini-mcp-add-option' });
-    setIcon(importOption.createSpan({ cls: 'obsidian-gemini-mcp-add-option-icon' }), 'clipboard-paste');
+    const importOption = dropdown.createDiv({ cls: 'geminese-mcp-add-option' });
+    setIcon(importOption.createSpan({ cls: 'geminese-mcp-add-option-icon' }), 'clipboard-paste');
     importOption.createSpan({ text: 'Import from clipboard' });
     importOption.addEventListener('click', () => {
       dropdown.removeClass('is-visible');
@@ -86,84 +86,84 @@ export class McpSettingsManager {
     });
 
     if (this.servers.length === 0) {
-      const emptyEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-mcp-empty' });
+      const emptyEl = this.containerEl.createDiv({ cls: 'geminese-mcp-empty' });
       emptyEl.setText('No MCP servers configured. Click "Add" to add one.');
       return;
     }
 
-    const listEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-mcp-list' });
+    const listEl = this.containerEl.createDiv({ cls: 'geminese-mcp-list' });
     for (const server of this.servers) {
       this.renderServerItem(listEl, server);
     }
   }
 
-  private renderServerItem(listEl: HTMLElement, server: GeminianMcpServer) {
-    const itemEl = listEl.createDiv({ cls: 'obsidian-gemini-mcp-item' });
+  private renderServerItem(listEl: HTMLElement, server: GemineseMcpServer) {
+    const itemEl = listEl.createDiv({ cls: 'geminese-mcp-item' });
     if (!server.enabled) {
-      itemEl.addClass('obsidian-gemini-mcp-item-disabled');
+      itemEl.addClass('geminese-mcp-item-disabled');
     }
 
-    const statusEl = itemEl.createDiv({ cls: 'obsidian-gemini-mcp-status' });
+    const statusEl = itemEl.createDiv({ cls: 'geminese-mcp-status' });
     statusEl.addClass(
-      server.enabled ? 'obsidian-gemini-mcp-status-enabled' : 'obsidian-gemini-mcp-status-disabled'
+      server.enabled ? 'geminese-mcp-status-enabled' : 'geminese-mcp-status-disabled'
     );
 
-    const infoEl = itemEl.createDiv({ cls: 'obsidian-gemini-mcp-info' });
+    const infoEl = itemEl.createDiv({ cls: 'geminese-mcp-info' });
 
-    const nameRow = infoEl.createDiv({ cls: 'obsidian-gemini-mcp-name-row' });
+    const nameRow = infoEl.createDiv({ cls: 'geminese-mcp-name-row' });
 
-    const nameEl = nameRow.createSpan({ cls: 'obsidian-gemini-mcp-name' });
+    const nameEl = nameRow.createSpan({ cls: 'geminese-mcp-name' });
     nameEl.setText(server.name);
 
     const serverType = getMcpServerType(server.config);
-    const typeEl = nameRow.createSpan({ cls: 'obsidian-gemini-mcp-type-badge' });
+    const typeEl = nameRow.createSpan({ cls: 'geminese-mcp-type-badge' });
     typeEl.setText(serverType);
 
     if (server.contextSaving) {
-      const csEl = nameRow.createSpan({ cls: 'obsidian-gemini-mcp-context-saving-badge' });
+      const csEl = nameRow.createSpan({ cls: 'geminese-mcp-context-saving-badge' });
       csEl.setText('@');
       csEl.setAttribute('title', 'Context-saving: mention with @' + server.name + ' to enable');
     }
 
-    const previewEl = infoEl.createDiv({ cls: 'obsidian-gemini-mcp-preview' });
+    const previewEl = infoEl.createDiv({ cls: 'geminese-mcp-preview' });
     if (server.description) {
       previewEl.setText(server.description);
     } else {
       previewEl.setText(this.getServerPreview(server, serverType));
     }
 
-    const actionsEl = itemEl.createDiv({ cls: 'obsidian-gemini-mcp-actions' });
+    const actionsEl = itemEl.createDiv({ cls: 'geminese-mcp-actions' });
 
     const testBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-mcp-action-btn',
+      cls: 'geminese-mcp-action-btn',
       attr: { 'aria-label': 'Verify (show tools)' },
     });
     setIcon(testBtn, 'zap');
     testBtn.addEventListener('click', () => this.testServer(server));
 
     const toggleBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-mcp-action-btn',
+      cls: 'geminese-mcp-action-btn',
       attr: { 'aria-label': server.enabled ? 'Disable' : 'Enable' },
     });
     setIcon(toggleBtn, server.enabled ? 'toggle-right' : 'toggle-left');
     toggleBtn.addEventListener('click', () => this.toggleServer(server));
 
     const editBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-mcp-action-btn',
+      cls: 'geminese-mcp-action-btn',
       attr: { 'aria-label': 'Edit' },
     });
     setIcon(editBtn, 'pencil');
     editBtn.addEventListener('click', () => this.openModal(server));
 
     const deleteBtn = actionsEl.createEl('button', {
-      cls: 'obsidian-gemini-mcp-action-btn obsidian-gemini-mcp-delete-btn',
+      cls: 'geminese-mcp-action-btn geminese-mcp-delete-btn',
       attr: { 'aria-label': 'Delete' },
     });
     setIcon(deleteBtn, 'trash-2');
     deleteBtn.addEventListener('click', () => this.deleteServer(server));
   }
 
-  private async testServer(server: GeminianMcpServer) {
+  private async testServer(server: GemineseMcpServer) {
     const modal = new McpTestModal(
       this.plugin.app,
       server.name,
@@ -187,7 +187,7 @@ export class McpSettingsManager {
 
   /** Rolls back on save failure; warns on reload failure (since save succeeded). */
   private async updateServerDisabledTools(
-    server: GeminianMcpServer,
+    server: GemineseMcpServer,
     newDisabledTools: string[] | undefined
   ): Promise<void> {
     const previous = server.disabledTools ? [...server.disabledTools] : undefined;
@@ -209,7 +209,7 @@ export class McpSettingsManager {
   }
 
   private async updateDisabledTool(
-    server: GeminianMcpServer,
+    server: GemineseMcpServer,
     toolName: string,
     enabled: boolean
   ) {
@@ -225,14 +225,14 @@ export class McpSettingsManager {
     );
   }
 
-  private async updateAllDisabledTools(server: GeminianMcpServer, disabledTools: string[]) {
+  private async updateAllDisabledTools(server: GemineseMcpServer, disabledTools: string[]) {
     await this.updateServerDisabledTools(
       server,
       disabledTools.length > 0 ? disabledTools : undefined
     );
   }
 
-  private getServerPreview(server: GeminianMcpServer, type: McpServerType): string {
+  private getServerPreview(server: GemineseMcpServer, type: McpServerType): string {
     if (type === 'stdio') {
       const config = server.config as { command: string; args?: string[] };
       const args = config.args?.join(' ') || '';
@@ -243,7 +243,7 @@ export class McpSettingsManager {
     }
   }
 
-  private openModal(existing: GeminianMcpServer | null, initialType?: McpServerType) {
+  private openModal(existing: GemineseMcpServer | null, initialType?: McpServerType) {
     const modal = new McpServerModal(
       this.plugin.app,
       this.plugin,
@@ -296,7 +296,7 @@ export class McpSettingsManager {
     }
   }
 
-  private async saveServer(server: GeminianMcpServer, existing: GeminianMcpServer | null) {
+  private async saveServer(server: GemineseMcpServer, existing: GemineseMcpServer | null) {
     if (existing) {
       const index = this.servers.findIndex((s) => s.name === existing.name);
       if (index !== -1) {
@@ -366,7 +366,7 @@ export class McpSettingsManager {
     new Notice(message);
   }
 
-  private async toggleServer(server: GeminianMcpServer) {
+  private async toggleServer(server: GemineseMcpServer) {
     server.enabled = !server.enabled;
     await this.plugin.storage.mcp.save(this.servers);
     await this.broadcastMcpReloadToAllViews();
@@ -374,7 +374,7 @@ export class McpSettingsManager {
     new Notice(`MCP server "${server.name}" ${server.enabled ? 'enabled' : 'disabled'}`);
   }
 
-  private async deleteServer(server: GeminianMcpServer) {
+  private async deleteServer(server: GemineseMcpServer) {
     if (!confirm(`Delete MCP server "${server.name}"?`)) {
       return;
     }

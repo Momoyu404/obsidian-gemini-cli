@@ -1,9 +1,9 @@
-.obsidian-gemini-history-container {
+.geminese-history-container {
   position: relative;
 }
 
 /* History dropup menu (opens upward since it's at bottom of view) */
-.obsidian-gemini-history-menu {
+.geminese-history-menu {
   display: none;
   position: absolute;
   bottom: 100%;
@@ -21,12 +21,12 @@
   width: 280px;
 }
 
-.obsidian-gemini-history-menu.visible {
+.geminese-history-menu.visible {
   display: block;
 }
 
 /* Header mode: dropdown instead of dropup */
-.obsidian-gemini-container--header-mode .obsidian-gemini-history-menu {
+.geminese-container--header-mode .geminese-history-menu {
   bottom: auto;
   top: 100%;
   margin-bottom: 0;
@@ -34,7 +34,7 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
-.obsidian-gemini-history-header {
+.geminese-history-header {
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 600;
@@ -44,19 +44,19 @@
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.obsidian-gemini-history-list {
+.geminese-history-list {
   max-height: 350px;
   overflow-y: auto;
 }
 
-.obsidian-gemini-history-empty {
+.geminese-history-empty {
   padding: 16px;
   text-align: center;
   color: var(--text-muted);
   font-size: 13px;
 }
 
-.obsidian-gemini-history-item {
+.geminese-history-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -65,51 +65,51 @@
   transition: background 0.15s ease;
 }
 
-.obsidian-gemini-history-item-icon {
+.geminese-history-item-icon {
   display: flex;
   align-items: center;
   color: var(--text-muted);
   flex-shrink: 0;
 }
 
-.obsidian-gemini-history-item-icon svg {
+.geminese-history-item-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.obsidian-gemini-history-item:last-child {
+.geminese-history-item:last-child {
   border-bottom: none;
 }
 
-.obsidian-gemini-history-item:hover {
+.geminese-history-item:hover {
   background: var(--background-modifier-hover);
 }
 
-.obsidian-gemini-history-item.active {
+.geminese-history-item.active {
   background: var(--background-secondary);
   border-inline-start: 2px solid var(--interactive-accent);
   padding-inline-start: 10px;
 }
 
-.obsidian-gemini-history-item.active .obsidian-gemini-history-item-icon {
+.geminese-history-item.active .geminese-history-item-icon {
   color: var(--interactive-accent);
 }
 
-.obsidian-gemini-history-item.active .obsidian-gemini-history-item-content {
+.geminese-history-item.active .geminese-history-item-content {
   cursor: default;
 }
 
-.obsidian-gemini-history-item.active .obsidian-gemini-history-item-date {
+.geminese-history-item.active .geminese-history-item-date {
   color: var(--text-faint);
 }
 
-.obsidian-gemini-history-item-content {
+.geminese-history-item-content {
   flex: 1;
   min-width: 0;
   cursor: pointer;
 }
 
-.obsidian-gemini-history-item-title {
+.geminese-history-item-title {
   font-size: 13px;
   font-weight: 500;
   color: var(--text-normal);
@@ -118,13 +118,13 @@
   text-overflow: ellipsis;
 }
 
-.obsidian-gemini-history-item-date {
+.geminese-history-item-date {
   font-size: 11px;
   color: var(--text-faint);
   margin-top: 2px;
 }
 
-.obsidian-gemini-history-item-actions {
+.geminese-history-item-actions {
   display: flex;
   gap: 4px;
   margin-inline-start: 8px;
@@ -132,11 +132,11 @@
   transition: opacity 0.15s ease;
 }
 
-.obsidian-gemini-history-item:hover .obsidian-gemini-history-item-actions {
+.geminese-history-item:hover .geminese-history-item-actions {
   opacity: 1;
 }
 
-.obsidian-gemini-action-btn {
+.geminese-action-btn {
   background: transparent;
   border: none;
   cursor: pointer;
@@ -146,21 +146,21 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.obsidian-gemini-action-btn:hover {
+.geminese-action-btn:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-action-btn svg {
+.geminese-action-btn svg {
   width: 14px;
   height: 14px;
 }
 
-.obsidian-gemini-delete-btn:hover {
+.geminese-delete-btn:hover {
   color: var(--color-red);
 }
 
-.obsidian-gemini-rename-input {
+.geminese-rename-input {
   width: 100%;
   padding: 2px 4px;
   font-size: 13px;
@@ -171,13 +171,13 @@
   color: var(--text-normal);
 }
 
-.obsidian-gemini-rename-input:focus {
+.geminese-rename-input:focus {
   outline: none;
   box-shadow: 0 0 0 2px var(--interactive-accent-hover);
 }
 
 /* Loading indicator for title generation */
-.obsidian-gemini-action-loading {
+.geminese-action-loading {
   display: flex;
   align-items: center;
   justify-content: center;

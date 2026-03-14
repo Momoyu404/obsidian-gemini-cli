@@ -53,10 +53,10 @@
     }
   },
   "settings": {
-    "title": "Geminian 설정",
+    "title": "Geminese 설정",
     "customization": "사용자 정의",
     "userName": {
-      "name": "Geminian이 당신을 어떻게 불러야 합니까?",
+      "name": "Geminese이 당신을 어떻게 불러야 합니까?",
       "desc": "개인화된 인사에 사용할 이름 (비워두면 일반 인사)"
     },
     "excludedTags": {
@@ -126,7 +126,7 @@
     },
     "hiddenSlashCommands": {
       "name": "숨겨진 명령어",
-      "desc": "드롭다운에서 특정 슬래시 명령어를 숨깁니다. Geminian과 관련 없는 Gemini CLI 명령어를 숨기는 데 유용합니다. 앞의 슬래시 없이 한 줄에 하나씩 명령어 이름을 입력하세요.",
+      "desc": "드롭다운에서 특정 슬래시 명령어를 숨깁니다. Geminese과 관련 없는 Gemini CLI 명령어를 숨기는 데 유용합니다. 앞의 슬래시 없이 한 줄에 하나씩 명령어 이름을 입력하세요.",
       "placeholder": "commit\nbuild\ntest"
     },
     "mcpServers": {

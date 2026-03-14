@@ -39,43 +39,43 @@ export class InlineExitPlanMode {
   }
 
   render(): void {
-    this.rootEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-plan-approval-inline' });
+    this.rootEl = this.containerEl.createDiv({ cls: 'geminese-plan-approval-inline' });
 
-    const titleEl = this.rootEl.createDiv({ cls: 'obsidian-gemini-plan-inline-title' });
+    const titleEl = this.rootEl.createDiv({ cls: 'geminese-plan-inline-title' });
     titleEl.setText('Plan complete');
 
     this.planContent = this.readPlanContent();
     if (this.planContent) {
-      const contentEl = this.rootEl.createDiv({ cls: 'obsidian-gemini-plan-content-preview' });
+      const contentEl = this.rootEl.createDiv({ cls: 'geminese-plan-content-preview' });
       if (this.renderContent) {
         void this.renderContent(contentEl, this.planContent);
       } else {
-        contentEl.createDiv({ cls: 'obsidian-gemini-plan-content-text', text: this.planContent });
+        contentEl.createDiv({ cls: 'geminese-plan-content-text', text: this.planContent });
       }
     } else if (this.planReadError) {
       this.rootEl.createDiv({
-        cls: 'obsidian-gemini-plan-content-preview obsidian-gemini-plan-read-error',
+        cls: 'geminese-plan-content-preview geminese-plan-read-error',
         text: `Could not read plan file: ${this.planReadError}. "Approve (new session)" will not include plan details.`,
       });
     }
 
     const allowedPrompts = this.input.allowedPrompts as Array<{ tool: string; prompt: string }> | undefined;
     if (allowedPrompts && Array.isArray(allowedPrompts) && allowedPrompts.length > 0) {
-      const permEl = this.rootEl.createDiv({ cls: 'obsidian-gemini-plan-permissions' });
-      permEl.createDiv({ text: 'Requested permissions:', cls: 'obsidian-gemini-plan-permissions-label' });
-      const listEl = permEl.createEl('ul', { cls: 'obsidian-gemini-plan-permissions-list' });
+      const permEl = this.rootEl.createDiv({ cls: 'geminese-plan-permissions' });
+      permEl.createDiv({ text: 'Requested permissions:', cls: 'geminese-plan-permissions-label' });
+      const listEl = permEl.createEl('ul', { cls: 'geminese-plan-permissions-list' });
       for (const perm of allowedPrompts) {
         listEl.createEl('li', { text: perm.prompt });
       }
     }
 
-    const actionsEl = this.rootEl.createDiv({ cls: 'obsidian-gemini-ask-list' });
+    const actionsEl = this.rootEl.createDiv({ cls: 'geminese-ask-list' });
 
-    const newSessionRow = actionsEl.createDiv({ cls: 'obsidian-gemini-ask-item' });
+    const newSessionRow = actionsEl.createDiv({ cls: 'geminese-ask-item' });
     newSessionRow.addClass('is-focused');
-    newSessionRow.createSpan({ text: '\u203A', cls: 'obsidian-gemini-ask-cursor' });
-    newSessionRow.createSpan({ text: '1. ', cls: 'obsidian-gemini-ask-item-num' });
-    newSessionRow.createSpan({ text: 'Approve (new session)', cls: 'obsidian-gemini-ask-item-label' });
+    newSessionRow.createSpan({ text: '\u203A', cls: 'geminese-ask-cursor' });
+    newSessionRow.createSpan({ text: '1. ', cls: 'geminese-ask-item-num' });
+    newSessionRow.createSpan({ text: 'Approve (new session)', cls: 'geminese-ask-item-label' });
     newSessionRow.addEventListener('click', () => {
       this.focusedIndex = 0;
       this.updateFocus();
@@ -86,10 +86,10 @@ export class InlineExitPlanMode {
     });
     this.items.push(newSessionRow);
 
-    const approveRow = actionsEl.createDiv({ cls: 'obsidian-gemini-ask-item' });
-    approveRow.createSpan({ text: '\u00A0', cls: 'obsidian-gemini-ask-cursor' });
-    approveRow.createSpan({ text: '2. ', cls: 'obsidian-gemini-ask-item-num' });
-    approveRow.createSpan({ text: 'Approve (current session)', cls: 'obsidian-gemini-ask-item-label' });
+    const approveRow = actionsEl.createDiv({ cls: 'geminese-ask-item' });
+    approveRow.createSpan({ text: '\u00A0', cls: 'geminese-ask-cursor' });
+    approveRow.createSpan({ text: '2. ', cls: 'geminese-ask-item-num' });
+    approveRow.createSpan({ text: 'Approve (current session)', cls: 'geminese-ask-item-label' });
     approveRow.addEventListener('click', () => {
       this.focusedIndex = 1;
       this.updateFocus();
@@ -97,12 +97,12 @@ export class InlineExitPlanMode {
     });
     this.items.push(approveRow);
 
-    const feedbackRow = actionsEl.createDiv({ cls: 'obsidian-gemini-ask-item obsidian-gemini-ask-custom-item' });
-    feedbackRow.createSpan({ text: '\u00A0', cls: 'obsidian-gemini-ask-cursor' });
-    feedbackRow.createSpan({ text: '3. ', cls: 'obsidian-gemini-ask-item-num' });
+    const feedbackRow = actionsEl.createDiv({ cls: 'geminese-ask-item geminese-ask-custom-item' });
+    feedbackRow.createSpan({ text: '\u00A0', cls: 'geminese-ask-cursor' });
+    feedbackRow.createSpan({ text: '3. ', cls: 'geminese-ask-item-num' });
     this.feedbackInput = feedbackRow.createEl('input', {
       type: 'text',
-      cls: 'obsidian-gemini-ask-custom-text',
+      cls: 'geminese-ask-custom-text',
       placeholder: 'Enter feedback to continue planning...',
     });
     this.feedbackInput.addEventListener('focus', () => { this.isInputFocused = true; });
@@ -113,7 +113,7 @@ export class InlineExitPlanMode {
     });
     this.items.push(feedbackRow);
 
-    this.rootEl.createDiv({ text: HINTS_TEXT, cls: 'obsidian-gemini-ask-hints' });
+    this.rootEl.createDiv({ text: HINTS_TEXT, cls: 'geminese-ask-hints' });
 
     this.rootEl.setAttribute('tabindex', '0');
     this.rootEl.addEventListener('keydown', this.boundKeyDown);
@@ -218,14 +218,14 @@ export class InlineExitPlanMode {
   private updateFocus(): void {
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i];
-      const cursor = item.querySelector('.obsidian-gemini-ask-cursor');
+      const cursor = item.querySelector('.geminese-ask-cursor');
       if (i === this.focusedIndex) {
         item.addClass('is-focused');
         if (cursor) cursor.textContent = '\u203A';
         item.scrollIntoView({ block: 'nearest' });
 
-        if (item.hasClass('obsidian-gemini-ask-custom-item')) {
-          const input = item.querySelector('.obsidian-gemini-ask-custom-text') as HTMLInputElement;
+        if (item.hasClass('geminese-ask-custom-item')) {
+          const input = item.querySelector('.geminese-ask-custom-text') as HTMLInputElement;
           if (input) {
             input.focus();
             this.isInputFocused = true;
@@ -235,8 +235,8 @@ export class InlineExitPlanMode {
         item.removeClass('is-focused');
         if (cursor) cursor.textContent = '\u00A0';
 
-        if (item.hasClass('obsidian-gemini-ask-custom-item')) {
-          const input = item.querySelector('.obsidian-gemini-ask-custom-text') as HTMLInputElement;
+        if (item.hasClass('geminese-ask-custom-item')) {
+          const input = item.querySelector('.geminese-ask-custom-text') as HTMLInputElement;
           if (input && document.activeElement === input) {
             input.blur();
             this.isInputFocused = false;

@@ -1,12 +1,12 @@
 /* Input area */
-.obsidian-gemini-input-container {
+.geminese-input-container {
   position: relative;
   padding: 12px 0 0 0;
 }
 
 /* Input wrapper (border container) - flex column so textarea expands when no chips */
 /* Height calculation: context row (36px) + textarea min (60px) + toolbar (38px) + border (2px) = 136px */
-.obsidian-gemini-input-wrapper {
+.geminese-input-wrapper {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -17,7 +17,7 @@
 }
 
 /* File context card (current note and attached files) */
-.obsidian-gemini-context-card {
+.geminese-context-card {
   display: none;
   flex-direction: column;
   padding: 8px 10px 6px 10px;
@@ -27,11 +27,11 @@
   gap: 4px;
 }
 
-.obsidian-gemini-context-card.has-content {
+.geminese-context-card.has-content {
   display: flex;
 }
 
-.obsidian-gemini-context-card-header {
+.geminese-context-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -39,11 +39,11 @@
   color: var(--text-muted);
 }
 
-.obsidian-gemini-context-card-title {
+.geminese-context-card-title {
   font-weight: 500;
 }
 
-.obsidian-gemini-context-card-hint {
+.geminese-context-card-hint {
   margin-top: 2px;
   font-size: 11px;
   color: var(--text-faint, var(--text-muted));
@@ -51,7 +51,7 @@
 
 /* Context row (file chip start, selection indicator end) - inside input wrapper at top */
 /* Collapsed by default; expanded via .has-content class; textarea fills remaining space */
-.obsidian-gemini-context-row {
+.geminese-context-row {
   display: none;
   align-items: flex-start;
   justify-content: flex-start;
@@ -61,12 +61,12 @@
 }
 
 /* Show context row when it has visible content */
-.obsidian-gemini-context-row.has-content {
+.geminese-context-row.has-content {
   display: flex;
 }
 
 /* Nav row (tab badges start, header icons end) - above input wrapper */
-.obsidian-gemini-input-nav-row {
+.geminese-input-nav-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -75,16 +75,16 @@
 }
 
 /* Header mode: hide nav row above input (content moved to header) */
-.obsidian-gemini-container--header-mode .obsidian-gemini-input-nav-row {
+.geminese-container--header-mode .geminese-input-nav-row {
   display: none;
 }
 
 /* Selection indicator (shown when text is selected in editor) */
 /* Match file chip height (24px): chip has 16px remove button + 6px padding + 2px border */
 /* Indicator: 12px text + 10px padding (5+5) + 2px border = 24px */
-.obsidian-gemini-selection-indicator,
-.obsidian-gemini-browser-selection-indicator,
-.obsidian-gemini-canvas-indicator {
+.geminese-selection-indicator,
+.geminese-browser-selection-indicator,
+.geminese-canvas-indicator {
   color: #7abaff;
   font-size: 12px;
   line-height: 1;
@@ -102,7 +102,7 @@
   text-overflow: ellipsis;
 }
 
-.obsidian-gemini-input {
+.geminese-input {
   width: 100%;
   flex: 1 1 0;
   min-height: 60px;
@@ -121,20 +121,20 @@
   unicode-bidi: plaintext; /* Proper BiDi text handling for mixed RTL/LTR */
 }
 
-.obsidian-gemini-input:hover,
-.obsidian-gemini-input:focus {
+.geminese-input:hover,
+.geminese-input:focus {
   outline: none !important;
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;
 }
 
-.obsidian-gemini-input::placeholder {
+.geminese-input::placeholder {
   color: var(--text-muted);
 }
 
 /* Input toolbar */
-.obsidian-gemini-input-toolbar {
+.geminese-input-toolbar {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -146,7 +146,7 @@
   overflow: visible;
 }
 
-.obsidian-gemini-send-btn {
+.geminese-send-btn {
   position: absolute;
   right: 6px;
   bottom: 4px;
@@ -163,23 +163,23 @@
   transition: color 0.15s ease;
 }
 
-.obsidian-gemini-send-btn:hover {
+.geminese-send-btn:hover {
   color: var(--text-normal);
 }
 
-.obsidian-gemini-send-btn.disabled {
+.geminese-send-btn.disabled {
   opacity: 0.5;
   cursor: default;
 }
 
 /* File indicator (attached files) */
-.obsidian-gemini-file-indicator {
+.geminese-file-indicator {
   display: none;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.obsidian-gemini-file-chip {
+.geminese-file-chip {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -193,26 +193,26 @@
   cursor: pointer;
 }
 
-.obsidian-gemini-file-chip-icon {
+.geminese-file-chip-icon {
   display: flex;
   align-items: center;
   color: var(--text-muted);
   flex-shrink: 0;
 }
 
-.obsidian-gemini-file-chip-icon svg {
+.geminese-file-chip-icon svg {
   width: 12px;
   height: 12px;
 }
 
-.obsidian-gemini-file-chip-name {
+.geminese-file-chip-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-normal);
 }
 
-.obsidian-gemini-file-chip-remove {
+.geminese-file-chip-remove {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -226,17 +226,17 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.obsidian-gemini-file-chip-remove:hover {
+.geminese-file-chip-remove:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-file-chip:hover {
+.geminese-file-chip:hover {
   background: var(--background-modifier-hover);
 }
 
 /* Message Queue Indicator (shown below flavor text in thinking indicator) */
-.obsidian-gemini-queue-indicator {
+.geminese-queue-indicator {
   display: none;
   font-size: 12px;
   color: var(--text-muted);
@@ -248,18 +248,18 @@
 }
 
 /* Light blue border when instruction mode is active */
-.obsidian-gemini-input-instruction-mode {
+.geminese-input-instruction-mode {
   border-color: #60a5fa !important;
   box-shadow: 0 0 0 1px #60a5fa;
 }
 
 /* Pink border when bash mode is active */
-.obsidian-gemini-input-bang-bash-mode {
+.geminese-input-bang-bash-mode {
   border-color: #f472b6 !important;
   box-shadow: 0 0 0 1px #f472b6;
 }
 
 /* Monospace input while in bash mode */
-.obsidian-gemini-input-wrapper.obsidian-gemini-input-bang-bash-mode .obsidian-gemini-input {
+.geminese-input-wrapper.geminese-input-bang-bash-mode .geminese-input {
   font-family: var(--font-monospace);
 }

@@ -1,5 +1,5 @@
 /* Resume Session Dropdown */
-.obsidian-gemini-resume-dropdown {
+.geminese-resume-dropdown {
   display: none;
   position: absolute;
   bottom: 100%;
@@ -17,11 +17,11 @@
   overflow: hidden;
 }
 
-.obsidian-gemini-resume-dropdown.visible {
+.geminese-resume-dropdown.visible {
   display: block;
 }
 
-.obsidian-gemini-resume-header {
+.geminese-resume-header {
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 600;
@@ -31,19 +31,19 @@
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.obsidian-gemini-resume-list {
+.geminese-resume-list {
   max-height: 350px;
   overflow-y: auto;
 }
 
-.obsidian-gemini-resume-empty {
+.geminese-resume-empty {
   padding: 16px;
   text-align: center;
   color: var(--text-muted);
   font-size: 13px;
 }
 
-.obsidian-gemini-resume-item {
+.geminese-resume-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -53,43 +53,43 @@
   transition: background 0.1s ease;
 }
 
-.obsidian-gemini-resume-item:last-child {
+.geminese-resume-item:last-child {
   border-bottom: none;
 }
 
-.obsidian-gemini-resume-item:hover,
-.obsidian-gemini-resume-item.selected {
+.geminese-resume-item:hover,
+.geminese-resume-item.selected {
   background: var(--background-modifier-hover);
 }
 
-.obsidian-gemini-resume-item.current {
+.geminese-resume-item.current {
   background: var(--background-secondary);
   border-inline-start: 2px solid var(--interactive-accent);
   padding-inline-start: 10px;
 }
 
-.obsidian-gemini-resume-item-icon {
+.geminese-resume-item-icon {
   display: flex;
   align-items: center;
   color: var(--text-muted);
   flex-shrink: 0;
 }
 
-.obsidian-gemini-resume-item-icon svg {
+.geminese-resume-item-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.obsidian-gemini-resume-item.current .obsidian-gemini-resume-item-icon {
+.geminese-resume-item.current .geminese-resume-item-icon {
   color: var(--interactive-accent);
 }
 
-.obsidian-gemini-resume-item-content {
+.geminese-resume-item-content {
   flex: 1;
   min-width: 0;
 }
 
-.obsidian-gemini-resume-item-title {
+.geminese-resume-item-title {
   font-size: 13px;
   font-weight: 500;
   color: var(--text-normal);
@@ -98,22 +98,22 @@
   text-overflow: ellipsis;
 }
 
-.obsidian-gemini-resume-item-date {
+.geminese-resume-item-date {
   font-size: 11px;
   color: var(--text-faint);
   margin-top: 2px;
 }
 
 /* Scrollbar */
-.obsidian-gemini-resume-list::-webkit-scrollbar {
+.geminese-resume-list::-webkit-scrollbar {
   width: 6px;
 }
 
-.obsidian-gemini-resume-list::-webkit-scrollbar-track {
+.geminese-resume-list::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.obsidian-gemini-resume-list::-webkit-scrollbar-thumb {
+.geminese-resume-list::-webkit-scrollbar-thumb {
   background: var(--background-modifier-border);
   border-radius: 3px;
 }

@@ -1,19 +1,19 @@
 /* Write/Edit Diff Block - Subagent style */
-.obsidian-gemini-write-edit-block {
+.geminese-write-edit-block {
   margin: 4px 0;
   background: transparent;
   overflow: hidden;
 }
 
-.obsidian-gemini-text-block+.obsidian-gemini-write-edit-block {
+.geminese-text-block+.geminese-write-edit-block {
   margin-top: 8px;
 }
 
-.obsidian-gemini-write-edit-block+.obsidian-gemini-text-block {
+.geminese-write-edit-block+.geminese-text-block {
   margin-top: 8px;
 }
 
-.obsidian-gemini-write-edit-header {
+.geminese-write-edit-header {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -24,20 +24,20 @@
   overflow: hidden;
 }
 
-.obsidian-gemini-write-edit-icon {
+.geminese-write-edit-icon {
   width: 16px;
   height: 16px;
   color: var(--text-accent);
   flex-shrink: 0;
 }
 
-.obsidian-gemini-write-edit-icon svg {
+.geminese-write-edit-icon svg {
   width: 16px;
   height: 16px;
 }
 
 /* Two-part header: name (fixed) + summary (flexible) */
-.obsidian-gemini-write-edit-name {
+.geminese-write-edit-name {
   font-family: var(--font-monospace);
   font-size: 13px;
   font-weight: 400;
@@ -46,7 +46,7 @@
   flex-shrink: 0;
 }
 
-.obsidian-gemini-write-edit-summary {
+.geminese-write-edit-summary {
   font-family: var(--font-monospace);
   font-size: 13px;
   color: var(--text-muted);
@@ -57,57 +57,57 @@
   min-width: 0;
 }
 
-.obsidian-gemini-write-edit-stats {
+.geminese-write-edit-stats {
   font-family: var(--font-monospace);
   font-size: 11px;
   flex-shrink: 0;
 }
 
-.obsidian-gemini-write-edit-stats .added {
+.geminese-write-edit-stats .added {
   color: var(--color-green);
 }
 
-.obsidian-gemini-write-edit-stats .removed {
+.geminese-write-edit-stats .removed {
   color: var(--color-red);
   margin-left: 4px;
 }
 
-.obsidian-gemini-write-edit-status {
+.geminese-write-edit-status {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
 }
 
 /* Hide empty status on successful completion so stats align to right edge */
-.obsidian-gemini-write-edit-block.done .obsidian-gemini-write-edit-status:empty {
+.geminese-write-edit-block.done .geminese-write-edit-status:empty {
   display: none;
 }
 
-.obsidian-gemini-write-edit-status svg {
+.geminese-write-edit-status svg {
   width: 16px;
   height: 16px;
 }
 
-.obsidian-gemini-write-edit-status.status-completed {
+.geminese-write-edit-status.status-completed {
   color: var(--color-green);
 }
 
-.obsidian-gemini-write-edit-status.status-error,
-.obsidian-gemini-write-edit-status.status-blocked {
+.geminese-write-edit-status.status-error,
+.geminese-write-edit-status.status-blocked {
   color: var(--color-red);
 }
 
-.obsidian-gemini-write-edit-content {
+.geminese-write-edit-content {
   padding: 0;
   background: transparent;
   overflow: hidden;
 }
 
-.obsidian-gemini-write-edit-diff-row {
+.geminese-write-edit-diff-row {
   display: flex;
 }
 
-.obsidian-gemini-write-edit-diff {
+.geminese-write-edit-diff {
   flex: 1;
   font-family: var(--font-monospace);
   font-size: 12px;
@@ -118,31 +118,31 @@
   overflow-x: auto;
 }
 
-.obsidian-gemini-write-edit-loading,
-.obsidian-gemini-write-edit-binary,
-.obsidian-gemini-write-edit-error,
-.obsidian-gemini-write-edit-done-text {
+.geminese-write-edit-loading,
+.geminese-write-edit-binary,
+.geminese-write-edit-error,
+.geminese-write-edit-done-text {
   font-family: var(--font-monospace);
   font-size: 12px;
   color: var(--text-muted);
 }
 
-.obsidian-gemini-write-edit-error {
+.geminese-write-edit-error {
   color: var(--color-red);
 }
 
 /* Diff line styling */
-.obsidian-gemini-diff-hunk {
+.geminese-diff-hunk {
   margin-bottom: 4px;
 }
 
-.obsidian-gemini-diff-line {
+.geminese-diff-line {
   display: flex;
   white-space: pre-wrap;
   word-break: break-all;
 }
 
-.obsidian-gemini-diff-prefix {
+.geminese-diff-prefix {
   flex-shrink: 0;
   width: 16px;
   text-align: center;
@@ -150,36 +150,36 @@
   user-select: none;
 }
 
-.obsidian-gemini-diff-text {
+.geminese-diff-text {
   flex: 1;
   min-width: 0;
 }
 
 /* Diff colors - NO strikethrough for Write/Edit blocks */
-.obsidian-gemini-diff-equal {
+.geminese-diff-equal {
   color: var(--text-muted);
 }
 
-.obsidian-gemini-diff-delete {
+.geminese-diff-delete {
   background: rgba(255, 80, 80, 0.25);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-diff-delete .obsidian-gemini-diff-prefix {
+.geminese-diff-delete .geminese-diff-prefix {
   color: var(--color-red);
 }
 
-.obsidian-gemini-diff-insert {
+.geminese-diff-insert {
   background: rgba(80, 200, 80, 0.25);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-diff-insert .obsidian-gemini-diff-prefix {
+.geminese-diff-insert .geminese-diff-prefix {
   color: var(--color-green);
 }
 
 /* Hunk separator */
-.obsidian-gemini-diff-separator {
+.geminese-diff-separator {
   color: var(--text-muted);
   text-align: center;
   padding: 4px 0;
@@ -190,7 +190,7 @@
   font-size: 11px;
 }
 
-.obsidian-gemini-diff-no-changes {
+.geminese-diff-no-changes {
   color: var(--text-muted);
   font-style: italic;
   padding: 8px;

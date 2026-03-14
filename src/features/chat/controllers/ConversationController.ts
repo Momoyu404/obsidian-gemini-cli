@@ -1,8 +1,8 @@
 import { Notice, setIcon } from 'obsidian';
 
-import type { GeminianService } from '../../../core/agent';
+import type { GemineseService } from '../../../core/agent';
 import type { Conversation } from '../../../core/types';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { cleanupThinkingBlock } from '../rendering';
 import type { MessageRenderer } from '../rendering/MessageRenderer';
 import type { SubagentManager } from '../services/SubagentManager';
@@ -17,7 +17,7 @@ export interface ConversationCallbacks {
 }
 
 export interface ConversationControllerDeps {
-  plugin: GeminianPlugin;
+  plugin: GeminesePlugin;
   state: ChatState;
   renderer: MessageRenderer;
   subagentManager: SubagentManager;
@@ -33,7 +33,7 @@ export interface ConversationControllerDeps {
   clearQueuedMessage: () => void;
   getTitleGenerationService: () => TitleGenerationService | null;
   getStatusPanel: () => StatusPanel | null;
-  getAgentService?: () => GeminianService | null;
+  getAgentService?: () => GemineseService | null;
 }
 
 type SaveOptions = {
@@ -49,7 +49,7 @@ export class ConversationController {
     this.callbacks = callbacks;
   }
 
-  private getAgentService(): GeminianService | null {
+  private getAgentService(): GemineseService | null {
     return this.deps.getAgentService?.() ?? null;
   }
 
@@ -119,8 +119,8 @@ export class ConversationController {
       messagesEl.empty();
 
       // Recreate welcome element first (before StatusPanel for consistent ordering)
-      const welcomeEl = messagesEl.createDiv({ cls: 'obsidian-gemini-welcome' });
-      welcomeEl.createDiv({ cls: 'obsidian-gemini-welcome-greeting', text: this.getGreeting() });
+      const welcomeEl = messagesEl.createDiv({ cls: 'geminese-welcome' });
+      welcomeEl.createDiv({ cls: 'geminese-welcome-greeting', text: this.getGreeting() });
       this.deps.setWelcomeEl(welcomeEl);
 
       // Remount StatusPanel to restore state for new conversation
@@ -507,14 +507,14 @@ export class ConversationController {
 
     container.empty();
 
-    const dropdownHeader = container.createDiv({ cls: 'obsidian-gemini-history-header' });
+    const dropdownHeader = container.createDiv({ cls: 'geminese-history-header' });
     dropdownHeader.createSpan({ text: 'Conversations' });
 
-    const list = container.createDiv({ cls: 'obsidian-gemini-history-list' });
+    const list = container.createDiv({ cls: 'geminese-history-list' });
     const allConversations = plugin.getConversationList();
 
     if (allConversations.length === 0) {
-      list.createDiv({ cls: 'obsidian-gemini-history-empty', text: 'No conversations' });
+      list.createDiv({ cls: 'geminese-history-empty', text: 'No conversations' });
       return;
     }
 
@@ -526,17 +526,17 @@ export class ConversationController {
     for (const conv of conversations) {
       const isCurrent = conv.id === state.currentConversationId;
       const item = list.createDiv({
-        cls: `obsidian-gemini-history-item${isCurrent ? ' active' : ''}`,
+        cls: `geminese-history-item${isCurrent ? ' active' : ''}`,
       });
 
-      const iconEl = item.createDiv({ cls: 'obsidian-gemini-history-item-icon' });
+      const iconEl = item.createDiv({ cls: 'geminese-history-item-icon' });
       setIcon(iconEl, isCurrent ? 'message-square-dot' : 'message-square');
 
-      const content = item.createDiv({ cls: 'obsidian-gemini-history-item-content' });
-      const titleEl = content.createDiv({ cls: 'obsidian-gemini-history-item-title', text: conv.title });
+      const content = item.createDiv({ cls: 'geminese-history-item-content' });
+      const titleEl = content.createDiv({ cls: 'geminese-history-item-title', text: conv.title });
       titleEl.setAttribute('title', conv.title);
       content.createDiv({
-        cls: 'obsidian-gemini-history-item-date',
+        cls: 'geminese-history-item-date',
         text: isCurrent ? 'Current session' : this.formatDate(conv.lastResponseAt ?? conv.createdAt),
       });
 
@@ -551,15 +551,15 @@ export class ConversationController {
         });
       }
 
-      const actions = item.createDiv({ cls: 'obsidian-gemini-history-item-actions' });
+      const actions = item.createDiv({ cls: 'geminese-history-item-actions' });
 
       // Show regenerate button if title generation failed, or loading indicator if pending
       if (conv.titleGenerationStatus === 'pending') {
-        const loadingEl = actions.createEl('span', { cls: 'obsidian-gemini-action-btn obsidian-gemini-action-loading' });
+        const loadingEl = actions.createEl('span', { cls: 'geminese-action-btn geminese-action-loading' });
         setIcon(loadingEl, 'loader-2');
         loadingEl.setAttribute('aria-label', 'Generating title...');
       } else if (conv.titleGenerationStatus === 'failed') {
-        const regenerateBtn = actions.createEl('button', { cls: 'obsidian-gemini-action-btn' });
+        const regenerateBtn = actions.createEl('button', { cls: 'geminese-action-btn' });
         setIcon(regenerateBtn, 'refresh-cw');
         regenerateBtn.setAttribute('aria-label', 'Regenerate title');
         regenerateBtn.addEventListener('click', async (e) => {
@@ -572,7 +572,7 @@ export class ConversationController {
         });
       }
 
-      const renameBtn = actions.createEl('button', { cls: 'obsidian-gemini-action-btn' });
+      const renameBtn = actions.createEl('button', { cls: 'geminese-action-btn' });
       setIcon(renameBtn, 'pencil');
       renameBtn.setAttribute('aria-label', 'Rename');
       renameBtn.addEventListener('click', (e) => {
@@ -580,7 +580,7 @@ export class ConversationController {
         this.showRenameInput(item, conv.id, conv.title);
       });
 
-      const deleteBtn = actions.createEl('button', { cls: 'obsidian-gemini-action-btn obsidian-gemini-delete-btn' });
+      const deleteBtn = actions.createEl('button', { cls: 'geminese-action-btn geminese-delete-btn' });
       setIcon(deleteBtn, 'trash-2');
       deleteBtn.setAttribute('aria-label', 'Delete');
       deleteBtn.addEventListener('click', async (e) => {
@@ -602,12 +602,12 @@ export class ConversationController {
 
   /** Shows inline rename input for a conversation. */
   private showRenameInput(item: HTMLElement, convId: string, currentTitle: string): void {
-    const titleEl = item.querySelector('.obsidian-gemini-history-item-title') as HTMLElement;
+    const titleEl = item.querySelector('.geminese-history-item-title') as HTMLElement;
     if (!titleEl) return;
 
     const input = document.createElement('input');
     input.type = 'text';
-    input.className = 'obsidian-gemini-rename-input';
+    input.className = 'geminese-rename-input';
     input.value = currentTitle;
 
     titleEl.replaceWith(input);
@@ -665,7 +665,7 @@ export class ConversationController {
     // Time-specific greetings
     const getTimeGreetings = (): string[] => {
       if (hour >= 5 && hour < 12) {
-        return [personalize('Good morning'), 'Coffee and Geminian time?'];
+        return [personalize('Good morning'), 'Coffee and Geminese time?'];
       } else if (hour >= 12 && hour < 18) {
         return [personalize('Good afternoon'), personalize('Hey there'), personalize("How's it going") + '?'];
       } else if (hour >= 18 && hour < 22) {
@@ -722,8 +722,8 @@ export class ConversationController {
     fileCtx?.autoAttachActiveFile();
 
     // Only add greeting if not already present
-    if (!welcomeEl.querySelector('.obsidian-gemini-welcome-greeting')) {
-      welcomeEl.createDiv({ cls: 'obsidian-gemini-welcome-greeting', text: this.getGreeting() });
+    if (!welcomeEl.querySelector('.geminese-welcome-greeting')) {
+      welcomeEl.createDiv({ cls: 'geminese-welcome-greeting', text: this.getGreeting() });
     }
 
     this.updateWelcomeVisibility();
@@ -804,12 +804,12 @@ export class ConversationController {
   }
 
   // ============================================
-  // History Dropdown Rendering (for GeminianView)
+  // History Dropdown Rendering (for GemineseView)
   // ============================================
 
   /**
    * Renders the history dropdown content to a provided container.
-   * Used by GeminianView to render the dropdown with custom selection callback.
+   * Used by GemineseView to render the dropdown with custom selection callback.
    */
   renderHistoryDropdown(
     container: HTMLElement,

@@ -578,7 +578,7 @@ describe('ConversationController', () => {
 
         expect(dropdown.children.length).toBe(2);
         const list = dropdown.children[1];
-        expect(list.hasClass('geminian-history-list')).toBe(true);
+        expect(list.hasClass('geminese-history-list')).toBe(true);
         expect(list.children.length).toBe(2);
       });
 
@@ -588,7 +588,7 @@ describe('ConversationController', () => {
         controller.updateHistoryDropdown();
 
         const list = dropdown.children[1];
-        expect(list.children[0].hasClass('geminian-history-empty')).toBe(true);
+        expect(list.children[0].hasClass('geminese-history-empty')).toBe(true);
       });
 
       it('should sort conversations by lastResponseAt descending', () => {
@@ -601,7 +601,7 @@ describe('ConversationController', () => {
         controller.updateHistoryDropdown();
 
         const list = dropdown.children[1];
-        const firstTitle = list.children[0].querySelector('.geminian-history-item-title');
+        const firstTitle = list.children[0].querySelector('.geminese-history-item-title');
         expect(firstTitle?.textContent).toBe('New');
       });
 
@@ -630,7 +630,7 @@ describe('ConversationController', () => {
 
         const list = dropdown.children[1];
         const item = list.children[0];
-        const loadingEl = item.querySelector('.geminian-action-loading');
+        const loadingEl = item.querySelector('.geminese-action-loading');
         expect(loadingEl).toBeTruthy();
       });
 
@@ -643,7 +643,7 @@ describe('ConversationController', () => {
 
         const list = dropdown.children[1];
         const item = list.children[0];
-        const actions = item.querySelector('.geminian-history-item-actions');
+        const actions = item.querySelector('.geminese-history-item-actions');
         expect(actions).toBeTruthy();
         // regenerate button + rename button + delete button = 3 children
         expect(actions!.children.length).toBe(3);
@@ -660,7 +660,7 @@ describe('ConversationController', () => {
 
         const list = dropdown.children[1];
         const item = list.children[0];
-        const content = item.querySelector('.geminian-history-item-content');
+        const content = item.querySelector('.geminese-history-item-content');
         const listeners = content?._eventListeners?.get('click');
         expect(listeners).toBeUndefined();
       });
@@ -678,7 +678,7 @@ describe('ConversationController', () => {
         const list = dropdown.children[1];
         // conv-2 is the non-current one (sorted second by lastResponseAt)
         const otherItem = list.children[1];
-        const content = otherItem.querySelector('.geminian-history-item-content');
+        const content = otherItem.querySelector('.geminese-history-item-content');
         const listeners = content?._eventListeners?.get('click');
         expect(listeners).toBeDefined();
         expect(listeners!.length).toBe(1);
@@ -695,7 +695,7 @@ describe('ConversationController', () => {
 
         const list = dropdown.children[1];
         const item = list.children[0];
-        const deleteBtn = item.querySelector('.geminian-delete-btn');
+        const deleteBtn = item.querySelector('.geminese-delete-btn');
         expect(deleteBtn).toBeTruthy();
 
         const clickHandlers = deleteBtn!._eventListeners?.get('click');
@@ -742,7 +742,7 @@ describe('ConversationController', () => {
 
       const list = dropdown.children[1];
       const otherItem = list.children[1];
-      const content = otherItem.querySelector('.geminian-history-item-content');
+      const content = otherItem.querySelector('.geminese-history-item-content');
       const clickHandlers = content?._eventListeners?.get('click');
       expect(clickHandlers).toBeDefined();
 
@@ -766,7 +766,7 @@ describe('ConversationController', () => {
 
       const list = dropdown.children[1];
       const item = list.children[0];
-      const actions = item.querySelector('.geminian-history-item-actions');
+      const actions = item.querySelector('.geminese-history-item-actions');
       // First child is the regenerate button
       const regenerateBtn = actions!.children[0];
       const clickHandlers = regenerateBtn._eventListeners?.get('click');
@@ -794,7 +794,7 @@ describe('ConversationController', () => {
 
       const list = dropdown.children[1];
       const item = list.children[0];
-      const actions = item.querySelector('.geminian-history-item-actions');
+      const actions = item.querySelector('.geminese-history-item-actions');
       expect(actions).toBeTruthy();
       // For non-failed items: rename is children[0], delete is children[1]
       const rBtn = actions!.children[0];
@@ -809,7 +809,7 @@ describe('ConversationController', () => {
       (mockInput as any).focus = jest.fn();
       (mockInput as any).select = jest.fn();
 
-      const titleEl = item.querySelector('.geminian-history-item-title');
+      const titleEl = item.querySelector('.geminese-history-item-title');
       if (titleEl) {
         (titleEl as any).replaceWith = jest.fn();
       }
@@ -839,7 +839,7 @@ describe('ConversationController', () => {
 
       const list = dropdown.children[1];
       const item = list.children[0];
-      const deleteBtn = item.querySelector('.geminian-delete-btn');
+      const deleteBtn = item.querySelector('.geminese-delete-btn');
       expect(deleteBtn).toBeTruthy();
 
       const clickHandlers = deleteBtn!._eventListeners?.get('click');
@@ -862,7 +862,7 @@ describe('ConversationController', () => {
 
       const list = dropdown.children[1];
       const otherItem = list.children[1]; // conv-2
-      const deleteBtn = otherItem.querySelector('.geminian-delete-btn');
+      const deleteBtn = otherItem.querySelector('.geminese-delete-btn');
       const clickHandlers = deleteBtn!._eventListeners?.get('click');
 
       await clickHandlers![0]({ stopPropagation: jest.fn() });

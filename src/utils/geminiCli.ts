@@ -1,5 +1,5 @@
 /**
- * Geminian - Gemini CLI resolver
+ * Geminese - Gemini CLI resolver
  *
  * Shared resolver for Gemini CLI path detection across services.
  */

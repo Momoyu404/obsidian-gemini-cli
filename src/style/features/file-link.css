@@ -1,5 +1,5 @@
 /* Clickable file links that open files in Obsidian */
-.obsidian-gemini-file-link {
+.geminese-file-link {
   color: var(--text-accent);
   text-decoration: none;
   cursor: pointer;
@@ -7,16 +7,16 @@
   transition: color 0.15s ease;
 }
 
-.obsidian-gemini-file-link:hover {
+.geminese-file-link:hover {
   color: var(--text-accent-hover);
   text-decoration: underline;
 }
 
 /* File link inside inline code */
-code .obsidian-gemini-file-link {
+code .geminese-file-link {
   color: var(--text-accent);
 }
 
-code .obsidian-gemini-file-link:hover {
+code .geminese-file-link:hover {
   color: var(--text-accent-hover);
 }

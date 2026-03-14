@@ -12,7 +12,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 import type { GeminiCLISettingsStorage } from '../storage/CCSettingsStorage';
-import type { ExtensionScope,GeminianExtension, InstalledExtensionEntry, InstalledExtensionsFile } from '../types';
+import type { ExtensionScope,GemineseExtension, InstalledExtensionEntry, InstalledExtensionsFile } from '../types';
 
 const INSTALLED_EXTENSIONS_PATH = path.join(os.homedir(), '.gemini', 'extensions', 'installed_extensions.json');
 const GLOBAL_SETTINGS_PATH = path.join(os.homedir(), '.gemini', 'settings.json');
@@ -72,7 +72,7 @@ function extractExtensionName(extensionId: string): string {
 export class PluginManager {
   private geminiCliSettingsStorage: GeminiCLISettingsStorage;
   private vaultPath: string;
-  private extensions: GeminianExtension[] = [];
+  private extensions: GemineseExtension[] = [];
 
   constructor(vaultPath: string, geminiCliSettingsStorage: GeminiCLISettingsStorage) {
     this.vaultPath = vaultPath;
@@ -87,7 +87,7 @@ export class PluginManager {
     const globalEnabled = globalSettings?.enabledExtensions ?? {};
     const projectEnabled = projectSettings?.enabledExtensions ?? {};
 
-    const extensions: GeminianExtension[] = [];
+    const extensions: GemineseExtension[] = [];
     const normalizedVaultPath = normalizePathForComparison(this.vaultPath);
 
     if (installedExtensions?.extensions) {
@@ -96,7 +96,7 @@ export class PluginManager {
 
         const entriesArray = Array.isArray(entries) ? entries : [entries];
         if (!Array.isArray(entries)) {
-          new Notice(`Geminian: extension "${extensionId}" has malformed entry in installed_extensions.json (expected array, got ${typeof entries})`);
+          new Notice(`Geminese: extension "${extensionId}" has malformed entry in installed_extensions.json (expected array, got ${typeof entries})`);
         }
         const entry = selectInstalledExtensionEntry(entriesArray, normalizedVaultPath);
         if (!entry) continue;
@@ -128,7 +128,7 @@ export class PluginManager {
     return readJsonFile(projectSettingsPath);
   }
 
-  getExtensions(): GeminianExtension[] {
+  getExtensions(): GemineseExtension[] {
     return [...this.extensions];
   }
 
@@ -194,7 +194,7 @@ export class PluginManager {
   /** @deprecated Use loadExtensions() */
   async loadPlugins(): Promise<void> { return this.loadExtensions(); }
   /** @deprecated Use getExtensions() */
-  getPlugins(): GeminianExtension[] { return this.getExtensions(); }
+  getPlugins(): GemineseExtension[] { return this.getExtensions(); }
   /** @deprecated Use hasExtensions() */
   hasPlugins(): boolean { return this.hasExtensions(); }
   /** @deprecated Use hasEnabledExtensions() */

@@ -1,5 +1,5 @@
 /**
- * Geminian - Main Agent System Prompt
+ * Geminese - Main Agent System Prompt
  *
  * Builds the system prompt for the Gemini CLI including
  * Obsidian-specific instructions, tool guidance, and image handling.
@@ -29,7 +29,7 @@ function getBaseSystemPrompt(vaultPath?: string, userName?: string): string {
 
 ## Identity & Role
 
-You are **Geminian**, an expert AI assistant specialized in Obsidian vault management, knowledge organization, and code analysis. You operate directly inside the user's Obsidian vault.
+You are **Geminese**, an expert AI assistant specialized in Obsidian vault management, knowledge organization, and code analysis. You operate directly inside the user's Obsidian vault.
 
 **Core Principles:**
 1.  **Obsidian Native**: You understand Markdown, YAML frontmatter, Wiki-links, and the "second brain" philosophy.

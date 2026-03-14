@@ -3,16 +3,16 @@ import { Modal, Notice, setIcon, Setting } from 'obsidian';
 
 import type { EnvSnippet } from '../../../core/types';
 import { t } from '../../../i18n';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { formatContextLimit, getCustomModelIds, parseContextLimit, parseEnvironmentVariables } from '../../../utils/env';
-import type { GeminianView } from '../../chat/ClaudianView';
+import type { GemineseView } from '../../chat/ClaudianView';
 
 export class EnvSnippetModal extends Modal {
-  plugin: GeminianPlugin;
+  plugin: GeminesePlugin;
   snippet: EnvSnippet | null;
   onSave: (snippet: EnvSnippet) => void;
 
-  constructor(app: App, plugin: GeminianPlugin, snippet: EnvSnippet | null, onSave: (snippet: EnvSnippet) => void) {
+  constructor(app: App, plugin: GeminesePlugin, snippet: EnvSnippet | null, onSave: (snippet: EnvSnippet) => void) {
     super(app);
     this.plugin = plugin;
     this.snippet = snippet;
@@ -23,7 +23,7 @@ export class EnvSnippetModal extends Modal {
     const { contentEl } = this;
     this.setTitle(this.snippet ? t('settings.envSnippets.modal.titleEdit') : t('settings.envSnippets.modal.titleSave'));
 
-    this.modalEl.addClass('obsidian-gemini-env-snippet-modal');
+    this.modalEl.addClass('geminese-env-snippet-modal');
 
     let nameEl: HTMLInputElement;
     let descEl: HTMLInputElement;
@@ -99,14 +99,14 @@ export class EnvSnippetModal extends Modal {
       });
 
       for (const modelId of uniqueModelIds) {
-        const row = contextLimitsContainer.createDiv({ cls: 'obsidian-gemini-snippet-limit-row' });
-        row.createSpan({ text: modelId, cls: 'obsidian-gemini-snippet-limit-model' });
-        row.createSpan({ cls: 'obsidian-gemini-snippet-limit-spacer' });
+        const row = contextLimitsContainer.createDiv({ cls: 'geminese-snippet-limit-row' });
+        row.createSpan({ text: modelId, cls: 'geminese-snippet-limit-model' });
+        row.createSpan({ cls: 'geminese-snippet-limit-spacer' });
 
         const input = row.createEl('input', {
           type: 'text',
           placeholder: '200k',
-          cls: 'obsidian-gemini-snippet-limit-input',
+          cls: 'geminese-snippet-limit-input',
         });
         input.value = existingLimits[modelId] ? formatContextLimit(existingLimits[modelId]) : '';
         contextLimitInputs.set(modelId, input);
@@ -141,23 +141,23 @@ export class EnvSnippetModal extends Modal {
         text.inputEl.rows = 8;
         text.inputEl.addEventListener('blur', () => renderContextLimitFields());
       });
-    envVarsSetting.settingEl.addClass('obsidian-gemini-env-snippet-setting');
-    envVarsSetting.controlEl.addClass('obsidian-gemini-env-snippet-control');
+    envVarsSetting.settingEl.addClass('geminese-env-snippet-setting');
+    envVarsSetting.controlEl.addClass('geminese-env-snippet-control');
 
-    contextLimitsContainer = contentEl.createDiv({ cls: 'obsidian-gemini-snippet-context-limits' });
+    contextLimitsContainer = contentEl.createDiv({ cls: 'geminese-snippet-context-limits' });
     renderContextLimitFields();
 
-    const buttonContainer = contentEl.createDiv({ cls: 'obsidian-gemini-snippet-buttons' });
+    const buttonContainer = contentEl.createDiv({ cls: 'geminese-snippet-buttons' });
 
     const cancelBtn = buttonContainer.createEl('button', {
       text: t('settings.envSnippets.modal.cancel'),
-      cls: 'obsidian-gemini-cancel-btn'
+      cls: 'geminese-cancel-btn'
     });
     cancelBtn.addEventListener('click', () => this.close());
 
     const saveBtn = buttonContainer.createEl('button', {
       text: this.snippet ? t('settings.envSnippets.modal.update') : t('settings.envSnippets.modal.save'),
-      cls: 'obsidian-gemini-save-btn'
+      cls: 'geminese-save-btn'
     });
     saveBtn.addEventListener('click', () => saveSnippet());
 
@@ -173,10 +173,10 @@ export class EnvSnippetModal extends Modal {
 
 export class EnvSnippetManager {
   private containerEl: HTMLElement;
-  private plugin: GeminianPlugin;
+  private plugin: GeminesePlugin;
   private onContextLimitsChange?: () => void;
 
-  constructor(containerEl: HTMLElement, plugin: GeminianPlugin, onContextLimitsChange?: () => void) {
+  constructor(containerEl: HTMLElement, plugin: GeminesePlugin, onContextLimitsChange?: () => void) {
     this.containerEl = containerEl;
     this.plugin = plugin;
     this.onContextLimitsChange = onContextLimitsChange;
@@ -186,11 +186,11 @@ export class EnvSnippetManager {
   private render() {
     this.containerEl.empty();
 
-    const headerEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-snippet-header' });
-    headerEl.createSpan({ text: t('settings.envSnippets.name'), cls: 'obsidian-gemini-snippet-label' });
+    const headerEl = this.containerEl.createDiv({ cls: 'geminese-snippet-header' });
+    headerEl.createSpan({ text: t('settings.envSnippets.name'), cls: 'geminese-snippet-label' });
 
     const saveBtn = headerEl.createEl('button', {
-      cls: 'obsidian-gemini-settings-action-btn',
+      cls: 'geminese-settings-action-btn',
       attr: { 'aria-label': t('settings.envSnippets.addBtn') },
     });
     setIcon(saveBtn, 'plus');
@@ -199,30 +199,30 @@ export class EnvSnippetManager {
     const snippets = this.plugin.settings.envSnippets;
 
     if (snippets.length === 0) {
-      const emptyEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-snippet-empty' });
+      const emptyEl = this.containerEl.createDiv({ cls: 'geminese-snippet-empty' });
       emptyEl.setText(t('settings.envSnippets.noSnippets'));
       return;
     }
 
-    const listEl = this.containerEl.createDiv({ cls: 'obsidian-gemini-snippet-list' });
+    const listEl = this.containerEl.createDiv({ cls: 'geminese-snippet-list' });
 
     for (const snippet of snippets) {
-      const itemEl = listEl.createDiv({ cls: 'obsidian-gemini-snippet-item' });
+      const itemEl = listEl.createDiv({ cls: 'geminese-snippet-item' });
 
-      const infoEl = itemEl.createDiv({ cls: 'obsidian-gemini-snippet-info' });
+      const infoEl = itemEl.createDiv({ cls: 'geminese-snippet-info' });
 
-      const nameEl = infoEl.createDiv({ cls: 'obsidian-gemini-snippet-name' });
+      const nameEl = infoEl.createDiv({ cls: 'geminese-snippet-name' });
       nameEl.setText(snippet.name);
 
       if (snippet.description) {
-        const descEl = infoEl.createDiv({ cls: 'obsidian-gemini-snippet-description' });
+        const descEl = infoEl.createDiv({ cls: 'geminese-snippet-description' });
         descEl.setText(snippet.description);
       }
 
-      const actionsEl = itemEl.createDiv({ cls: 'obsidian-gemini-snippet-actions' });
+      const actionsEl = itemEl.createDiv({ cls: 'geminese-snippet-actions' });
 
       const restoreBtn = actionsEl.createEl('button', {
-        cls: 'obsidian-gemini-settings-action-btn',
+        cls: 'geminese-settings-action-btn',
         attr: { 'aria-label': 'Insert' },
       });
       setIcon(restoreBtn, 'clipboard-paste');
@@ -235,7 +235,7 @@ export class EnvSnippetManager {
       });
 
       const editBtn = actionsEl.createEl('button', {
-        cls: 'obsidian-gemini-settings-action-btn',
+        cls: 'geminese-settings-action-btn',
         attr: { 'aria-label': 'Edit' },
       });
       setIcon(editBtn, 'pencil');
@@ -244,7 +244,7 @@ export class EnvSnippetManager {
       });
 
       const deleteBtn = actionsEl.createEl('button', {
-        cls: 'obsidian-gemini-settings-action-btn obsidian-gemini-settings-delete-btn',
+        cls: 'geminese-settings-action-btn geminese-settings-delete-btn',
         attr: { 'aria-label': 'Delete' },
       });
       setIcon(deleteBtn, 'trash-2');
@@ -278,7 +278,7 @@ export class EnvSnippetManager {
   private async insertSnippet(snippet: EnvSnippet) {
     const snippetContent = snippet.envVars.trim();
 
-    const envTextarea = document.querySelector('.obsidian-gemini-settings-env-textarea') as HTMLTextAreaElement;
+    const envTextarea = document.querySelector('.geminese-settings-env-textarea') as HTMLTextAreaElement;
     if (envTextarea) {
       envTextarea.value = snippetContent;
     } else {
@@ -296,7 +296,7 @@ export class EnvSnippetManager {
     await this.plugin.saveSettings();
 
     this.onContextLimitsChange?.();
-    const view = this.plugin.app.workspace.getLeavesOfType('obsidian-gemini-view')[0]?.view as GeminianView | undefined;
+    const view = this.plugin.app.workspace.getLeavesOfType('geminese-view')[0]?.view as GemineseView | undefined;
     view?.refreshModelSelector();
   }
 

@@ -11,7 +11,7 @@ import * as path from 'path';
 import type { McpServerManager } from '../mcp';
 import type { PluginManager } from '../plugins';
 import { buildSystemPrompt, type SystemPromptSettings } from '../prompts/mainAgent';
-import type { GeminianSettings, PermissionMode } from '../types';
+import type { GemineseSettings, PermissionMode } from '../types';
 import { THINKING_BUDGETS } from '../types';
 import {
   computeSystemPromptKey,
@@ -21,7 +21,7 @@ import {
 export interface QueryOptionsContext {
   vaultPath: string;
   cliPath: string;
-  settings: GeminianSettings;
+  settings: GemineseSettings;
   customEnv: Record<string, string>;
   enhancedPath: string;
   mcpManager: McpServerManager;

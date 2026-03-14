@@ -1,5 +1,5 @@
 /**
- * Geminian - Environment Utilities
+ * Geminese - Environment Utilities
  *
  * Environment variable parsing, model configuration, PATH enhancement for GUI apps,
  * and system identification utilities.

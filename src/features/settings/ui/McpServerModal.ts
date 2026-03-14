@@ -2,7 +2,7 @@ import type { App } from 'obsidian';
 import { Modal, Notice, Setting } from 'obsidian';
 
 import type {
-  GeminianMcpServer,
+  GemineseMcpServer,
   McpHttpServerConfig,
   McpServerConfig,
   McpServerType,
@@ -10,13 +10,13 @@ import type {
   McpStdioServerConfig,
 } from '../../../core/types';
 import { DEFAULT_MCP_SERVER, getMcpServerType } from '../../../core/types';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { parseCommand } from '../../../utils/mcp';
 
 export class McpServerModal extends Modal {
-  private plugin: GeminianPlugin;
-  private existingServer: GeminianMcpServer | null;
-  private onSave: (server: GeminianMcpServer) => void;
+  private plugin: GeminesePlugin;
+  private existingServer: GemineseMcpServer | null;
+  private onSave: (server: GemineseMcpServer) => void;
 
   private serverName = '';
   private serverType: McpServerType = 'stdio';
@@ -31,9 +31,9 @@ export class McpServerModal extends Modal {
 
   constructor(
     app: App,
-    plugin: GeminianPlugin,
-    existingServer: GeminianMcpServer | null,
-    onSave: (server: GeminianMcpServer) => void,
+    plugin: GeminesePlugin,
+    existingServer: GemineseMcpServer | null,
+    onSave: (server: GemineseMcpServer) => void,
     initialType?: McpServerType,
     prefillConfig?: { name: string; config: McpServerConfig }
   ) {
@@ -76,7 +76,7 @@ export class McpServerModal extends Modal {
 
   onOpen() {
     this.setTitle(this.existingServer ? 'Edit MCP Server' : 'Add MCP Server');
-    this.modalEl.addClass('obsidian-gemini-mcp-modal');
+    this.modalEl.addClass('geminese-mcp-modal');
 
     const { contentEl } = this;
 
@@ -107,7 +107,7 @@ export class McpServerModal extends Modal {
         });
       });
 
-    this.typeFieldsEl = contentEl.createDiv({ cls: 'obsidian-gemini-mcp-type-fields' });
+    this.typeFieldsEl = contentEl.createDiv({ cls: 'geminese-mcp-type-fields' });
     this.renderTypeFields();
 
     new Setting(contentEl)
@@ -130,17 +130,17 @@ export class McpServerModal extends Modal {
         });
       });
 
-    const buttonContainer = contentEl.createDiv({ cls: 'obsidian-gemini-mcp-buttons' });
+    const buttonContainer = contentEl.createDiv({ cls: 'geminese-mcp-buttons' });
 
     const cancelBtn = buttonContainer.createEl('button', {
       text: 'Cancel',
-      cls: 'obsidian-gemini-cancel-btn',
+      cls: 'geminese-cancel-btn',
     });
     cancelBtn.addEventListener('click', () => this.close());
 
     const saveBtn = buttonContainer.createEl('button', {
       text: this.existingServer ? 'Update' : 'Add',
-      cls: 'obsidian-gemini-save-btn mod-cta',
+      cls: 'geminese-save-btn mod-cta',
     });
     saveBtn.addEventListener('click', () => this.save());
   }
@@ -162,10 +162,10 @@ export class McpServerModal extends Modal {
     const cmdSetting = new Setting(this.typeFieldsEl)
       .setName('Command')
       .setDesc('Full command with arguments');
-    cmdSetting.settingEl.addClass('obsidian-gemini-mcp-cmd-setting');
+    cmdSetting.settingEl.addClass('geminese-mcp-cmd-setting');
 
     const cmdTextarea = cmdSetting.controlEl.createEl('textarea', {
-      cls: 'obsidian-gemini-mcp-cmd-textarea',
+      cls: 'geminese-mcp-cmd-textarea',
     });
     cmdTextarea.value = this.command;
     cmdTextarea.placeholder = 'docker exec -i mcp-server python -m src.server';
@@ -177,10 +177,10 @@ export class McpServerModal extends Modal {
     const envSetting = new Setting(this.typeFieldsEl)
       .setName('Environment variables')
       .setDesc('KEY=VALUE per line (optional)');
-    envSetting.settingEl.addClass('obsidian-gemini-mcp-env-setting');
+    envSetting.settingEl.addClass('geminese-mcp-env-setting');
 
     const envTextarea = envSetting.controlEl.createEl('textarea', {
-      cls: 'obsidian-gemini-mcp-env-textarea',
+      cls: 'geminese-mcp-env-textarea',
     });
     envTextarea.value = this.env;
     envTextarea.placeholder = 'API_KEY=your-key';
@@ -208,10 +208,10 @@ export class McpServerModal extends Modal {
     const headersSetting = new Setting(this.typeFieldsEl)
       .setName('Headers')
       .setDesc('HTTP headers (KEY=VALUE per line)');
-    headersSetting.settingEl.addClass('obsidian-gemini-mcp-env-setting');
+    headersSetting.settingEl.addClass('geminese-mcp-env-setting');
 
     const headersTextarea = headersSetting.controlEl.createEl('textarea', {
-      cls: 'obsidian-gemini-mcp-env-textarea',
+      cls: 'geminese-mcp-env-textarea',
     });
     headersTextarea.value = this.headers;
     headersTextarea.placeholder = 'Authorization=Bearer token\nContent-Type=application/json';
@@ -292,7 +292,7 @@ export class McpServerModal extends Modal {
       }
     }
 
-    const server: GeminianMcpServer = {
+    const server: GemineseMcpServer = {
       name,
       config,
       enabled: this.enabled,

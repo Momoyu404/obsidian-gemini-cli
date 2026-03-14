@@ -1,42 +1,42 @@
-.obsidian-gemini-thinking {
-  color: var(--obsidian-gemini-brand);
+.geminese-thinking {
+  color: var(--geminese-brand);
   font-style: italic;
   padding: 4px 0;
   text-align: start;
   animation: thinking-pulse 1.5s ease-in-out infinite;
 }
 
-.obsidian-gemini-thinking.obsidian-gemini-thinking--compact {
-  color: var(--obsidian-gemini-compact);
+.geminese-thinking.geminese-thinking--compact {
+  color: var(--geminese-compact);
 }
 
-.obsidian-gemini-thinking-hint {
+.geminese-thinking-hint {
   color: var(--text-muted);
   font-style: normal;
   font-variant-numeric: tabular-nums;
 }
 
-.obsidian-gemini-thinking-block {
+.geminese-thinking-block {
   margin: 8px 0;
 }
 
-.obsidian-gemini-text-block+.obsidian-gemini-thinking-block {
+.geminese-text-block+.geminese-thinking-block {
   margin-top: 8px;
 }
 
-.obsidian-gemini-thinking-block+.obsidian-gemini-text-block {
+.geminese-thinking-block+.geminese-text-block {
   margin-top: 8px;
 }
 
-.obsidian-gemini-thinking-block+.obsidian-gemini-tool-call {
+.geminese-thinking-block+.geminese-tool-call {
   margin-top: 8px;
 }
 
-.obsidian-gemini-tool-call+.obsidian-gemini-thinking-block {
+.geminese-tool-call+.geminese-thinking-block {
   margin-top: 8px;
 }
 
-.obsidian-gemini-thinking-header {
+.geminese-thinking-header {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -45,15 +45,15 @@
   overflow: hidden;
 }
 
-.obsidian-gemini-thinking-label {
+.geminese-thinking-label {
   flex: 1;
   font-size: 13px;
   font-weight: 500;
-  color: var(--obsidian-gemini-brand);
+  color: var(--geminese-brand);
 }
 
 /* Thinking block content - tree-branch style */
-.obsidian-gemini-thinking-content {
+.geminese-thinking-content {
   padding: 4px 0;
   padding-inline-start: 24px;
   font-size: 13px;
@@ -65,24 +65,24 @@
   margin-inline-start: 7px;
 }
 
-.obsidian-gemini-thinking-content p {
+.geminese-thinking-content p {
   margin: 0 0 8px 0;
 }
 
-.obsidian-gemini-thinking-content p:last-child {
+.geminese-thinking-content p:last-child {
   margin-bottom: 0;
 }
 
-.obsidian-gemini-thinking-content .obsidian-gemini-code-wrapper {
+.geminese-thinking-content .geminese-code-wrapper {
   margin: 8px 0;
 }
 
-.obsidian-gemini-thinking-content .obsidian-gemini-code-wrapper pre {
+.geminese-thinking-content .geminese-code-wrapper pre {
   padding: 8px 10px;
   border-radius: 4px;
 }
 
-.obsidian-gemini-thinking-content code {
+.geminese-thinking-content code {
   font-family: var(--font-monospace);
   font-size: 12px;
 }

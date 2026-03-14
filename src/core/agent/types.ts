@@ -1,5 +1,5 @@
 /**
- * Types and constants for the GeminianService module.
+ * Types and constants for the GemineseService module.
  */
 
 import type { SystemPromptSettings } from '../prompts/mainAgent';

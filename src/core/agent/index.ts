@@ -1,4 +1,4 @@
-export { type ApprovalCallback, type ApprovalCallbackOptions, GeminianService, type QueryOptions } from './ClaudianService';
+export { type ApprovalCallback, type ApprovalCallbackOptions, GemineseService, type QueryOptions } from './ClaudianService';
 export { MessageChannel } from './MessageChannel';
 export {
   type ColdStartQueryContext,

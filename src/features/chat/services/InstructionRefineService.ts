@@ -5,19 +5,19 @@ import { QueryOptionsBuilder } from '../../../core/agent/QueryOptionsBuilder';
 import { buildRefineSystemPrompt } from '../../../core/prompts/instructionRefine';
 import { parseGeminiJsonLine } from '../../../core/sdk/transformSDKMessage';
 import { type InstructionRefineResult } from '../../../core/types';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { getEnhancedPath, getMissingNodeError, parseEnvironmentVariables } from '../../../utils/env';
 import { getVaultPath } from '../../../utils/path';
 
 export type RefineProgressCallback = (update: InstructionRefineResult) => void;
 
 export class InstructionRefineService {
-  private plugin: GeminianPlugin;
+  private plugin: GeminesePlugin;
   private abortController: AbortController | null = null;
   private sessionId: string | null = null;
   private existingInstructions: string = '';
 
-  constructor(plugin: GeminianPlugin) {
+  constructor(plugin: GeminesePlugin) {
     this.plugin = plugin;
   }
 

@@ -1,5 +1,5 @@
 /**
- * Geminian - Slash command dropdown
+ * Geminese - Slash command dropdown
  *
  * Dropdown UI for selecting slash commands when typing /.
  * Follows the FileContext.ts pattern for input detection and keyboard navigation.
@@ -11,7 +11,7 @@ import { normalizeArgumentHint } from '../../utils/slashCommand';
 
 /**
  * SDK commands to filter out from the dropdown.
- * These are either handled differently in Geminian or don't apply.
+ * These are either handled differently in Geminese or don't apply.
  */
 const FILTERED_SDK_COMMANDS = new Set([
   'context',
@@ -243,7 +243,7 @@ export class SlashCommandDropdown {
     const seenNames = new Set<string>();
     const allCommands: SlashCommand[] = [];
 
-    // Add Geminian built-in commands first (highest priority)
+    // Add Geminese built-in commands first (highest priority)
     // Built-in commands are not subject to user hiding (they are essential UI actions)
     for (const cmd of builtInCommands) {
       const nameLower = cmd.name.toLowerCase();
@@ -277,27 +277,27 @@ export class SlashCommandDropdown {
     this.dropdownEl.empty();
 
     if (this.filteredCommands.length === 0) {
-      const emptyEl = this.dropdownEl.createDiv({ cls: 'obsidian-gemini-slash-empty' });
+      const emptyEl = this.dropdownEl.createDiv({ cls: 'geminese-slash-empty' });
       emptyEl.setText('No matching commands');
     } else {
       for (let i = 0; i < this.filteredCommands.length; i++) {
         const cmd = this.filteredCommands[i];
-        const itemEl = this.dropdownEl.createDiv({ cls: 'obsidian-gemini-slash-item' });
+        const itemEl = this.dropdownEl.createDiv({ cls: 'geminese-slash-item' });
 
         if (i === this.selectedIndex) {
           itemEl.addClass('selected');
         }
 
-        const nameEl = itemEl.createSpan({ cls: 'obsidian-gemini-slash-name' });
+        const nameEl = itemEl.createSpan({ cls: 'geminese-slash-name' });
         nameEl.setText(`/${cmd.name}`);
 
         if (cmd.argumentHint) {
-          const hintEl = itemEl.createSpan({ cls: 'obsidian-gemini-slash-hint' });
+          const hintEl = itemEl.createSpan({ cls: 'geminese-slash-hint' });
           hintEl.setText(normalizeArgumentHint(cmd.argumentHint));
         }
 
         if (cmd.description) {
-          const descEl = itemEl.createDiv({ cls: 'obsidian-gemini-slash-desc' });
+          const descEl = itemEl.createDiv({ cls: 'geminese-slash-desc' });
           descEl.setText(cmd.description);
         }
 
@@ -325,12 +325,12 @@ export class SlashCommandDropdown {
     if (this.isFixed) {
       // For inline editor: append to containerEl with fixed positioning
       const dropdown = this.containerEl.createDiv({
-        cls: 'obsidian-gemini-slash-dropdown obsidian-gemini-slash-dropdown-fixed',
+        cls: 'geminese-slash-dropdown geminese-slash-dropdown-fixed',
       });
       return dropdown;
     } else {
       // For chat panel: append to container with absolute positioning
-      return this.containerEl.createDiv({ cls: 'obsidian-gemini-slash-dropdown' });
+      return this.containerEl.createDiv({ cls: 'geminese-slash-dropdown' });
     }
   }
 
@@ -353,7 +353,7 @@ export class SlashCommandDropdown {
   }
 
   private updateSelection(): void {
-    const items = this.dropdownEl?.querySelectorAll('.obsidian-gemini-slash-item');
+    const items = this.dropdownEl?.querySelectorAll('.geminese-slash-item');
     items?.forEach((item, index) => {
       if (index === this.selectedIndex) {
         item.addClass('selected');

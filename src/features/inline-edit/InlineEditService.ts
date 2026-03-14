@@ -14,7 +14,7 @@ import {
   TOOL_LS,
   TOOL_READ,
 } from '../../core/tools/toolNames';
-import type GeminianPlugin from '../../main';
+import type GeminesePlugin from '../../main';
 import { appendContextFiles } from '../../utils/context';
 import { type CursorContext } from '../../utils/editor';
 import { getEnhancedPath, getMissingNodeError, parseEnvironmentVariables } from '../../utils/env';
@@ -228,11 +228,11 @@ export function extractTextFromSdkMessage(message: any): string | null {
 }
 
 export class InlineEditService {
-  private plugin: GeminianPlugin;
+  private plugin: GeminesePlugin;
   private abortController: AbortController | null = null;
   private sessionId: string | null = null;
 
-  constructor(plugin: GeminianPlugin) {
+  constructor(plugin: GeminesePlugin) {
     this.plugin = plugin;
   }
 

@@ -3,11 +3,11 @@ import * as sdkModule from '@test/__mocks__/gemini-cli-sdk';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { GeminianService } from '@/core/agent/ClaudianService';
+import { GemineseService } from '@/core/agent/ClaudianService';
 import { MessageChannel } from '@/core/agent/MessageChannel';
 import { createResponseHandler } from '@/core/agent/types';
 import type { McpServerManager } from '@/core/mcp';
-import type GeminianPlugin from '@/main';
+import type GeminesePlugin from '@/main';
 import * as envUtils from '@/utils/env';
 import * as sdkSessionUtils from '@/utils/sdkSession';
 import * as sessionUtils from '@/utils/session';
@@ -21,10 +21,10 @@ const sdkMock = sdkModule as unknown as {
 
 type MockMcpServerManager = jest.Mocked<McpServerManager>;
 
-describe('GeminianService', () => {
-  let mockPlugin: Partial<GeminianPlugin>;
+describe('GemineseService', () => {
+  let mockPlugin: Partial<GeminesePlugin>;
   let mockMcpManager: MockMcpServerManager;
-  let service: GeminianService;
+  let service: GemineseService;
 
   async function collectChunks(gen: AsyncGenerator<any>): Promise<any[]> {
     const chunks: any[] = [];
@@ -54,7 +54,7 @@ describe('GeminianService', () => {
         thinkingBudget: 0,
         blockedCommands: [],
         enableBlocklist: false,
-        mediaFolder: 'geminian-media',
+        mediaFolder: 'geminese-media',
         systemPrompt: '',
         allowedExportPaths: [],
         loadUserGeminiSettings: false,
@@ -68,7 +68,7 @@ describe('GeminianService', () => {
       pluginManager: {
         getPluginsKey: jest.fn().mockReturnValue(''),
       },
-    } as unknown as GeminianPlugin;
+    } as unknown as GeminesePlugin;
 
     mockMcpManager = {
       loadServers: jest.fn().mockResolvedValue(undefined),
@@ -77,7 +77,7 @@ describe('GeminianService', () => {
       getDisallowedMcpTools: jest.fn().mockReturnValue([]),
     } as unknown as MockMcpServerManager;
 
-    service = new GeminianService(mockPlugin as GeminianPlugin, mockMcpManager);
+    service = new GemineseService(mockPlugin as GeminesePlugin, mockMcpManager);
   });
 
   describe('Session Management', () => {

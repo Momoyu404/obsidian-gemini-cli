@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import type { GeminiCliArgs,QueryOptionsContext } from '@/core/agent/QueryOptionsBuilder';
 import { QueryOptionsBuilder } from '@/core/agent/QueryOptionsBuilder';
 import type { PersistentQueryConfig } from '@/core/agent/types';
-import type { GeminianSettings } from '@/core/types';
+import type { GemineseSettings } from '@/core/types';
 
 jest.mock('fs', () => ({
   mkdirSync: jest.fn(),
@@ -38,7 +38,7 @@ function createMockPluginManager() {
   } as any;
 }
 
-function createMockSettings(overrides: Partial<GeminianSettings> = {}): GeminianSettings {
+function createMockSettings(overrides: Partial<GemineseSettings> = {}): GemineseSettings {
   return {
     enableBlocklist: true,
     blockedCommands: {
@@ -64,7 +64,7 @@ function createMockSettings(overrides: Partial<GeminianSettings> = {}): Geminian
     },
     geminiCliPath: '',
     ...overrides,
-  } as GeminianSettings;
+  } as GemineseSettings;
 }
 
 function createMockPersistentQueryConfig(

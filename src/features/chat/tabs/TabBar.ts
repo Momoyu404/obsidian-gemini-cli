@@ -27,7 +27,7 @@ export class TabBar {
 
   /** Builds the tab bar UI. */
   private build(): void {
-    this.containerEl.addClass('obsidian-gemini-tab-badges');
+    this.containerEl.addClass('geminese-tab-badges');
   }
 
   /**
@@ -47,17 +47,17 @@ export class TabBar {
   /** Renders a single tab badge. */
   private renderBadge(item: TabBarItem): void {
     // Determine state class (priority: active > attention > streaming > idle)
-    let stateClass = 'obsidian-gemini-tab-badge-idle';
+    let stateClass = 'geminese-tab-badge-idle';
     if (item.isActive) {
-      stateClass = 'obsidian-gemini-tab-badge-active';
+      stateClass = 'geminese-tab-badge-active';
     } else if (item.needsAttention) {
-      stateClass = 'obsidian-gemini-tab-badge-attention';
+      stateClass = 'geminese-tab-badge-attention';
     } else if (item.isStreaming) {
-      stateClass = 'obsidian-gemini-tab-badge-streaming';
+      stateClass = 'geminese-tab-badge-streaming';
     }
 
     const badgeEl = this.containerEl.createDiv({
-      cls: `obsidian-gemini-tab-badge ${stateClass}`,
+      cls: `geminese-tab-badge ${stateClass}`,
       text: String(item.index),
     });
 
@@ -82,6 +82,6 @@ export class TabBar {
   /** Destroys the tab bar. */
   destroy(): void {
     this.containerEl.empty();
-    this.containerEl.removeClass('obsidian-gemini-tab-badges');
+    this.containerEl.removeClass('geminese-tab-badges');
   }
 }

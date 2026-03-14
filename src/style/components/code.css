@@ -1,12 +1,12 @@
 /* Code block wrapper - contains pre + button outside scroll area */
-.obsidian-gemini-code-wrapper {
+.geminese-code-wrapper {
   position: relative;
   margin: 8px 0;
 }
 
 /* Code blocks in chat messages */
-.obsidian-gemini-code-wrapper pre,
-.obsidian-gemini-message-content pre {
+.geminese-code-wrapper pre,
+.geminese-message-content pre {
   background: rgba(0, 0, 0, 0.2);
   padding: 8px 12px;
   border-radius: 6px;
@@ -15,30 +15,30 @@
 }
 
 /* Light mode: use a lighter background so hljs comment colors stay readable */
-body.theme-light .obsidian-gemini-code-wrapper pre,
-body.theme-light .obsidian-gemini-message-content pre {
+body.theme-light .geminese-code-wrapper pre,
+body.theme-light .geminese-message-content pre {
   background: rgba(0, 0, 0, 0.08);
 }
 
 /* Code blocks without language - wrap content */
-.obsidian-gemini-code-wrapper:not(.has-language) pre {
+.geminese-code-wrapper:not(.has-language) pre {
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-x: hidden;
 }
 
 /* Unwrapped pre still needs margin */
-.obsidian-gemini-message-content>pre {
+.geminese-message-content>pre {
   margin: 8px 0;
 }
 
-.obsidian-gemini-message-content code {
+.geminese-message-content code {
   font-family: var(--font-monospace);
   font-size: 13px;
 }
 
 /* Clickable language label - positioned outside scroll area */
-.obsidian-gemini-code-wrapper .obsidian-gemini-code-lang-label {
+.geminese-code-wrapper .geminese-code-lang-label {
   position: absolute;
   top: 6px;
   inset-inline-end: 6px;
@@ -53,18 +53,18 @@ body.theme-light .obsidian-gemini-message-content pre {
   transition: color 0.15s ease, background 0.15s ease;
 }
 
-.obsidian-gemini-code-wrapper .obsidian-gemini-code-lang-label:hover {
+.geminese-code-wrapper .geminese-code-lang-label:hover {
   color: var(--text-normal);
   background: var(--background-modifier-hover);
 }
 
 /* Hide default copy button when language label exists */
-.obsidian-gemini-code-wrapper.has-language .copy-code-button {
+.geminese-code-wrapper.has-language .copy-code-button {
   display: none;
 }
 
 /* Copy button - positioned outside scroll area */
-.obsidian-gemini-code-wrapper .copy-code-button {
+.geminese-code-wrapper .copy-code-button {
   position: absolute;
   top: 6px;
   inset-inline-end: 6px;
@@ -81,17 +81,17 @@ body.theme-light .obsidian-gemini-message-content pre {
 }
 
 /* If copy button uses an icon (svg) */
-.obsidian-gemini-code-wrapper .copy-code-button svg {
+.geminese-code-wrapper .copy-code-button svg {
   width: 14px;
   height: 14px;
 }
 
 /* Show copy button on hover */
-.obsidian-gemini-code-wrapper:not(.has-language):hover .copy-code-button {
+.geminese-code-wrapper:not(.has-language):hover .copy-code-button {
   opacity: 1;
 }
 
-.obsidian-gemini-code-wrapper .copy-code-button:hover {
+.geminese-code-wrapper .copy-code-button:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }

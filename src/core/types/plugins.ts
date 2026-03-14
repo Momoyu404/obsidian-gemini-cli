@@ -1,6 +1,6 @@
 export type ExtensionScope = 'user' | 'project';
 
-export interface GeminianExtension {
+export interface GemineseExtension {
   /** e.g., "extension-name@source" */
   id: string;
   name: string;
@@ -27,8 +27,8 @@ export interface InstalledExtensionsFile {
 // Backwards-compatible aliases
 /** @deprecated Use ExtensionScope */
 export type PluginScope = ExtensionScope;
-/** @deprecated Use GeminianExtension */
-export type GeminianPlugin = GeminianExtension;
+/** @deprecated Use GemineseExtension */
+export type GeminesePlugin = GemineseExtension;
 /** @deprecated Use InstalledExtensionEntry */
 export type InstalledPluginEntry = InstalledExtensionEntry;
 /** @deprecated Use InstalledExtensionsFile */

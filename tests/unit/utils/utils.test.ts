@@ -225,7 +225,7 @@ describe('utils.ts', () => {
 
   describe('expandHomePath', () => {
     const envKey = 'CLAUDIAN_TEST_PATH';
-    const envValue = path.join(os.tmpdir(), 'geminian-env');
+    const envValue = path.join(os.tmpdir(), 'geminese-env');
     let originalValue: string | undefined;
 
     beforeEach(() => {
@@ -284,10 +284,10 @@ describe('utils.ts', () => {
     it('expands environment variables before filesystem use', () => {
       const envKey = 'CLAUDIAN_FS_TEST_PATH';
       const originalValue = process.env[envKey];
-      process.env[envKey] = '/tmp/geminian-test';
+      process.env[envKey] = '/tmp/geminese-test';
 
       try {
-        expect(normalizePathForFilesystem(`$${envKey}/notes/file.md`)).toBe('/tmp/geminian-test/notes/file.md');
+        expect(normalizePathForFilesystem(`$${envKey}/notes/file.md`)).toBe('/tmp/geminese-test/notes/file.md');
       } finally {
         if (originalValue === undefined) {
           delete process.env[envKey];

@@ -1,10 +1,10 @@
 import { Notice } from 'obsidian';
 
-import type { GeminianService } from '../../../core/agent';
+import type { GemineseService } from '../../../core/agent';
 import type { McpServerManager } from '../../../core/mcp';
 import type { SlashCommand } from '../../../core/types';
 import { t } from '../../../i18n';
-import type GeminianPlugin from '../../../main';
+import type GeminesePlugin from '../../../main';
 import { chooseForkTarget } from '../../../shared/modals/ForkTargetModal';
 import {
   activateTab,
@@ -37,7 +37,7 @@ import {
  * TabManager coordinates multiple chat tabs.
  */
 export class TabManager implements TabManagerInterface {
-  private plugin: GeminianPlugin;
+  private plugin: GeminesePlugin;
   private mcpManager: McpServerManager;
   private containerEl: HTMLElement;
   private view: TabManagerViewHost;
@@ -59,7 +59,7 @@ export class TabManager implements TabManagerInterface {
   }
 
   constructor(
-    plugin: GeminianPlugin,
+    plugin: GeminesePlugin,
     mcpManager: McpServerManager,
     containerEl: HTMLElement,
     view: TabManagerViewHost,
@@ -571,11 +571,11 @@ export class TabManager implements TabManagerInterface {
   // ============================================
 
   /**
-   * Broadcasts a function call to all tabs' GeminianService instances.
+   * Broadcasts a function call to all tabs' GemineseService instances.
    * Used by settings managers to apply configuration changes to all tabs.
    * @param fn Function to call on each service.
    */
-  async broadcastToAllTabs(fn: (service: GeminianService) => Promise<void>): Promise<void> {
+  async broadcastToAllTabs(fn: (service: GemineseService) => Promise<void>): Promise<void> {
     const promises: Promise<void>[] = [];
 
     for (const tab of this.tabs.values()) {

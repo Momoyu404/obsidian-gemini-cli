@@ -5,15 +5,15 @@
  */
 
 import { extractMcpMentions, transformMcpMentions } from '../../utils/mcp';
-import type { GeminianMcpServer, McpServerConfig } from '../types';
+import type { GemineseMcpServer, McpServerConfig } from '../types';
 
 /** Storage interface for loading MCP servers. */
 export interface McpStorageAdapter {
-  load(): Promise<GeminianMcpServer[]>;
+  load(): Promise<GemineseMcpServer[]>;
 }
 
 export class McpServerManager {
-  private servers: GeminianMcpServer[] = [];
+  private servers: GemineseMcpServer[] = [];
   private storage: McpStorageAdapter;
 
   constructor(storage: McpStorageAdapter) {
@@ -24,7 +24,7 @@ export class McpServerManager {
     this.servers = await this.storage.load();
   }
 
-  getServers(): GeminianMcpServer[] {
+  getServers(): GemineseMcpServer[] {
     return this.servers;
   }
 
@@ -81,7 +81,7 @@ export class McpServerManager {
     return this.collectDisallowedTools().sort();
   }
 
-  private collectDisallowedTools(filter?: (server: GeminianMcpServer) => boolean): string[] {
+  private collectDisallowedTools(filter?: (server: GemineseMcpServer) => boolean): string[] {
     const disallowed = new Set<string>();
 
     for (const server of this.servers) {
@@ -103,7 +103,7 @@ export class McpServerManager {
     return this.servers.length > 0;
   }
 
-  getContextSavingServers(): GeminianMcpServer[] {
+  getContextSavingServers(): GemineseMcpServer[] {
     return this.servers.filter((s) => s.enabled && s.contextSaving);
   }
 

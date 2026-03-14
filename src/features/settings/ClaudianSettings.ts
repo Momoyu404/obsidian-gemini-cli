@@ -6,10 +6,10 @@ import { getCurrentPlatformKey, getHostnameKey } from '../../core/types';
 import { DEFAULT_GEMINI_MODELS } from '../../core/types/models';
 import { getAvailableLocales, getLocaleDisplayName, setLocale, t } from '../../i18n';
 import type { Locale, TranslationKey } from '../../i18n/types';
-import type GeminianPlugin from '../../main';
+import type GeminesePlugin from '../../main';
 import { findNodeExecutable, formatContextLimit, getCustomModelIds, getEnhancedPath, getModelsFromEnvironment, parseContextLimit, parseEnvironmentVariables } from '../../utils/env';
 import { expandHomePath } from '../../utils/path';
-import { GeminianView } from '../chat/ClaudianView';
+import { GemineseView } from '../chat/ClaudianView';
 import { buildNavMappingText, parseNavMappings } from './keyboardNavigation';
 import { AgentSettings } from './ui/AgentSettings';
 import { EnvSnippetManager } from './ui/EnvSnippetManager';
@@ -66,19 +66,19 @@ function addHotkeySettingRow(
   translationPrefix: string
 ): void {
   const hotkey = getHotkeyForCommand(app, commandId);
-  const item = containerEl.createDiv({ cls: 'obsidian-gemini-hotkey-item' });
-  item.createSpan({ cls: 'obsidian-gemini-hotkey-name', text: t(`${translationPrefix}.name` as TranslationKey) });
+  const item = containerEl.createDiv({ cls: 'geminese-hotkey-item' });
+  item.createSpan({ cls: 'geminese-hotkey-name', text: t(`${translationPrefix}.name` as TranslationKey) });
   if (hotkey) {
-    item.createSpan({ cls: 'obsidian-gemini-hotkey-badge', text: hotkey });
+    item.createSpan({ cls: 'geminese-hotkey-badge', text: hotkey });
   }
   item.addEventListener('click', () => openHotkeySettings(app));
 }
 
-export class GeminianSettingTab extends PluginSettingTab {
-  plugin: GeminianPlugin;
+export class GemineseSettingTab extends PluginSettingTab {
+  plugin: GeminesePlugin;
   private contextLimitsContainer: HTMLElement | null = null;
 
-  constructor(app: App, plugin: GeminianPlugin) {
+  constructor(app: App, plugin: GeminesePlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }
@@ -86,7 +86,7 @@ export class GeminianSettingTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
-    containerEl.addClass('obsidian-gemini-settings');
+    containerEl.addClass('geminese-settings');
 
     setLocale(this.plugin.settings.locale);
 
@@ -158,7 +158,7 @@ export class GeminianSettingTab extends PluginSettingTab {
             this.plugin.settings.mediaFolder = value.trim();
             await this.plugin.saveSettings();
           });
-        text.inputEl.addClass('obsidian-gemini-settings-media-input');
+        text.inputEl.addClass('geminese-settings-media-input');
         text.inputEl.addEventListener('blur', () => this.restartServiceForPromptChange());
       });
 
@@ -297,8 +297,8 @@ export class GeminianSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
 
             // Update all views' layouts immediately
-            for (const leaf of this.plugin.app.workspace.getLeavesOfType('obsidian-gemini-view')) {
-              if (leaf.view instanceof GeminianView) {
+            for (const leaf of this.plugin.app.workspace.getLeavesOfType('geminese-view')) {
+              if (leaf.view instanceof GemineseView) {
                 leaf.view.updateLayoutForPosition();
               }
             }
@@ -320,16 +320,16 @@ export class GeminianSettingTab extends PluginSettingTab {
 
     new Setting(containerEl).setName(t('settings.hotkeys')).setHeading();
 
-    const hotkeyGrid = containerEl.createDiv({ cls: 'obsidian-gemini-hotkey-grid' });
-    addHotkeySettingRow(hotkeyGrid, this.app, 'geminian:inline-edit', 'settings.inlineEditHotkey');
-    addHotkeySettingRow(hotkeyGrid, this.app, 'geminian:open-view', 'settings.openChatHotkey');
-    addHotkeySettingRow(hotkeyGrid, this.app, 'geminian:new-session', 'settings.newSessionHotkey');
-    addHotkeySettingRow(hotkeyGrid, this.app, 'geminian:new-tab', 'settings.newTabHotkey');
-    addHotkeySettingRow(hotkeyGrid, this.app, 'geminian:close-current-tab', 'settings.closeTabHotkey');
+    const hotkeyGrid = containerEl.createDiv({ cls: 'geminese-hotkey-grid' });
+    addHotkeySettingRow(hotkeyGrid, this.app, 'geminese:inline-edit', 'settings.inlineEditHotkey');
+    addHotkeySettingRow(hotkeyGrid, this.app, 'geminese:open-view', 'settings.openChatHotkey');
+    addHotkeySettingRow(hotkeyGrid, this.app, 'geminese:new-session', 'settings.newSessionHotkey');
+    addHotkeySettingRow(hotkeyGrid, this.app, 'geminese:new-tab', 'settings.newTabHotkey');
+    addHotkeySettingRow(hotkeyGrid, this.app, 'geminese:close-current-tab', 'settings.closeTabHotkey');
 
     new Setting(containerEl).setName(t('settings.slashCommands.name')).setHeading();
 
-    const slashCommandsDesc = containerEl.createDiv({ cls: 'obsidian-gemini-sp-settings-desc' });
+    const slashCommandsDesc = containerEl.createDiv({ cls: 'geminese-sp-settings-desc' });
     const descP = slashCommandsDesc.createEl('p', { cls: 'setting-item-description' });
     descP.appendText(t('settings.slashCommands.desc') + ' ');
     descP.createEl('a', {
@@ -337,7 +337,7 @@ export class GeminianSettingTab extends PluginSettingTab {
       href: 'https://ai.google.dev/gemini-api/docs',
     });
 
-    const slashCommandsContainer = containerEl.createDiv({ cls: 'obsidian-gemini-slash-commands-container' });
+    const slashCommandsContainer = containerEl.createDiv({ cls: 'geminese-slash-commands-container' });
     new SlashCommandSettings(slashCommandsContainer, this.plugin);
 
     new Setting(containerEl)
@@ -361,35 +361,35 @@ export class GeminianSettingTab extends PluginSettingTab {
 
     new Setting(containerEl).setName(t('settings.subagents.name')).setHeading();
 
-    const agentsDesc = containerEl.createDiv({ cls: 'obsidian-gemini-sp-settings-desc' });
+    const agentsDesc = containerEl.createDiv({ cls: 'geminese-sp-settings-desc' });
     agentsDesc.createEl('p', {
       text: t('settings.subagents.desc'),
       cls: 'setting-item-description',
     });
 
-    const agentsContainer = containerEl.createDiv({ cls: 'obsidian-gemini-agents-container' });
+    const agentsContainer = containerEl.createDiv({ cls: 'geminese-agents-container' });
     new AgentSettings(agentsContainer, this.plugin);
 
     new Setting(containerEl).setName(t('settings.mcpServers.name')).setHeading();
 
-    const mcpDesc = containerEl.createDiv({ cls: 'obsidian-gemini-mcp-settings-desc' });
+    const mcpDesc = containerEl.createDiv({ cls: 'geminese-mcp-settings-desc' });
     mcpDesc.createEl('p', {
       text: t('settings.mcpServers.desc'),
       cls: 'setting-item-description',
     });
 
-    const mcpContainer = containerEl.createDiv({ cls: 'obsidian-gemini-mcp-container' });
+    const mcpContainer = containerEl.createDiv({ cls: 'geminese-mcp-container' });
     new McpSettingsManager(mcpContainer, this.plugin);
 
     new Setting(containerEl).setName(t('settings.plugins.name')).setHeading();
 
-    const pluginsDesc = containerEl.createDiv({ cls: 'obsidian-gemini-plugin-settings-desc' });
+    const pluginsDesc = containerEl.createDiv({ cls: 'geminese-plugin-settings-desc' });
     pluginsDesc.createEl('p', {
       text: t('settings.plugins.desc'),
       cls: 'setting-item-description',
     });
 
-    const pluginsContainer = containerEl.createDiv({ cls: 'obsidian-gemini-plugins-container' });
+    const pluginsContainer = containerEl.createDiv({ cls: 'geminese-plugins-container' });
     new PluginSettingsManager(pluginsContainer, this.plugin);
 
     new Setting(containerEl).setName(t('settings.safety')).setHeading();
@@ -497,17 +497,17 @@ export class GeminianSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.environmentVariables);
         text.inputEl.rows = 6;
         text.inputEl.cols = 50;
-        text.inputEl.addClass('obsidian-gemini-settings-env-textarea');
+        text.inputEl.addClass('geminese-settings-env-textarea');
         text.inputEl.addEventListener('blur', async () => {
           await this.plugin.applyEnvironmentVariables(text.inputEl.value);
           this.renderContextLimitsSection();
         });
       });
 
-    this.contextLimitsContainer = containerEl.createDiv({ cls: 'obsidian-gemini-context-limits-container' });
+    this.contextLimitsContainer = containerEl.createDiv({ cls: 'geminese-context-limits-container' });
     this.renderContextLimitsSection();
 
-    const envSnippetsContainer = containerEl.createDiv({ cls: 'obsidian-gemini-env-snippets-container' });
+    const envSnippetsContainer = containerEl.createDiv({ cls: 'geminese-env-snippets-container' });
     new EnvSnippetManager(envSnippetsContainer, this.plugin, () => {
       this.renderContextLimitsSection();
     });
@@ -537,7 +537,7 @@ export class GeminianSettingTab extends PluginSettingTab {
           })
       );
 
-    const bangBashValidationEl = containerEl.createDiv({ cls: 'obsidian-gemini-bang-bash-validation' });
+    const bangBashValidationEl = containerEl.createDiv({ cls: 'geminese-bang-bash-validation' });
     bangBashValidationEl.style.color = 'var(--text-error)';
     bangBashValidationEl.style.fontSize = '0.85em';
     bangBashValidationEl.style.marginTop = '-0.5em';
@@ -548,7 +548,7 @@ export class GeminianSettingTab extends PluginSettingTab {
       .setName(t('settings.maxTabs.name'))
       .setDesc(t('settings.maxTabs.desc'));
 
-    const maxTabsWarningEl = containerEl.createDiv({ cls: 'obsidian-gemini-max-tabs-warning' });
+    const maxTabsWarningEl = containerEl.createDiv({ cls: 'geminese-max-tabs-warning' });
     maxTabsWarningEl.style.color = 'var(--text-warning)';
     maxTabsWarningEl.style.fontSize = '0.85em';
     maxTabsWarningEl.style.marginTop = '-0.5em';
@@ -584,7 +584,7 @@ export class GeminianSettingTab extends PluginSettingTab {
       .setName(`${t('settings.cliPath.name')} (${hostnameKey})`)
       .setDesc(cliPathDescription);
 
-    const validationEl = containerEl.createDiv({ cls: 'obsidian-gemini-cli-path-validation' });
+    const validationEl = containerEl.createDiv({ cls: 'geminese-cli-path-validation' });
     validationEl.style.color = 'var(--text-error)';
     validationEl.style.fontSize = '0.85em';
     validationEl.style.marginTop = '-0.5em';
@@ -640,7 +640,7 @@ export class GeminianSettingTab extends PluginSettingTab {
             (service) => Promise.resolve(service.cleanup())
           );
         });
-      text.inputEl.addClass('obsidian-gemini-settings-cli-path-input');
+      text.inputEl.addClass('geminese-settings-cli-path-input');
       text.inputEl.style.width = '100%';
 
       const initialError = validatePath(currentValue);
@@ -665,33 +665,33 @@ export class GeminianSettingTab extends PluginSettingTab {
       return;
     }
 
-    const headerEl = container.createDiv({ cls: 'obsidian-gemini-context-limits-header' });
-    headerEl.createSpan({ text: t('settings.customContextLimits.name'), cls: 'obsidian-gemini-context-limits-label' });
+    const headerEl = container.createDiv({ cls: 'geminese-context-limits-header' });
+    headerEl.createSpan({ text: t('settings.customContextLimits.name'), cls: 'geminese-context-limits-label' });
 
-    const descEl = container.createDiv({ cls: 'obsidian-gemini-context-limits-desc' });
+    const descEl = container.createDiv({ cls: 'geminese-context-limits-desc' });
     descEl.setText(t('settings.customContextLimits.desc'));
 
-    const listEl = container.createDiv({ cls: 'obsidian-gemini-context-limits-list' });
+    const listEl = container.createDiv({ cls: 'geminese-context-limits-list' });
 
     for (const modelId of uniqueModelIds) {
       const currentValue = this.plugin.settings.customContextLimits?.[modelId];
 
-      const itemEl = listEl.createDiv({ cls: 'obsidian-gemini-context-limits-item' });
+      const itemEl = listEl.createDiv({ cls: 'geminese-context-limits-item' });
 
-      const nameEl = itemEl.createDiv({ cls: 'obsidian-gemini-context-limits-model' });
+      const nameEl = itemEl.createDiv({ cls: 'geminese-context-limits-model' });
       nameEl.setText(modelId);
 
-      const inputWrapper = itemEl.createDiv({ cls: 'obsidian-gemini-context-limits-input-wrapper' });
+      const inputWrapper = itemEl.createDiv({ cls: 'geminese-context-limits-input-wrapper' });
 
       const inputEl = inputWrapper.createEl('input', {
         type: 'text',
         placeholder: '200k',
-        cls: 'obsidian-gemini-context-limits-input',
+        cls: 'geminese-context-limits-input',
         value: currentValue ? formatContextLimit(currentValue) : '',
       });
 
       // Validation element
-      const validationEl = inputWrapper.createDiv({ cls: 'obsidian-gemini-context-limit-validation' });
+      const validationEl = inputWrapper.createDiv({ cls: 'geminese-context-limit-validation' });
 
       inputEl.addEventListener('input', async () => {
         const trimmed = inputEl.value.trim();
@@ -704,19 +704,19 @@ export class GeminianSettingTab extends PluginSettingTab {
           // Empty = use default (remove from custom limits)
           delete this.plugin.settings.customContextLimits[modelId];
           validationEl.style.display = 'none';
-          inputEl.classList.remove('obsidian-gemini-input-error');
+          inputEl.classList.remove('geminese-input-error');
         } else {
           const parsed = parseContextLimit(trimmed);
           if (parsed === null) {
             validationEl.setText(t('settings.customContextLimits.invalid'));
             validationEl.style.display = 'block';
-            inputEl.classList.add('obsidian-gemini-input-error');
+            inputEl.classList.add('geminese-input-error');
             return; // Don't save invalid value
           }
 
           this.plugin.settings.customContextLimits[modelId] = parsed;
           validationEl.style.display = 'none';
-          inputEl.classList.remove('obsidian-gemini-input-error');
+          inputEl.classList.remove('geminese-input-error');
         }
 
         await this.plugin.saveSettings();

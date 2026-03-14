@@ -161,7 +161,7 @@ describe('CCSettingsStorage', () => {
             expect(writtenContent.permissions).toEqual({ allow: [], deny: [], ask: [] });
         });
 
-        it('should strip geminian-only fields during migration', async () => {
+        it('should strip geminese-only fields during migration', async () => {
             mockAdapter.exists.mockResolvedValue(true);
             mockAdapter.read.mockResolvedValue(JSON.stringify({
                 permissions: { allow: [], deny: [], ask: [] },

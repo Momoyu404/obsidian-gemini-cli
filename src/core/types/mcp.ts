@@ -1,5 +1,5 @@
 /**
- * Geminian - MCP (Model Context Protocol) type definitions
+ * Geminese - MCP (Model Context Protocol) type definitions
  *
  * Types for configuring and managing MCP servers that extend Gemini's capabilities.
  */
@@ -35,8 +35,8 @@ export type McpServerConfig =
 /** Server type identifier. */
 export type McpServerType = 'stdio' | 'sse' | 'http';
 
-/** Extended server configuration with Geminian-specific options. */
-export interface GeminianMcpServer {
+/** Extended server configuration with Geminese-specific options. */
+export interface GemineseMcpServer {
   /** Unique server name (key in mcpServers record). */
   name: string;
   config: McpServerConfig;
@@ -53,10 +53,10 @@ export interface McpConfigFile {
   mcpServers: Record<string, McpServerConfig>;
 }
 
-/** Extended config file with Geminian metadata. */
-export interface GeminianMcpConfigFile extends McpConfigFile {
-  _geminian?: {
-    /** Per-server Geminian-specific settings. */
+/** Extended config file with Geminese metadata. */
+export interface GemineseMcpConfigFile extends McpConfigFile {
+  _geminese?: {
+    /** Per-server Geminese-specific settings. */
     servers: Record<
       string,
       {
@@ -95,7 +95,7 @@ export function isValidMcpServerConfig(obj: unknown): obj is McpServerConfig {
   return false;
 }
 
-export const DEFAULT_MCP_SERVER: Omit<GeminianMcpServer, 'name' | 'config'> = {
+export const DEFAULT_MCP_SERVER: Omit<GemineseMcpServer, 'name' | 'config'> = {
   enabled: true,
   contextSaving: true,
 };

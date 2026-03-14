@@ -1,37 +1,37 @@
 /* Settings page - remove separator lines from setting items */
-.obsidian-gemini-settings .setting-item {
+.geminese-settings .setting-item {
   border-top: none;
 }
 
 /* Settings section headings (via setHeading()) */
-.obsidian-gemini-settings .setting-item-heading {
+.geminese-settings .setting-item-heading {
   padding-top: 18px;
   margin-top: 12px;
   border-top: 1px solid var(--background-modifier-border);
 }
 
-.obsidian-gemini-settings .setting-item-heading:first-child {
+.geminese-settings .setting-item-heading:first-child {
   padding-top: 0;
   margin-top: 0;
   border-top: none;
 }
 
-.obsidian-gemini-settings .setting-item-heading .setting-item-name {
+.geminese-settings .setting-item-heading .setting-item-name {
   font-size: var(--font-ui-medium);
   font-weight: var(--font-semibold);
   color: var(--text-normal);
 }
 
 /* Custom section descriptions - align with items */
-.obsidian-gemini-sp-settings-desc,
-.obsidian-gemini-mcp-settings-desc,
-.obsidian-gemini-plugin-settings-desc,
-.obsidian-gemini-approved-desc {
+.geminese-sp-settings-desc,
+.geminese-mcp-settings-desc,
+.geminese-plugin-settings-desc,
+.geminese-approved-desc {
   padding: 0 12px;
 }
 
 /* Unified icon action buttons for settings */
-.obsidian-gemini-settings-action-btn {
+.geminese-settings-action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,29 +46,29 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.obsidian-gemini-settings-action-btn:hover {
+.geminese-settings-action-btn:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-settings-action-btn svg {
+.geminese-settings-action-btn svg {
   width: 14px;
   height: 14px;
 }
 
-.obsidian-gemini-settings-delete-btn:hover {
+.geminese-settings-delete-btn:hover {
   color: var(--text-error);
 }
 
 /* Hotkey grid - 3 columns */
-.obsidian-gemini-hotkey-grid {
+.geminese-hotkey-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 4px 12px;
   padding: 4px 0;
 }
 
-.obsidian-gemini-hotkey-item {
+.geminese-hotkey-item {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -77,17 +77,17 @@
   border-radius: 6px;
 }
 
-.obsidian-gemini-hotkey-item:hover {
+.geminese-hotkey-item:hover {
   background: var(--background-modifier-hover);
 }
 
-.obsidian-gemini-hotkey-name {
+.geminese-hotkey-name {
   flex: 1;
   color: var(--text-normal);
   font-size: var(--font-ui-small);
 }
 
-.obsidian-gemini-hotkey-badge {
+.geminese-hotkey-badge {
   color: var(--text-muted);
   font-size: var(--font-ui-smaller);
   background: var(--background-modifier-hover);
@@ -97,13 +97,13 @@
 }
 
 /* Media folder input width */
-.obsidian-gemini-settings-media-input {
+.geminese-settings-media-input {
   width: 200px;
 }
 
 /* ── Shared settings panel layout (used by slash-settings + agent-settings) ── */
 
-.obsidian-gemini-sp-header {
+.geminese-sp-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -111,18 +111,18 @@
   padding: 0 12px;
 }
 
-.obsidian-gemini-sp-label {
+.geminese-sp-label {
   font-size: var(--font-ui-small);
   color: var(--text-muted);
   font-weight: var(--font-medium);
 }
 
-.obsidian-gemini-sp-header-actions {
+.geminese-sp-header-actions {
   display: flex;
   gap: 4px;
 }
 
-.obsidian-gemini-sp-empty-state {
+.geminese-sp-empty-state {
   padding: 20px;
   text-align: center;
   color: var(--text-muted);
@@ -131,14 +131,14 @@
   margin-top: 8px;
 }
 
-.obsidian-gemini-sp-list {
+.geminese-sp-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-top: 8px;
 }
 
-.obsidian-gemini-sp-item {
+.geminese-sp-item {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -147,48 +147,48 @@
   border-radius: 6px;
 }
 
-.obsidian-gemini-sp-item:hover {
+.geminese-sp-item:hover {
   background: var(--background-modifier-hover);
 }
 
-.obsidian-gemini-sp-info {
+.geminese-sp-info {
   flex: 1;
   min-width: 0;
 }
 
-.obsidian-gemini-sp-item-header {
+.geminese-sp-item-header {
   display: flex;
   align-items: baseline;
   gap: 8px;
 }
 
-.obsidian-gemini-sp-item-name {
+.geminese-sp-item-name {
   font-weight: 600;
   font-family: var(--font-monospace);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-sp-item-desc {
+.geminese-sp-item-desc {
   font-size: 13px;
   color: var(--text-muted);
   margin-top: 2px;
 }
 
-.obsidian-gemini-sp-item-actions {
+.geminese-sp-item-actions {
   display: flex;
   gap: 4px;
   margin-left: 16px;
   flex-shrink: 0;
 }
 
-.obsidian-gemini-sp-advanced-section {
+.geminese-sp-advanced-section {
   border: 1px solid var(--background-modifier-border);
   border-radius: 6px;
   padding: 0 12px;
   margin: 8px 0;
 }
 
-.obsidian-gemini-sp-advanced-summary {
+.geminese-sp-advanced-summary {
   cursor: pointer;
   padding: 8px 0;
   font-size: var(--font-ui-small);
@@ -196,16 +196,16 @@
   font-weight: var(--font-medium);
 }
 
-.obsidian-gemini-sp-advanced-section[open] .obsidian-gemini-sp-advanced-summary {
+.geminese-sp-advanced-section[open] .geminese-sp-advanced-summary {
   margin-bottom: 4px;
 }
 
-.obsidian-gemini-sp-modal .modal-content {
+.geminese-sp-modal .modal-content {
   max-width: 600px;
   width: auto;
 }
 
-.obsidian-gemini-sp-content-area {
+.geminese-sp-content-area {
   width: 100%;
   font-family: var(--font-monospace);
   font-size: 13px;
@@ -218,12 +218,12 @@
   margin-top: 8px;
 }
 
-.obsidian-gemini-sp-content-area:focus {
+.geminese-sp-content-area:focus {
   outline: none;
   border-color: var(--interactive-accent);
 }
 
-.obsidian-gemini-sp-modal-buttons {
+.geminese-sp-modal-buttons {
   display: flex;
   gap: 8px;
   margin-top: 16px;

@@ -1,13 +1,13 @@
 /* Plugin Settings */
-.obsidian-gemini-plugin-settings-desc {
+.geminese-plugin-settings-desc {
   margin-bottom: 12px;
 }
 
-.obsidian-gemini-plugins-container {
+.geminese-plugins-container {
   margin-top: 8px;
 }
 
-.obsidian-gemini-plugin-header {
+.geminese-plugin-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -15,13 +15,13 @@
   padding: 0 12px;
 }
 
-.obsidian-gemini-plugin-label {
+.geminese-plugin-label {
   font-size: var(--font-ui-small);
   color: var(--text-muted);
   font-weight: var(--font-medium);
 }
 
-.obsidian-gemini-plugin-empty {
+.geminese-plugin-empty {
   padding: 16px;
   text-align: center;
   color: var(--text-muted);
@@ -30,13 +30,13 @@
   border-radius: 6px;
 }
 
-.obsidian-gemini-plugin-list {
+.geminese-plugin-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.obsidian-gemini-plugin-section-header {
+.geminese-plugin-section-header {
   font-size: 11px;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -44,7 +44,7 @@
   font-weight: 600;
 }
 
-.obsidian-gemini-plugin-item {
+.geminese-plugin-item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -54,19 +54,19 @@
   transition: background 0.15s ease;
 }
 
-.obsidian-gemini-plugin-item:hover {
+.geminese-plugin-item:hover {
   background: var(--background-modifier-hover);
 }
 
-.obsidian-gemini-plugin-item-disabled {
+.geminese-plugin-item-disabled {
   opacity: 0.6;
 }
 
-.obsidian-gemini-plugin-item-error {
+.geminese-plugin-item-error {
   opacity: 0.8;
 }
 
-.obsidian-gemini-plugin-status {
+.geminese-plugin-status {
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -74,35 +74,35 @@
   flex-shrink: 0;
 }
 
-.obsidian-gemini-plugin-status-enabled {
+.geminese-plugin-status-enabled {
   background: var(--color-green);
 }
 
-.obsidian-gemini-plugin-status-disabled {
+.geminese-plugin-status-disabled {
   background: var(--text-muted);
 }
 
-.obsidian-gemini-plugin-status-error {
+.geminese-plugin-status-error {
   background: var(--text-error);
 }
 
-.obsidian-gemini-plugin-info {
+.geminese-plugin-info {
   flex: 1;
   min-width: 0;
 }
 
-.obsidian-gemini-plugin-name-row {
+.geminese-plugin-name-row {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.obsidian-gemini-plugin-name {
+.geminese-plugin-name {
   font-weight: 600;
 }
 
-.obsidian-gemini-plugin-version-badge {
+.geminese-plugin-version-badge {
   font-size: 10px;
   padding: 2px 6px;
   background: var(--background-modifier-border);
@@ -110,7 +110,7 @@
   color: var(--text-muted);
 }
 
-.obsidian-gemini-plugin-error-badge {
+.geminese-plugin-error-badge {
   font-size: 10px;
   padding: 2px 6px;
   background: var(--text-error);
@@ -119,7 +119,7 @@
   text-transform: uppercase;
 }
 
-.obsidian-gemini-plugin-preview {
+.geminese-plugin-preview {
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 4px;
@@ -128,17 +128,17 @@
   white-space: nowrap;
 }
 
-.obsidian-gemini-plugin-preview-error {
+.geminese-plugin-preview-error {
   color: var(--text-error);
 }
 
-.obsidian-gemini-plugin-actions {
+.geminese-plugin-actions {
   display: flex;
   gap: 4px;
   flex-shrink: 0;
 }
 
-.obsidian-gemini-plugin-action-btn {
+.geminese-plugin-action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -153,12 +153,12 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.obsidian-gemini-plugin-action-btn:hover {
+.geminese-plugin-action-btn:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.obsidian-gemini-plugin-action-btn svg {
+.geminese-plugin-action-btn svg {
   width: 14px;
   height: 14px;
 }
