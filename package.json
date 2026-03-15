@@ -1,6 +1,6 @@
 {
   "name": "geminese",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "description": "Geminese - Gemini CLI embedded in Obsidian sidebar",
   "main": "main.js",
   "scripts": {
