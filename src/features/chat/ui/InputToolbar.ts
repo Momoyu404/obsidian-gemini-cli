@@ -197,7 +197,7 @@ export class PermissionToggle {
 
   private static readonly MODES: { value: PermissionMode; label: string }[] = [
     { value: 'plan', label: 'Plan' },
-    { value: 'build', label: 'Build' },
+    { value: 'agent', label: 'Agent' },
   ];
 
   constructor(parentEl: HTMLElement, callbacks: ToolbarCallbacks) {
@@ -228,7 +228,7 @@ export class PermissionToggle {
 
     // Apply mode-specific color styling
     this.container.removeClass('mode-plan');
-    this.container.removeClass('mode-build');
+    this.container.removeClass('mode-agent');
     this.container.addClass(`mode-${mode}`);
   }
 

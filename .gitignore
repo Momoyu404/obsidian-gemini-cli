@@ -94,3 +94,7 @@ dev
 .gemini/
 .codex/
 .worktrees/
+
+# AI Planning
+.sisyphus/
+

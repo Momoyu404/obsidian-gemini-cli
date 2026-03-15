@@ -285,7 +285,7 @@ describe('InputController - Message Queue', () => {
     it('should send queued message in non-plan mode', async () => {
       jest.useFakeTimers();
       try {
-        deps.plugin.settings.permissionMode = 'normal';
+        deps.plugin.settings.permissionMode = 'agent';
         deps.state.queuedMessage = {
           content: 'queued plan',
           images: undefined,

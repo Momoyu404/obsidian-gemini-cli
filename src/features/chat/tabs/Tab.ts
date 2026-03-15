@@ -1228,7 +1228,7 @@ export function setupServiceCallbacks(tab: TabData, plugin: GeminesePlugin): voi
         if (decision !== null && decision.type !== 'feedback') {
           // Only restore permission mode if still in plan mode — user may have toggled out via Shift+Tab
           if (plugin.settings.permissionMode === 'plan') {
-            const restoreMode = tab.state.prePlanPermissionMode ?? 'build';
+            const restoreMode = tab.state.prePlanPermissionMode ?? 'agent';
             tab.state.prePlanPermissionMode = null;
             updatePlanModeUI(tab, plugin, restoreMode);
           }

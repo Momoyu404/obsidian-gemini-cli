@@ -487,6 +487,90 @@ describe('StorageService migration', () => {
     expect(saved.lastGeminiModel).toBe('claude-3-sonnet');
   });
 
+  it('migrates permissionMode agent during settings migration', async () => {
+    const legacySettings = {
+      userName: 'Test User',
+      permissions: [],
+      permissionMode: 'agent',
+    };
+
+    const { plugin, files } = createMockPlugin({
+      dataJson: null,
+      initialFiles: {
+        '.gemini/settings.json': JSON.stringify(legacySettings),
+      },
+    });
+
+    const storage = new StorageService(plugin);
+    await storage.initialize();
+
+    const saved = JSON.parse(files.get('.gemini/geminese-settings.json') || '{}') as Record<string, unknown>;
+    expect(saved.permissionMode).toBe('agent');
+  });
+
+  it('migrates permissionMode normal to agent during settings migration', async () => {
+    const legacySettings = {
+      userName: 'Test User',
+      permissions: [],
+      permissionMode: 'normal',
+    };
+
+    const { plugin, files } = createMockPlugin({
+      dataJson: null,
+      initialFiles: {
+        '.gemini/settings.json': JSON.stringify(legacySettings),
+      },
+    });
+
+    const storage = new StorageService(plugin);
+    await storage.initialize();
+
+    const saved = JSON.parse(files.get('.gemini/geminese-settings.json') || '{}') as Record<string, unknown>;
+    expect(saved.permissionMode).toBe('agent');
+  });
+
+  it('migrates permissionMode plan to agent during settings migration', async () => {
+    const legacySettings = {
+      userName: 'Test User',
+      permissions: [],
+      permissionMode: 'plan',
+    };
+
+    const { plugin, files } = createMockPlugin({
+      dataJson: null,
+      initialFiles: {
+        '.gemini/settings.json': JSON.stringify(legacySettings),
+      },
+    });
+
+    const storage = new StorageService(plugin);
+    await storage.initialize();
+
+    const saved = JSON.parse(files.get('.gemini/geminese-settings.json') || '{}') as Record<string, unknown>;
+    expect(saved.permissionMode).toBe('agent');
+  });
+
+  it('preserves permissionMode agent during settings migration', async () => {
+    const legacySettings = {
+      userName: 'Test User',
+      permissions: [],
+      permissionMode: 'agent',
+    };
+
+    const { plugin, files } = createMockPlugin({
+      dataJson: null,
+      initialFiles: {
+        '.gemini/settings.json': JSON.stringify(legacySettings),
+      },
+    });
+
+    const storage = new StorageService(plugin);
+    await storage.initialize();
+
+    const saved = JSON.parse(files.get('.gemini/geminese-settings.json') || '{}') as Record<string, unknown>;
+    expect(saved.permissionMode).toBe('agent');
+  });
+
   it('preserves persistentExternalContextPaths from existing settings', async () => {
     const existingSettings = {
       userName: 'Test User',

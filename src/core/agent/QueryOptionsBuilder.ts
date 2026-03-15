@@ -11,6 +11,7 @@ import * as path from 'path';
 import type { McpServerManager } from '../mcp';
 import type { PluginManager } from '../plugins';
 import { buildSystemPrompt, type SystemPromptSettings } from '../prompts/mainAgent';
+import { READ_ONLY_TOOLS } from '../tools/toolNames';
 import type { GemineseSettings, PermissionMode } from '../types';
 import { THINKING_BUDGETS } from '../types';
 import {
@@ -127,6 +128,7 @@ export class QueryOptionsBuilder {
       allowedExportPaths: ctx.settings.allowedExportPaths,
       vaultPath: ctx.vaultPath,
       userName: ctx.settings.userName,
+      permissionMode: ctx.settings.permissionMode,
     });
 
     const promptPath = QueryOptionsBuilder.writeSystemPromptFile(ctx.vaultPath, systemPrompt);
@@ -172,6 +174,7 @@ export class QueryOptionsBuilder {
       allowedExportPaths: ctx.settings.allowedExportPaths,
       vaultPath: ctx.vaultPath,
       userName: ctx.settings.userName,
+      permissionMode: ctx.settings.permissionMode,
     });
 
     const promptPath = QueryOptionsBuilder.writeSystemPromptFile(ctx.vaultPath, systemPrompt);
@@ -227,8 +230,10 @@ export class QueryOptionsBuilder {
   private static applyApprovalMode(args: string[], permissionMode: PermissionMode): void {
     if (permissionMode === 'plan') {
       args.push('--approval-mode', 'plan');
+      const allowedTools = [...READ_ONLY_TOOLS].join(',');
+      args.push('--allowed-tools', allowedTools);
     } else {
-      // 'build' and 'normal' both map to auto_edit
+      // 'agent' maps to auto_edit
       args.push('--approval-mode', 'auto_edit');
     }
   }

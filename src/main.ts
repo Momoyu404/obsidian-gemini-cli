@@ -249,10 +249,10 @@ export default class GeminesePlugin extends Plugin {
       slashCommands,
     };
 
-    // Plan mode is ephemeral — normalize back to normal on load so the app
-    // doesn't start stuck in plan mode after a restart (prePlanPermissionMode is lost)
-    if (this.settings.permissionMode === 'plan') {
-      this.settings.permissionMode = 'normal';
+    // Migrate legacy permission modes to 'agent', and normalize ephemeral 'plan' mode
+    const legacyMode = this.settings.permissionMode as string;
+    if (legacyMode === 'plan' || legacyMode === 'build' || legacyMode === 'normal') {
+      this.settings.permissionMode = 'agent';
     }
 
     // Initialize and migrate legacy CLI paths to hostname-based paths

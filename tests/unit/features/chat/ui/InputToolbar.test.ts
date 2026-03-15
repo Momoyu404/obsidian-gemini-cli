@@ -35,7 +35,7 @@ function createMockCallbacks(overrides: Record<string, any> = {}) {
     getSettings: jest.fn().mockReturnValue({
       model: 'sonnet',
       thinkingBudget: 'low',
-      permissionMode: 'normal',
+      permissionMode: 'agent',
     }),
     getEnvironmentVariables: jest.fn().mockReturnValue(''),
     ...overrides,
@@ -72,7 +72,7 @@ describe('ModelSelector', () => {
     callbacks.getSettings.mockReturnValue({
       model: 'nonexistent',
       thinkingBudget: 'low',
-      permissionMode: 'normal',
+      permissionMode: 'agent',
     });
     selector.updateDisplay();
     const label = parentEl.querySelector('.geminese-model-label');
@@ -121,7 +121,7 @@ describe('ModelSelector', () => {
     callbacks.getSettings.mockReturnValue({
       model: 'sonnet',
       thinkingBudget: 'low',
-      permissionMode: 'normal',
+      permissionMode: 'agent',
       show1MModel: true,
     });
     selector.updateDisplay();
@@ -136,7 +136,7 @@ describe('ModelSelector', () => {
     callbacks.getSettings.mockReturnValue({
       model: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
       thinkingBudget: 'low',
-      permissionMode: 'normal',
+      permissionMode: 'agent',
     });
     selector.renderOptions();
     selector.updateDisplay();
@@ -177,7 +177,7 @@ describe('ThinkingBudgetSelector', () => {
     callbacks.getSettings.mockReturnValue({
       model: 'sonnet',
       thinkingBudget: 'off',
-      permissionMode: 'normal',
+      permissionMode: 'agent',
     });
     selector.updateDisplay();
     const current = parentEl.querySelector('.geminese-thinking-current');
@@ -241,9 +241,9 @@ describe('PermissionToggle', () => {
     expect(container).not.toBeNull();
   });
 
-  it('should display Build label when in build mode', () => {
+  it('should display Agent label when in agent mode', () => {
     const label = parentEl.querySelector('.geminese-permission-label');
-    expect(label?.textContent).toBe('Build');
+    expect(label?.textContent).toBe('Agent');
   });
 
   it('should display Plan label when in plan mode', () => {
@@ -259,7 +259,7 @@ describe('PermissionToggle', () => {
     expect(label?.textContent).toBe('Plan');
   });
 
-  it('should render dropdown options for Plan and Build', () => {
+  it('should render dropdown options for Plan and Agent', () => {
     const dropdown = parentEl.querySelector('.geminese-permission-dropdown');
     expect(dropdown).not.toBeNull();
     const options = dropdown?.children || [];

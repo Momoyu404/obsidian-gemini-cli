@@ -6,6 +6,7 @@
  */
 
 import { getTodayDate } from '../../utils/date';
+import type { PermissionMode } from '../types/settings';
 
 export interface SystemPromptSettings {
   mediaFolder?: string;
@@ -13,6 +14,7 @@ export interface SystemPromptSettings {
   allowedExportPaths?: string[];
   vaultPath?: string;
   userName?: string;
+  permissionMode?: PermissionMode;
 }
 
 function getBaseSystemPrompt(vaultPath?: string, userName?: string): string {
@@ -295,6 +297,23 @@ cp ./note.md ~/Desktop/note.md
 }
 
 
+function getPlanModeInstructions(): string {
+  return `
+
+## Plan Mode (READ-ONLY)
+
+You are currently in **Plan mode**. This is a read-only mode for exploration and planning.
+
+**ALLOWED tools**: Read, Glob, Grep, LS, WebSearch, WebFetch
+**FORBIDDEN tools**: Write, Edit, Bash, NotebookEdit — DO NOT call these tools.
+
+If the user asks you to modify files, create content, or execute commands:
+1. Explain what you WOULD do (the plan)
+2. Tell the user: "To execute these changes, please switch to **Agent mode**."
+
+DO NOT attempt to use Write, Edit, or Bash tools. They are not available in Plan mode.`;
+}
+
 export function buildSystemPrompt(settings: SystemPromptSettings = {}): string {
   let prompt = getBaseSystemPrompt(settings.vaultPath, settings.userName);
 
@@ -304,6 +323,10 @@ export function buildSystemPrompt(settings: SystemPromptSettings = {}): string {
 
   if (settings.customPrompt?.trim()) {
     prompt += '\n\n## Custom Instructions\n\n' + settings.customPrompt.trim();
+  }
+
+  if (settings.permissionMode === 'plan') {
+    prompt += getPlanModeInstructions();
   }
 
   return prompt;

@@ -496,7 +496,7 @@ export class GemineseView extends ItemView {
         if (!activeTab) return;
         const current = this.plugin.settings.permissionMode;
         if (current === 'plan') {
-          const restoreMode = activeTab.state.prePlanPermissionMode ?? 'normal';
+          const restoreMode = activeTab.state.prePlanPermissionMode ?? 'agent';
           activeTab.state.prePlanPermissionMode = null;
           updatePlanModeUI(activeTab, this.plugin, restoreMode);
         } else {

@@ -118,7 +118,7 @@ export function getCliPlatformKey(): CliPlatformKey {
 export type HostnameCliPaths = Record<string, string>;
 
 /** Permission mode for tool execution. */
-export type PermissionMode = 'plan' | 'build' | 'normal';
+export type PermissionMode = 'plan' | 'agent';
 
 /** User decision from the approval modal. */
 export type ApprovalDecision = 'allow' | 'allow-always' | 'deny' | 'cancel';
@@ -304,7 +304,7 @@ export const DEFAULT_SETTINGS: GemineseSettings = {
   // Security
   enableBlocklist: true,
   blockedCommands: getDefaultBlockedCommands(),
-  permissionMode: 'build',
+  permissionMode: 'agent',
 
   // Model & thinking
   model: 'auto',

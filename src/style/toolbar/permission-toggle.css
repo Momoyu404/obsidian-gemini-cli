@@ -28,7 +28,7 @@
   color: rgb(92, 148, 140);
 }
 
-.geminese-permission-selector.mode-build .geminese-permission-btn {
+.geminese-permission-selector.mode-agent .geminese-permission-btn {
   color: var(--geminese-brand, #8a58ff);
 }
 

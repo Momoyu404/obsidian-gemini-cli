@@ -114,6 +114,34 @@ describe('systemPrompt', () => {
     });
   });
 
+  describe('plan mode instructions', () => {
+    it('should include Plan Mode and FORBIDDEN when permissionMode is plan', () => {
+      const prompt = buildSystemPrompt({ permissionMode: 'plan' });
+      expect(prompt).toContain('Plan Mode');
+      expect(prompt).toContain('FORBIDDEN');
+    });
+
+    it('should not include Plan Mode when permissionMode is agent', () => {
+      const prompt = buildSystemPrompt({ permissionMode: 'agent' });
+      expect(prompt).not.toContain('Plan Mode');
+    });
+
+    it('should not include Plan Mode when permissionMode is undefined', () => {
+      const prompt = buildSystemPrompt({});
+      expect(prompt).not.toContain('Plan Mode');
+    });
+
+    it('should include read-only tool list in plan mode', () => {
+      const prompt = buildSystemPrompt({ permissionMode: 'plan' });
+      expect(prompt).toContain('Read, Glob, Grep, LS, WebSearch, WebFetch');
+    });
+
+    it('should include switch-to-agent-mode instruction in plan mode', () => {
+      const prompt = buildSystemPrompt({ permissionMode: 'plan' });
+      expect(prompt).toContain('Agent mode');
+    });
+  });
+
   describe('getInlineEditSystemPrompt', () => {
     it('should include inline edit critical output rules', () => {
       const prompt = getInlineEditSystemPrompt();

@@ -226,7 +226,9 @@ export class StorageService {
       blockedCommands: normalizeBlockedCommands(oldSettings.blockedCommands),
       model: (oldSettings.model as GeminiModel) ?? DEFAULT_SETTINGS.model,
       thinkingBudget: (oldSettings.thinkingBudget as StoredGemineseSettings['thinkingBudget']) ?? DEFAULT_SETTINGS.thinkingBudget,
-      permissionMode: (oldSettings.permissionMode as StoredGemineseSettings['permissionMode']) ?? DEFAULT_SETTINGS.permissionMode,
+      permissionMode: (['build', 'normal', 'plan'].includes(oldSettings.permissionMode ?? '')
+        ? 'agent'
+        : (oldSettings.permissionMode as StoredGemineseSettings['permissionMode'])) ?? DEFAULT_SETTINGS.permissionMode,
       excludedTags: oldSettings.excludedTags ?? DEFAULT_SETTINGS.excludedTags,
       mediaFolder: oldSettings.mediaFolder ?? DEFAULT_SETTINGS.mediaFolder,
       environmentVariables,

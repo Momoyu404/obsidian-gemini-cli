@@ -2204,7 +2204,7 @@ describe('GemineseService', () => {
       expect(response?.setMaxThinkingTokens).toHaveBeenCalledWith(16000);
     });
 
-    it('updates permission mode via setPermissionMode when going from YOLO to normal', async () => {
+    it('updates permission mode via setPermissionMode when going from YOLO to agent', async () => {
       // Start in YOLO mode
       mockPlugin.settings.permissionMode = 'yolo';
       service = new GemineseService(mockPlugin, createMockMcpManager());
@@ -2212,20 +2212,20 @@ describe('GemineseService', () => {
       const chunks1: any[] = [];
       for await (const c of service.query('first')) chunks1.push(c);
 
-      // Switch to normal mode
-      mockPlugin.settings.permissionMode = 'normal';
+      // Switch to agent mode
+      mockPlugin.settings.permissionMode = 'agent';
 
       const chunks2: any[] = [];
       for await (const c of service.query('second')) chunks2.push(c);
 
       const response = getLastResponse();
-      // Should call setPermissionMode for YOLO -> normal transition
+      // Should call setPermissionMode for YOLO -> agent transition
       expect(response?.setPermissionMode).toHaveBeenCalledWith('acceptEdits');
     });
 
-    it('updates permission mode via setPermissionMode when going from normal to YOLO', async () => {
-      // Start in normal mode
-      mockPlugin.settings.permissionMode = 'normal';
+    it('updates permission mode via setPermissionMode when going from agent to YOLO', async () => {
+      // Start in agent mode
+      mockPlugin.settings.permissionMode = 'agent';
       service = new GemineseService(mockPlugin, createMockMcpManager());
 
       const chunks1: any[] = [];
@@ -2238,7 +2238,7 @@ describe('GemineseService', () => {
       for await (const c of service.query('second')) chunks2.push(c);
 
       const response = getLastResponse();
-      // Should call setPermissionMode for normal -> YOLO transition (no restart needed)
+      // Should call setPermissionMode for agent -> YOLO transition (no restart needed)
       expect(response?.setPermissionMode).toHaveBeenCalledWith('bypassPermissions');
     });
 

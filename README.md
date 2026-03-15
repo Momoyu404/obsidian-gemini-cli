@@ -16,7 +16,7 @@ geminese is an Obsidian plugin that embeds [Gemini CLI](https://github.com/googl
 - **MCP Support**: Connect external tools and data sources via Model Context Protocol servers (stdio, SSE, HTTP).
 - **Model Selection**: Choose between Auto, Pro, Flash, and Flash Lite. The actual model (Gemini 2.5 or 3.x) depends on your [Gemini CLI](https://github.com/google-gemini/gemini-cli) version.
 - **Plan Mode**: Toggle plan mode via Shift+Tab — Gemini explores and designs before implementing.
-- **Security**: Permission modes — **Build** (execute tools and edit files) and **Plan** (read-only planning), plus command blocklist and vault-scoped access.
+- **Security**: Permission modes — **Agent** (execute tools and edit files) and **Plan** (read-only planning), plus command blocklist and vault-scoped access.
 - **10 Languages**: English, Chinese (Simplified/Traditional), Japanese, Korean, Spanish, German, French, Portuguese, Russian.
 
 ## Requirements
@@ -80,7 +80,7 @@ npm run lint    # Lint code
 
 Use it like Gemini CLI — read, write, edit, search files in your vault.
 
-**Check you're connected:** If you get a reply in the chat, you're connected. You can ask e.g. “What model are you?” to confirm. The **model** (Auto / Pro / Flash / Flash Lite) is shown in the input toolbar next to “Thinking”; click it to change. Permission mode (**Plan / Build**): Plan is read-only planning, Build allows tool execution and file editing.
+**Check you're connected:** If you get a reply in the chat, you're connected. You can ask e.g. “What model are you?” to confirm. The **model** (Auto / Pro / Flash / Flash Lite) is shown in the input toolbar next to “Thinking”; click it to change. Permission mode (**Plan / Agent**): Plan is read-only planning, Agent allows tool execution and file editing.
 
 ### Context
 
@@ -126,7 +126,7 @@ Use it like Gemini CLI — read, write, edit, search files in your vault.
 | **Export paths** | Write-only (e.g., `~/Desktop`, `~/Downloads`) |
 | **External contexts** | Full read/write (session-only) |
 
-- **Build mode**: Default mode — execute tools and edit files (with safety interception and approval)
+- **Agent mode**: Default mode — execute tools and edit files (with safety interception and approval)
 - **Plan mode**: Read-only — explores and designs a plan before implementing
 
 ## Privacy & Data Use

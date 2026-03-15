@@ -45,7 +45,7 @@ function createMockSettings(overrides: Partial<GemineseSettings> = {}): Geminese
       unix: ['rm -rf'],
       windows: ['Remove-Item -Recurse -Force'],
     },
-    permissionMode: 'build',
+    permissionMode: 'agent',
     allowedExportPaths: [],
     loadUserGeminiSettings: false,
     mediaFolder: '',
@@ -73,7 +73,7 @@ function createMockPersistentQueryConfig(
   return {
     model: 'auto',
     thinkingTokens: null,
-    permissionMode: 'build',
+    permissionMode: 'agent',
     systemPromptKey: 'key1',
     disallowedToolsKey: '',
     mcpServersKey: '',
@@ -186,7 +186,7 @@ describe('QueryOptionsBuilder', () => {
 
       expect(config.model).toBe('auto');
       expect(config.thinkingTokens).toBeNull();
-      expect(config.permissionMode).toBe('build');
+      expect(config.permissionMode).toBe('agent');
       expect(config.settingSources).toBe('project');
       expect(config.geminiCliPath).toBe('/mock/claude');
     });
@@ -211,7 +211,7 @@ describe('QueryOptionsBuilder', () => {
   });
 
   describe('buildPersistentCliArgs', () => {
-    it('sets build mode approval arg correctly', () => {
+    it('sets agent mode approval arg correctly', () => {
       const ctx = {
         ...createMockContext(),
         abortController: new AbortController(),
@@ -223,10 +223,10 @@ describe('QueryOptionsBuilder', () => {
       expect(result.args[result.args.indexOf('--approval-mode') + 1]).toBe('auto_edit');
     });
 
-    it('sets normal mode approval arg correctly (same as build)', () => {
+    it('sets agent mode approval arg correctly (same as agent)', () => {
       const ctx = {
         ...createMockContext({
-          settings: createMockSettings({ permissionMode: 'normal' as any }),
+          settings: createMockSettings({ permissionMode: 'agent' }),
         }),
         abortController: new AbortController(),
         hooks: {},
@@ -249,6 +249,32 @@ describe('QueryOptionsBuilder', () => {
 
       expect(result.args).toContain('--approval-mode');
       expect(result.args[result.args.indexOf('--approval-mode') + 1]).toBe('plan');
+    });
+
+    it('includes --allowed-tools when permissionMode is plan', () => {
+      const ctx = {
+        ...createMockContext({
+          settings: createMockSettings({ permissionMode: 'plan' }),
+        }),
+        abortController: new AbortController(),
+        hooks: {},
+      };
+      const result: GeminiCliArgs = QueryOptionsBuilder.buildPersistentCliArgs(ctx);
+
+      expect(result.args).toContain('--allowed-tools');
+    });
+
+    it('does not include --allowed-tools when permissionMode is agent', () => {
+      const ctx = {
+        ...createMockContext({
+          settings: createMockSettings({ permissionMode: 'agent' }),
+        }),
+        abortController: new AbortController(),
+        hooks: {},
+      };
+      const result: GeminiCliArgs = QueryOptionsBuilder.buildPersistentCliArgs(ctx);
+
+      expect(result.args).not.toContain('--allowed-tools');
     });
 
     it('includes model in args', () => {
@@ -428,6 +454,34 @@ describe('QueryOptionsBuilder', () => {
     it('does not include --allowed-tools when not provided', () => {
       const ctx = {
         ...createMockContext(),
+        abortController: new AbortController(),
+        hooks: {},
+        hasEditorContext: false,
+      };
+      const result: GeminiCliArgs = QueryOptionsBuilder.buildColdStartCliArgs(ctx, 'hello');
+
+      expect(result.args).not.toContain('--allowed-tools');
+    });
+
+    it('includes --allowed-tools when permissionMode is plan', () => {
+      const ctx = {
+        ...createMockContext({
+          settings: createMockSettings({ permissionMode: 'plan' }),
+        }),
+        abortController: new AbortController(),
+        hooks: {},
+        hasEditorContext: false,
+      };
+      const result: GeminiCliArgs = QueryOptionsBuilder.buildColdStartCliArgs(ctx, 'hello');
+
+      expect(result.args).toContain('--allowed-tools');
+    });
+
+    it('does not include --allowed-tools from permissionMode when permissionMode is agent', () => {
+      const ctx = {
+        ...createMockContext({
+          settings: createMockSettings({ permissionMode: 'agent' }),
+        }),
         abortController: new AbortController(),
         hooks: {},
         hasEditorContext: false,
