@@ -96,6 +96,32 @@ Use it like Gemini CLI — read, write, edit, search files in your vault.
 - **Slash Commands**: Type `/` for custom prompt templates
 - **MCP**: Add external tools via Settings → MCP Servers; use `@mcp-server` in chat to activate
 
+## Skills
+
+Supercharge your Gemini with [Obsidian Skills](https://github.com/kepano/obsidian-skills) — agent skills that teach Gemini how to work with Obsidian Markdown, Bases, JSON Canvas, CLI, and more.
+
+### Install Skills
+
+Just open gemini in Terminal and say:
+
+```
+Help me install the Obsidian Skills plugin from https://github.com/kepano/obsidian-skills
+```
+
+Gemini will clone the repo and set everything up for you.
+
+<sub>*If AI can do it, why should a human bother? Leave this kind of thing to the AI.*</sub>
+
+### Available Skills
+
+| Skill | Description |
+|-------|-------------|
+| [obsidian-markdown](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-markdown) | Obsidian Flavored Markdown — wikilinks, embeds, callouts, properties |
+| [obsidian-bases](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-bases) | Obsidian Bases — views, filters, formulas, summaries |
+| [json-canvas](https://github.com/kepano/obsidian-skills/tree/main/skills/json-canvas) | JSON Canvas — nodes, edges, groups, connections |
+| [obsidian-cli](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-cli) | Obsidian CLI — vault interaction, plugin/theme development |
+| [defuddle](https://github.com/kepano/obsidian-skills/tree/main/skills/defuddle) | Extract clean markdown from web pages, removing clutter to save tokens |
+
 ## Configuration
 
 ### Settings
