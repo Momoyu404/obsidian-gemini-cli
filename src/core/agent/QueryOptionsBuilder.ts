@@ -8,6 +8,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { filterValidFiles } from '../../utils/externalContext';
 import type { McpServerManager } from '../mcp';
 import type { PluginManager } from '../plugins';
 import { buildSystemPrompt, type SystemPromptSettings } from '../prompts/mainAgent';
@@ -122,7 +123,7 @@ export class QueryOptionsBuilder {
 
   /** Builds Gemini CLI arguments for a persistent/warm query. */
   static buildPersistentCliArgs(ctx: PersistentQueryContext): GeminiCliArgs {
-    const systemPrompt = buildSystemPrompt({
+    let systemPrompt = buildSystemPrompt({
       mediaFolder: ctx.settings.mediaFolder,
       customPrompt: ctx.settings.systemPrompt,
       allowedExportPaths: ctx.settings.allowedExportPaths,
@@ -130,8 +131,6 @@ export class QueryOptionsBuilder {
       userName: ctx.settings.userName,
       permissionMode: ctx.settings.permissionMode,
     });
-
-    const promptPath = QueryOptionsBuilder.writeSystemPromptFile(ctx.vaultPath, systemPrompt);
 
     const args: string[] = [
       '--output-format', 'stream-json',
@@ -145,8 +144,15 @@ export class QueryOptionsBuilder {
     }
 
     if (ctx.externalContextPaths && ctx.externalContextPaths.length > 0) {
-      args.push('--include-directories', ctx.externalContextPaths.join(','));
+      const validFiles = filterValidFiles(ctx.externalContextPaths);
+      if (validFiles.length > 0) {
+        const includeDirs = Array.from(new Set(validFiles.map(p => path.dirname(p))));
+        args.push('--include-directories', includeDirs.join(','));
+        systemPrompt += `\n\nExternal Attached Files:\nThe user has attached these files. Please use your tools to read or look at them if needed:\n${validFiles.join('\n')}`;
+      }
     }
+
+    const promptPath = QueryOptionsBuilder.writeSystemPromptFile(ctx.vaultPath, systemPrompt);
 
     const env: Record<string, string | undefined> = {
       ...process.env,
@@ -168,7 +174,7 @@ export class QueryOptionsBuilder {
   static buildColdStartCliArgs(ctx: ColdStartQueryContext, prompt: string): GeminiCliArgs {
     const selectedModel = ctx.modelOverride ?? ctx.settings.model;
 
-    const systemPrompt = buildSystemPrompt({
+    let systemPrompt = buildSystemPrompt({
       mediaFolder: ctx.settings.mediaFolder,
       customPrompt: ctx.settings.systemPrompt,
       allowedExportPaths: ctx.settings.allowedExportPaths,
@@ -176,8 +182,6 @@ export class QueryOptionsBuilder {
       userName: ctx.settings.userName,
       permissionMode: ctx.settings.permissionMode,
     });
-
-    const promptPath = QueryOptionsBuilder.writeSystemPromptFile(ctx.vaultPath, systemPrompt);
 
     const args: string[] = [
       '--output-format', 'stream-json',
@@ -192,12 +196,19 @@ export class QueryOptionsBuilder {
     }
 
     if (ctx.externalContextPaths && ctx.externalContextPaths.length > 0) {
-      args.push('--include-directories', ctx.externalContextPaths.join(','));
+      const validFiles = filterValidFiles(ctx.externalContextPaths);
+      if (validFiles.length > 0) {
+        const includeDirs = Array.from(new Set(validFiles.map(p => path.dirname(p))));
+        args.push('--include-directories', includeDirs.join(','));
+        systemPrompt += `\n\nExternal Attached Files:\nThe user has attached these files. Please use your tools to read or look at them if needed:\n${validFiles.join('\n')}`;
+      }
     }
 
     if (ctx.allowedTools && ctx.allowedTools.length > 0) {
       args.push('--allowed-tools', ctx.allowedTools.join(','));
     }
+
+    const promptPath = QueryOptionsBuilder.writeSystemPromptFile(ctx.vaultPath, systemPrompt);
 
     const env: Record<string, string | undefined> = {
       ...process.env,
