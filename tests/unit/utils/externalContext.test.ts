@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 
 import {
-  filterValidPaths,
+  filterValidFiles,
   findConflictingPath,
   getFolderName,
   isDuplicatePath,
-  isValidDirectoryPath,
+  isValidFilePath,
   normalizePathForComparison,
-  validateDirectoryPath,
+  validateFilePath,
 } from '@/utils/externalContext';
 
 jest.mock('fs');
@@ -181,21 +181,21 @@ describe('externalContext utilities', () => {
     });
   });
 
-  describe('validateDirectoryPath', () => {
+  describe('validateFilePath', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
-    it('should return valid for existing directory', () => {
-      (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => true });
-      expect(validateDirectoryPath('/existing/dir')).toEqual({ valid: true });
+    it('should return valid for existing file', () => {
+      (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => true });
+      expect(validateFilePath('/existing/file.txt')).toEqual({ valid: true });
     });
 
-    it('should return not-a-directory error for file path', () => {
-      (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => false });
-      expect(validateDirectoryPath('/path/to/file.txt')).toEqual({
+    it('should return not-a-file error for directory path', () => {
+      (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => false });
+      expect(validateFilePath('/path/to/dir')).toEqual({
         valid: false,
-        error: 'Path exists but is not a directory',
+        error: 'Path exists but is not a file',
       });
     });
 
@@ -203,7 +203,7 @@ describe('externalContext utilities', () => {
       const err = new Error('ENOENT') as NodeJS.ErrnoException;
       err.code = 'ENOENT';
       (fs.statSync as jest.Mock).mockImplementation(() => { throw err; });
-      expect(validateDirectoryPath('/non/existent')).toEqual({
+      expect(validateFilePath('/non/existent')).toEqual({
         valid: false,
         error: 'Path does not exist',
       });
@@ -213,7 +213,7 @@ describe('externalContext utilities', () => {
       const err = new Error('EACCES') as NodeJS.ErrnoException;
       err.code = 'EACCES';
       (fs.statSync as jest.Mock).mockImplementation(() => { throw err; });
-      expect(validateDirectoryPath('/restricted/path')).toEqual({
+      expect(validateFilePath('/restricted/path')).toEqual({
         valid: false,
         error: 'Permission denied',
       });
@@ -223,52 +223,52 @@ describe('externalContext utilities', () => {
       const err = new Error('Something went wrong') as NodeJS.ErrnoException;
       err.code = 'EIO';
       (fs.statSync as jest.Mock).mockImplementation(() => { throw err; });
-      const result = validateDirectoryPath('/some/path');
+      const result = validateFilePath('/some/path');
       expect(result.valid).toBe(false);
       expect(result.error).toContain('Cannot access path');
       expect(result.error).toContain('Something went wrong');
     });
   });
 
-  describe('isValidDirectoryPath', () => {
+  describe('isValidFilePath', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
-    it('should return true for existing directory', () => {
-      (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => true });
-      expect(isValidDirectoryPath('/existing/dir')).toBe(true);
-      expect(fs.statSync).toHaveBeenCalledWith('/existing/dir');
+    it('should return true for existing file', () => {
+      (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => true });
+      expect(isValidFilePath('/existing/file.txt')).toBe(true);
+      expect(fs.statSync).toHaveBeenCalledWith('/existing/file.txt');
     });
 
     it('should return false for non-existent path', () => {
       (fs.statSync as jest.Mock).mockImplementation(() => {
         throw new Error('ENOENT');
       });
-      expect(isValidDirectoryPath('/non/existent')).toBe(false);
+      expect(isValidFilePath('/non/existent')).toBe(false);
     });
 
-    it('should return false for file path (not directory)', () => {
-      (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => false });
-      expect(isValidDirectoryPath('/path/to/file.txt')).toBe(false);
+    it('should return false for directory path (not file)', () => {
+      (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => false });
+      expect(isValidFilePath('/path/to/dir')).toBe(false);
     });
   });
 
-  describe('filterValidPaths', () => {
+  describe('filterValidFiles', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
     it('should filter out non-existent paths', () => {
       (fs.statSync as jest.Mock).mockImplementation((p: string) => {
-        if (p === '/valid/path') {
-          return { isDirectory: () => true };
+        if (p === '/valid/path.txt') {
+          return { isFile: () => true };
         }
         throw new Error('ENOENT');
       });
 
-      const result = filterValidPaths(['/valid/path', '/invalid/path', '/another/invalid']);
-      expect(result).toEqual(['/valid/path']);
+      const result = filterValidFiles(['/valid/path.txt', '/invalid/path.txt', '/another/invalid.txt']);
+      expect(result).toEqual(['/valid/path.txt']);
     });
 
     it('should return empty array when all paths are invalid', () => {
@@ -276,20 +276,20 @@ describe('externalContext utilities', () => {
         throw new Error('ENOENT');
       });
 
-      const result = filterValidPaths(['/invalid1', '/invalid2']);
+      const result = filterValidFiles(['/invalid1.txt', '/invalid2.txt']);
       expect(result).toEqual([]);
     });
 
     it('should return all paths when all are valid', () => {
-      (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => true });
+      (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => true });
 
-      const paths = ['/path1', '/path2', '/path3'];
-      const result = filterValidPaths(paths);
+      const paths = ['/path1.txt', '/path2.txt', '/path3.txt'];
+      const result = filterValidFiles(paths);
       expect(result).toEqual(paths);
     });
 
     it('should handle empty array', () => {
-      const result = filterValidPaths([]);
+      const result = filterValidFiles([]);
       expect(result).toEqual([]);
     });
   });

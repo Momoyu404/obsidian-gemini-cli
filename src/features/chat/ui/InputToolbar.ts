@@ -15,7 +15,7 @@ import {
 } from '../../../core/types';
 import { CHECK_ICON_SVG, MCP_ICON_SVG } from '../../../shared/icons';
 import { getModelsFromEnvironment, parseEnvironmentVariables } from '../../../utils/env';
-import { filterValidPaths, findConflictingPath, isDuplicatePath, isValidDirectoryPath, validateDirectoryPath } from '../../../utils/externalContext';
+import { filterValidFiles, findConflictingPath, isDuplicatePath, isValidFilePath, validateFilePath } from '../../../utils/externalContext';
 import { expandHomePath, normalizePathForFilesystem } from '../../../utils/path';
 
 export interface ToolbarSettings {
@@ -302,7 +302,7 @@ export class ExternalContextSelector {
 
   setPersistentPaths(paths: string[]): void {
     // Validate paths - remove non-existent directories
-    const validPaths = filterValidPaths(paths);
+    const validPaths = filterValidFiles(paths);
     const invalidPaths = paths.filter(p => !validPaths.includes(p));
 
     this.persistentPaths = new Set(validPaths);
@@ -324,8 +324,8 @@ export class ExternalContextSelector {
       this.persistentPaths.delete(path);
     } else {
       // Validate path still exists before persisting
-      if (!isValidDirectoryPath(path)) {
-        new Notice(`Cannot persist "${this.shortenPath(path)}" - directory no longer exists`, 4000);
+      if (!isValidFilePath(path)) {
+        new Notice(`Cannot persist "${this.shortenPath(path)}" - file no longer exists`, 4000);
         return;
       }
       this.persistentPaths.add(path);
@@ -369,16 +369,16 @@ export class ExternalContextSelector {
     this.renderDropdown();
   }
 
-  /**
-   * Add an external context path programmatically (e.g., from /add-dir command).
-   * Validates the path and handles duplicates/conflicts.
-   * @param pathInput - Path string (supports ~/ expansion)
-   * @returns Result with success status and normalized path, or error message on failure
-   */
+    /**
+    * Add an external context path programmatically (e.g., from /add-file command).
+    * Validates the path and handles duplicates/conflicts.
+    * @param pathInput - Path string (supports ~/ expansion)
+    * @returns Result with success status and normalized path, or error message on failure
+    */
   addExternalContext(pathInput: string): AddExternalContextResult {
     const trimmed = pathInput?.trim();
     if (!trimmed) {
-      return { success: false, error: 'No path provided. Usage: /add-dir /absolute/path' };
+      return { success: false, error: 'No path provided. Usage: /add-file /absolute/path' };
     }
 
     // Strip surrounding quotes if present (e.g., "/path/with spaces")
@@ -393,18 +393,18 @@ export class ExternalContextSelector {
     const normalizedPath = normalizePathForFilesystem(expandedPath);
 
     if (!path.isAbsolute(normalizedPath)) {
-      return { success: false, error: 'Path must be absolute. Usage: /add-dir /absolute/path' };
+      return { success: false, error: 'Path must be absolute. Usage: /add-file /absolute/path' };
     }
 
-    // Validate path exists and is a directory with specific error messages
-    const validation = validateDirectoryPath(normalizedPath);
+    // Validate path exists and is a file with specific error messages
+    const validation = validateFilePath(normalizedPath);
     if (!validation.valid) {
       return { success: false, error: `${validation.error}: ${pathInput}` };
     }
 
     // Check for duplicate (normalized comparison for cross-platform support)
     if (isDuplicatePath(normalizedPath, this.externalContextPaths)) {
-      return { success: false, error: 'This folder is already added as an external context.' };
+      return { success: false, error: 'This file is already added as an external context.' };
     }
 
     // Check for nested/overlapping paths
@@ -431,7 +431,7 @@ export class ExternalContextSelector {
     // Use settings value if provided (most up-to-date), otherwise use local cache
     if (persistentPathsFromSettings) {
       // Validate paths - silently filter during session initialization (not user action)
-      const validPaths = filterValidPaths(persistentPathsFromSettings);
+      const validPaths = filterValidFiles(persistentPathsFromSettings);
       this.persistentPaths = new Set(validPaths);
     }
     this.externalContextPaths = [...this.persistentPaths];
@@ -519,7 +519,7 @@ export class ExternalContextSelector {
 
     if (this.externalContextPaths.length === 0) {
       const emptyEl = listEl.createDiv({ cls: 'geminese-external-context-empty' });
-      emptyEl.setText('Click folder icon to add');
+      emptyEl.setText('Click file icon to add');
     } else {
       for (const pathStr of this.externalContextPaths) {
         const itemEl = listEl.createDiv({ cls: 'geminese-external-context-item' });

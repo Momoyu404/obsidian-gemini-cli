@@ -137,7 +137,7 @@ export class InputController {
     // Clear completed/error/orphaned subagents from previous responses
     this.deps.getStatusPanel()?.clearTerminalSubagents();
 
-    // Check for built-in commands first (e.g., /clear, /new, /add-dir)
+    // Check for built-in commands first (e.g., /clear, /new, /add-file)
     const builtInCmd = detectBuiltInCommand(content);
     if (builtInCmd) {
       if (shouldUseInput) {
@@ -974,7 +974,7 @@ export class InputController {
       case 'clear':
         await conversationController.createNew();
         break;
-      case 'add-dir': {
+      case 'add-file': {
         const externalContextSelector = this.deps.getExternalContextSelector();
         if (!externalContextSelector) {
           new Notice('External context selector not available.');

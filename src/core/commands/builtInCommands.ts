@@ -5,7 +5,7 @@
  * These are handled separately from user-defined slash commands.
  */
 
-export type BuiltInCommandAction = 'clear' | 'add-dir' | 'resume' | 'fork';
+export type BuiltInCommandAction = 'clear' | 'add-file' | 'resume' | 'fork';
 
 export interface BuiltInCommand {
   name: string;
@@ -32,11 +32,11 @@ export const BUILT_IN_COMMANDS: BuiltInCommand[] = [
     action: 'clear',
   },
   {
-    name: 'add-dir',
-    description: 'Add external context directory',
-    action: 'add-dir',
+    name: 'add-file',
+    description: 'Add external context file',
+    action: 'add-file',
     hasArgs: true,
-    argumentHint: '[path/to/directory]',
+    argumentHint: '[path/to/file]',
   },
   {
     name: 'resume',
