@@ -1,5 +1,7 @@
 # geminese   
 
+[中文（简体）](README.zh-CN.md) | [中文（繁體）](README.zh-TW.md)
+
 geminese is an Obsidian plugin that embeds [Gemini CLI](https://github.com/google-gemini/gemini-cli) as an AI collaborator in your vault. Your vault becomes Gemini's working directory, giving it full agentic capabilities: file read/write, search, bash commands, and multi-step workflows.
 
 > **Based on [Claudian](https://github.com/YishenTu/claudian)** — converted from Claude Code CLI to Gemini CLI. Uses your Google account (no API key needed).
@@ -62,15 +64,7 @@ Follow the prompts to sign in with your Google account.
    ```
 3. Copy the downloaded files into the folder
 4. Enable the plugin in Obsidian Settings → Community plugins
-
-### Development
-
-```bash
-npm run dev     # Watch mode
-npm run build   # Production build
-npm run test    # Run tests
-npm run lint    # Lint code
-```
+5. 
 
 ## Usage
 
@@ -187,6 +181,15 @@ gemini
 ```
 
 This will open a browser for Google account login. After signing in, the CLI (and plugin) can use your account.
+
+### Development
+
+```bash
+npm run dev     # Watch mode
+npm run build   # Production build
+npm run test    # Run tests
+npm run lint    # Lint code
+```
 
 ## Architecture
 
