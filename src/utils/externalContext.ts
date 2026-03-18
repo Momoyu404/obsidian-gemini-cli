@@ -105,16 +105,16 @@ export function buildExternalContextDisplayEntries(
   });
 }
 
-export interface DirectoryValidationResult {
+export interface FileValidationResult {
   valid: boolean;
   error?: string;
 }
 
-export function validateDirectoryPath(p: string): DirectoryValidationResult {
+export function validateFilePath(p: string): FileValidationResult {
   try {
     const stats = fs.statSync(p);
-    if (!stats.isDirectory()) {
-      return { valid: false, error: 'Path exists but is not a directory' };
+    if (!stats.isFile()) {
+      return { valid: false, error: 'Path exists but is not a file' };
     }
     return { valid: true };
   } catch (err) {
@@ -129,12 +129,12 @@ export function validateDirectoryPath(p: string): DirectoryValidationResult {
   }
 }
 
-export function isValidDirectoryPath(p: string): boolean {
-  return validateDirectoryPath(p).valid;
+export function isValidFilePath(p: string): boolean {
+  return validateFilePath(p).valid;
 }
 
-export function filterValidPaths(paths: string[]): string[] {
-  return paths.filter(isValidDirectoryPath);
+export function filterValidFiles(paths: string[]): string[] {
+  return paths.filter(isValidFilePath);
 }
 
 export function isDuplicatePath(newPath: string, existingPaths: string[]): boolean {
