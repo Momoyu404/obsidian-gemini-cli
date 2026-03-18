@@ -1,6 +1,6 @@
 # geminese   
 
-[中文（简体）](README.zh-CN.md) | [中文（繁體）](README.zh-TW.md)
+<p align="center"><a href="README.zh-CN.md">中文（简体）</a> | <a href="README.zh-TW.md">中文（繁體）</a></p>
 
 geminese is an Obsidian plugin that embeds [Gemini CLI](https://github.com/google-gemini/gemini-cli) as an AI collaborator in your vault. Your vault becomes Gemini's working directory, giving it full agentic capabilities: file read/write, search, bash commands, and multi-step workflows.
 
