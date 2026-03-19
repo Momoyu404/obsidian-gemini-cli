@@ -148,9 +148,6 @@ export class ThinkingBudgetSelector {
   private render() {
     this.container.empty();
 
-    const labelEl = this.container.createSpan({ cls: 'geminese-thinking-label-text' });
-    labelEl.setText('Thinking:');
-
     this.gearsEl = this.container.createDiv({ cls: 'geminese-thinking-gears' });
     this.renderGears();
   }

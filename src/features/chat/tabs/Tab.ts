@@ -194,8 +194,6 @@ function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
 
   // File context card (current note + attached files) inside input wrapper
   const contextCardEl = inputWrapper.createDiv({ cls: 'geminese-context-card' });
-  const contextHeaderEl = contextCardEl.createDiv({ cls: 'geminese-context-card-header' });
-  contextHeaderEl.createSpan({ cls: 'geminese-context-card-title', text: 'Context' });
   const contextBodyEl = contextCardEl.createDiv({ cls: 'geminese-context-card-body' });
 
   // Context row inside card body (file chips + selection / browser / canvas indicators)
