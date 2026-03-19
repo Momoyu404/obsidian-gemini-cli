@@ -35,7 +35,7 @@
     "@typescript-eslint/parser": "^8.30.0",
     "builtin-modules": "^3.3.0",
     "esbuild": "^0.27.1",
-    "eslint": "^8.57.0",
+    "eslint": "^10.0.3",
     "eslint-plugin-jest": "^28.11.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "jest": "^30.2.0",
