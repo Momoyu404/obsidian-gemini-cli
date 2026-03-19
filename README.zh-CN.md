@@ -61,30 +61,6 @@ gemini
 3. 将下载的三个文件复制到该目录
 4. 在 Obsidian 设置 → 社区插件 中刷新启用插件
 
-## 使用方式
-
-**两种模式：**
-1. 点击左侧边栏机器人图标，或通过命令面板打开聊天
-2. 选中文本 + 快捷键进行行内编辑
-
-你可以像使用 Gemini CLI 一样在 vault 中读写、编辑、搜索文件。
-
-**检查是否连接成功：** 如果聊天中能收到回复，说明已连接。你可以询问例如 “What model are you?” 进行确认。输入工具栏中 “Thinking” 旁会显示当前 **模型**（Auto / Pro / Flash / Flash Lite），点击可切换。权限模式（**Plan / Agent**）：Plan 只读规划，Agent 可执行工具并编辑文件。
-
-### 上下文
-
-- **文件**：自动附加当前聚焦笔记；输入 `@` 可附加其他文件
-- **选区**：在编辑器中选中文本后发起聊天，选区会自动作为上下文
-- **图片**：支持拖拽、粘贴或输入路径
-- **外部上下文**：点击工具栏文件夹图标，可访问 vault 外目录
-
-### 功能
-
-- **行内编辑**：选中文本 + 快捷键，直接在笔记里编辑
-- **指令模式**：输入 `#`，向系统提示词添加精炼指令
-- **斜杠命令**：输入 `/` 使用自定义提示词模板
-- **MCP**：在 设置 → MCP Servers 添加外部工具；聊天中使用 `@mcp-server` 激活
-
 ## Skills
 
 通过 [Obsidian Skills](https://github.com/kepano/obsidian-skills) 增强 Gemini 能力。这些技能会教 Gemini 如何处理 Obsidian Markdown、Bases、JSON Canvas、CLI 等工作。
@@ -110,6 +86,30 @@ Gemini 会自动克隆仓库并为你完成配置。
 | [json-canvas](https://github.com/kepano/obsidian-skills/tree/main/skills/json-canvas) | JSON Canvas：节点、边、分组、连接 |
 | [obsidian-cli](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-cli) | Obsidian CLI：管理 vault、开发插件/主题 |
 | [defuddle](https://github.com/kepano/obsidian-skills/tree/main/skills/defuddle) | 从网页提取干净的 Markdown，去除干扰内容以节省 token |
+
+## 使用方式
+
+**两种模式：**
+1. 点击左侧边栏机器人图标，或通过命令面板打开聊天
+2. 选中文本 + 快捷键进行行内编辑
+
+你可以像使用 Gemini CLI 一样在 vault 中读写、编辑、搜索文件。
+
+**检查是否连接成功：** 如果聊天中能收到回复，说明已连接。你可以询问例如 “What model are you?” 进行确认。输入工具栏中 “Thinking” 旁会显示当前 **模型**（Auto / Pro / Flash / Flash Lite），点击可切换。权限模式（**Plan / Agent**）：Plan 只读规划，Agent 可执行工具并编辑文件。
+
+### 上下文
+
+- **文件**：自动附加当前聚焦笔记；输入 `@` 可附加其他文件
+- **选区**：在编辑器中选中文本后发起聊天，选区会自动作为上下文
+- **图片**：支持拖拽、粘贴或输入路径
+- **外部上下文**：点击工具栏文件夹图标，可访问 vault 外目录
+
+### 功能
+
+- **行内编辑**：选中文本 + 快捷键，直接在笔记里编辑
+- **指令模式**：输入 `#`，向系统提示词添加精炼指令
+- **斜杠命令**：输入 `/` 使用自定义提示词模板
+- **MCP**：在 设置 → MCP Servers 添加外部工具；聊天中使用 `@mcp-server` 激活
 
 ## 配置
 

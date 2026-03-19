@@ -61,30 +61,6 @@ gemini
 3. 將下載的三個檔案複製到該目錄
 4. 在 Obsidian 設定 → 社群外掛 中重新整理並啟用外掛
 
-## 使用方式
-
-**兩種模式：**
-1. 點擊左側邊欄機器人圖示，或透過命令面板開啟聊天
-2. 選取文字 + 快捷鍵進行行內編輯
-
-你可以像使用 Gemini CLI 一樣在 vault 中讀寫、編輯、搜尋檔案。
-
-**檢查是否連線成功：** 如果聊天中能收到回覆，代表已連線。你可以詢問例如「What model are you?」進行確認。輸入工具列中「Thinking」旁會顯示目前 **模型**（Auto / Pro / Flash / Flash Lite），點擊可切換。權限模式（**Plan / Agent**）：Plan 唯讀規劃，Agent 可執行工具並編輯檔案。
-
-### 上下文
-
-- **檔案**：自動附加目前聚焦筆記；輸入 `@` 可附加其他檔案
-- **選取內容**：在編輯器中選取文字後發起聊天，選取內容會自動作為上下文
-- **圖片**：支援拖放、貼上或輸入路徑
-- **外部上下文**：點擊工具列資料夾圖示，可存取 vault 外目錄
-
-### 功能
-
-- **行內編輯**：選取文字 + 快捷鍵，直接在筆記中編輯
-- **指令模式**：輸入 `#`，向系統提示詞加入精煉指令
-- **斜線命令**：輸入 `/` 使用自訂提示詞模板
-- **MCP**：在 設定 → MCP Servers 新增外部工具；聊天中使用 `@mcp-server` 啟用
-
 ## Skills
 
 透過 [Obsidian Skills](https://github.com/kepano/obsidian-skills) 增強 Gemini 能力。這些技能會教 Gemini 如何處理 Obsidian Markdown、Bases、JSON Canvas、CLI 等工作。
@@ -110,6 +86,30 @@ Gemini 會自動 clone 倉庫並為你完成設定。
 | [json-canvas](https://github.com/kepano/obsidian-skills/tree/main/skills/json-canvas) | JSON Canvas：節點、邊、分組、連線 |
 | [obsidian-cli](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-cli) | Obsidian CLI：管理 vault、開發外掛/主題 |
 | [defuddle](https://github.com/kepano/obsidian-skills/tree/main/skills/defuddle) | 從網頁提取乾淨的 Markdown，移除干擾內容以節省 token |
+
+## 使用方式
+
+**兩種模式：**
+1. 點擊左側邊欄機器人圖示，或透過命令面板開啟聊天
+2. 選取文字 + 快捷鍵進行行內編輯
+
+你可以像使用 Gemini CLI 一樣在 vault 中讀寫、編輯、搜尋檔案。
+
+**檢查是否連線成功：** 如果聊天中能收到回覆，代表已連線。你可以詢問例如「What model are you?」進行確認。輸入工具列中「Thinking」旁會顯示目前 **模型**（Auto / Pro / Flash / Flash Lite），點擊可切換。權限模式（**Plan / Agent**）：Plan 唯讀規劃，Agent 可執行工具並編輯檔案。
+
+### 上下文
+
+- **檔案**：自動附加目前聚焦筆記；輸入 `@` 可附加其他檔案
+- **選取內容**：在編輯器中選取文字後發起聊天，選取內容會自動作為上下文
+- **圖片**：支援拖放、貼上或輸入路徑
+- **外部上下文**：點擊工具列資料夾圖示，可存取 vault 外目錄
+
+### 功能
+
+- **行內編輯**：選取文字 + 快捷鍵，直接在筆記中編輯
+- **指令模式**：輸入 `#`，向系統提示詞加入精煉指令
+- **斜線命令**：輸入 `/` 使用自訂提示詞模板
+- **MCP**：在 設定 → MCP Servers 新增外部工具；聊天中使用 `@mcp-server` 啟用
 
 ## 設定
 

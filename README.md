@@ -1,6 +1,8 @@
-# geminese   
+# geminese
 
 <p align="center"><a href="README.zh-CN.md">中文（简体）</a> | <a href="README.zh-TW.md">中文（繁體）</a></p>
+
+![geminese example](docs/image/geminese-example.png)
 
 geminese is an Obsidian plugin that embeds [Gemini CLI](https://github.com/google-gemini/gemini-cli) as an AI collaborator in your vault. Your vault becomes Gemini's working directory, giving it full agentic capabilities: file read/write, search, bash commands, and multi-step workflows.
 
@@ -64,31 +66,6 @@ Follow the prompts to sign in with your Google account.
    ```
 3. Copy the downloaded files into the folder
 4. Enable the plugin in Obsidian Settings → Community plugins
-5. 
-
-## Usage
-
-**Two modes:**
-1. Click the bot icon in ribbon or use command palette to open chat
-2. Select text + hotkey for inline edit
-
-Use it like Gemini CLI — read, write, edit, search files in your vault.
-
-**Check you're connected:** If you get a reply in the chat, you're connected. You can ask e.g. “What model are you?” to confirm. The **model** (Auto / Pro / Flash / Flash Lite) is shown in the input toolbar next to “Thinking”; click it to change. Permission mode (**Plan / Agent**): Plan is read-only planning, Agent allows tool execution and file editing.
-
-### Context
-
-- **File**: Auto-attaches focused note; type `@` to attach other files
-- **Selection**: Select text in editor, then chat — selection included automatically
-- **Images**: Drag-drop, paste, or type path
-- **External contexts**: Click folder icon in toolbar for access to directories outside vault
-
-### Features
-
-- **Inline Edit**: Select text + hotkey to edit directly in notes
-- **Instruction Mode**: Type `#` to add refined instructions to system prompt
-- **Slash Commands**: Type `/` for custom prompt templates
-- **MCP**: Add external tools via Settings → MCP Servers; use `@mcp-server` in chat to activate
 
 ## Skills
 
@@ -115,6 +92,30 @@ Gemini will clone the repo and set everything up for you.
 | [json-canvas](https://github.com/kepano/obsidian-skills/tree/main/skills/json-canvas) | JSON Canvas — nodes, edges, groups, connections |
 | [obsidian-cli](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-cli) | Obsidian CLI — vault interaction, plugin/theme development |
 | [defuddle](https://github.com/kepano/obsidian-skills/tree/main/skills/defuddle) | Extract clean markdown from web pages, removing clutter to save tokens |
+
+## Usage
+
+**Two modes:**
+1. Click the bot icon in ribbon or use command palette to open chat
+2. Select text + hotkey for inline edit
+
+Use it like Gemini CLI — read, write, edit, search files in your vault.
+
+**Check you're connected:** If you get a reply in the chat, you're connected. You can ask e.g. “What model are you?” to confirm. The **model** (Auto / Pro / Flash / Flash Lite) is shown in the input toolbar next to “Thinking”; click it to change. Permission mode (**Plan / Agent**): Plan is read-only planning, Agent allows tool execution and file editing.
+
+### Context
+
+- **File**: Auto-attaches focused note; type `@` to attach other files
+- **Selection**: Select text in editor, then chat — selection included automatically
+- **Images**: Drag-drop, paste, or type path
+- **External contexts**: Click folder icon in toolbar for access to directories outside vault
+
+### Features
+
+- **Inline Edit**: Select text + hotkey to edit directly in notes
+- **Instruction Mode**: Type `#` to add refined instructions to system prompt
+- **Slash Commands**: Type `/` for custom prompt templates
+- **MCP**: Add external tools via Settings → MCP Servers; use `@mcp-server` in chat to activate
 
 ## Configuration
 
