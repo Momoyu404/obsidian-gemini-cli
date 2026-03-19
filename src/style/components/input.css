@@ -21,9 +21,7 @@
   display: none;
   flex-direction: column;
   padding: 8px 10px 6px 10px;
-  border-bottom: 1px solid var(--background-modifier-border);
-  border-radius: 6px 6px 0 0;
-  background: var(--background-primary-alt, var(--background-primary));
+  background: transparent;
   gap: 4px;
 }
 
