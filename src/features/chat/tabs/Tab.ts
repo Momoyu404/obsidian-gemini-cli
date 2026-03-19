@@ -145,6 +145,12 @@ export function createTab(options: TabCreateOptions): TabData {
  * - Max height is capped at 55% of view height (minimum 150px)
  */
 function autoResizeTextarea(textarea: HTMLTextAreaElement): void {
+  const wrapper = textarea.closest('.geminese-input-wrapper') as HTMLElement;
+  if (wrapper && wrapper.style.height) {
+    textarea.style.minHeight = '';
+    return;
+  }
+
   // Clear inline min-height to let flexbox compute natural allocation
   textarea.style.minHeight = '';
 
@@ -191,6 +197,7 @@ function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
   const navRowEl = inputContainerEl.createDiv({ cls: 'geminese-input-nav-row' });
 
   const inputWrapper = inputContainerEl.createDiv({ cls: 'geminese-input-wrapper' });
+  const dragHandleEl = inputWrapper.createDiv({ cls: 'geminese-input-drag-handle' });
 
   // File context card (current note + attached files) inside input wrapper
   const contextCardEl = inputWrapper.createDiv({ cls: 'geminese-context-card' });
@@ -221,6 +228,7 @@ function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
     statusPanelContainerEl,
     inputContainerEl,
     inputWrapper,
+    dragHandleEl,
     contextCardEl,
     inputEl,
     sendButtonEl: sendBtnEl,
@@ -593,6 +601,52 @@ export function initializeTabUI(
   });
   resizeObserver.observe(dom.messagesEl);
   dom.eventCleanups.push(() => resizeObserver.disconnect());
+
+  initializeDragResize(tab);
+}
+
+function initializeDragResize(tab: TabData): void {
+  const { dom } = tab;
+
+  const handlePointerDown = (e: PointerEvent) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+
+    const startY = e.clientY;
+    const startHeight = dom.inputWrapper.offsetHeight;
+    
+    dom.dragHandleEl.setPointerCapture(e.pointerId);
+
+    const handlePointerMove = (moveEvent: PointerEvent) => {
+      moveEvent.preventDefault();
+      
+      const deltaY = startY - moveEvent.clientY;
+      let newHeight = startHeight + deltaY;
+
+      const viewHeight = dom.inputWrapper.closest('.geminese-container')?.clientHeight ?? window.innerHeight;
+      const maxHeight = viewHeight * 0.8;
+      const minHeight = 140;
+
+      newHeight = Math.max(minHeight, Math.min(newHeight, maxHeight));
+      
+      dom.inputWrapper.style.height = `${newHeight}px`;
+      dom.inputWrapper.style.minHeight = `${newHeight}px`;
+      dom.inputEl.style.maxHeight = `${newHeight - 40}px`;
+    };
+
+    const handlePointerUp = (upEvent: PointerEvent) => {
+      upEvent.preventDefault();
+      dom.dragHandleEl.releasePointerCapture(upEvent.pointerId);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+  };
+
+  dom.dragHandleEl.addEventListener('pointerdown', handlePointerDown);
+  dom.eventCleanups.push(() => dom.dragHandleEl.removeEventListener('pointerdown', handlePointerDown));
 }
 
 export interface ForkContext {
