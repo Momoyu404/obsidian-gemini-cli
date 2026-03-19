@@ -95,6 +95,6 @@ dev
 .codex/
 .worktrees/
 
-# AI Planning
+# Planning
 .sisyphus/
-
+.planning/
