@@ -19,7 +19,6 @@ import { getVaultPath, normalizePathForVault } from '../../../utils/path';
 import { loadSubagentFinalResult, loadSubagentToolCalls } from '../../../utils/sdkSession';
 import { FLAVOR_TEXTS } from '../constants';
 import {
-  appendThinkingContent,
   createThinkingBlock,
   createWriteEditBlock,
   finalizeThinkingBlock,

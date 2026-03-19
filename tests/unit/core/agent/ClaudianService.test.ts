@@ -1,8 +1,5 @@
 // eslint-disable-next-line jest/no-mocks-import
 import * as sdkModule from '@test/__mocks__/gemini-cli-sdk';
-import * as fs from 'fs';
-import * as path from 'path';
-
 import { GemineseService } from '@/core/agent/ClaudianService';
 import { MessageChannel } from '@/core/agent/MessageChannel';
 import { createResponseHandler } from '@/core/agent/types';
