@@ -667,6 +667,20 @@ export default class GeminesePlugin extends Plugin {
       return;
     }
 
+    if (allSessionsMissing) {
+      try {
+        const fallbackConversation = await this.storage.sessions.loadConversation(conversation.id);
+        if ((fallbackConversation?.messages?.length ?? 0) > 0) {
+          conversation.messages = fallbackConversation!.messages;
+        }
+      } catch (error) {
+        console.warn('Fallback conversation load failed', error);
+      }
+
+      conversation.sdkMessagesLoaded = true;
+      return;
+    }
+
     // Filter out rebuilt context messages (history blobs sent on session reset)
     const filteredSdkMessages = allSdkMessages.filter(msg => !msg.isRebuiltContext);
 

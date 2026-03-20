@@ -787,6 +787,42 @@ describe('GeminesePlugin', () => {
   });
 
   describe('loadSdkMessagesForConversation - fork branch', () => {
+    it('falls back to vault session storage when all SDK sessions are missing', async () => {
+      await plugin.onload();
+
+      const conv = await plugin.createConversation();
+      await plugin.updateConversation(conv.id, {
+        isNative: true,
+        sdkSessionId: 'missing-sdk-session',
+        sdkMessagesLoaded: false,
+        messages: [],
+      });
+
+      const fallbackMessages = [
+        { id: 'fallback-msg-1', role: 'user' as const, content: 'Recovered history', timestamp: 1000 },
+      ];
+
+      const existsSpy = jest.spyOn(sdkSession, 'sdkSessionExists').mockReturnValue(false);
+      const loadConversationSpy = jest.spyOn(plugin.storage.sessions, 'loadConversation').mockResolvedValue({
+        id: conv.id,
+        title: 'Recovered Conversation',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        sessionId: null,
+        messages: fallbackMessages,
+      });
+
+      const loaded = await plugin.getConversationById(conv.id);
+
+      expect(existsSpy).toHaveBeenCalledWith(expect.any(String), 'missing-sdk-session');
+      expect(loadConversationSpy).toHaveBeenCalledWith(conv.id);
+      expect(loaded?.messages).toEqual(fallbackMessages);
+      expect(loaded?.sdkMessagesLoaded).toBe(true);
+
+      existsSpy.mockRestore();
+      loadConversationSpy.mockRestore();
+    });
+
     it('should load from forkSource.sessionId and truncate at forkSource.resumeAt for pending fork', async () => {
       await plugin.onload();
 
