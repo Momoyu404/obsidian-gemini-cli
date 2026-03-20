@@ -86,6 +86,7 @@ export default class GeminesePlugin extends Plugin {
     });
     const iconWrap = ribbonEl?.querySelector('.svg-icon') ?? ribbonEl?.firstElementChild;
     if (iconWrap) {
+      iconWrap.innerHTML = '';
       const logoSvg = new DOMParser().parseFromString(GEMINI_LOGO_SVG, 'image/svg+xml').documentElement;
       iconWrap.appendChild(document.adoptNode(logoSvg));
     }
