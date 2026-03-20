@@ -541,14 +541,14 @@ export class ConversationController {
       });
 
       if (!isCurrent) {
-        content.addEventListener('click', async (e) => {
+        content.addEventListener('click', (e) => { void (async () => {
           e.stopPropagation();
           try {
             await options.onSelectConversation(conv.id);
           } catch {
             new Notice('Failed to load conversation');
           }
-        });
+        })(); });
       }
 
       const actions = item.createDiv({ cls: 'geminese-history-item-actions' });
@@ -562,14 +562,14 @@ export class ConversationController {
         const regenerateBtn = actions.createEl('button', { cls: 'geminese-action-btn' });
         setIcon(regenerateBtn, 'refresh-cw');
         regenerateBtn.setAttribute('aria-label', 'Regenerate title');
-        regenerateBtn.addEventListener('click', async (e) => {
+        regenerateBtn.addEventListener('click', (e) => { void (async () => {
           e.stopPropagation();
           try {
             await this.regenerateTitle(conv.id);
           } catch {
             new Notice('Failed to regenerate response');
           }
-        });
+        })(); });
       }
 
       const renameBtn = actions.createEl('button', { cls: 'geminese-action-btn' });
@@ -583,7 +583,7 @@ export class ConversationController {
       const deleteBtn = actions.createEl('button', { cls: 'geminese-action-btn geminese-delete-btn' });
       setIcon(deleteBtn, 'trash-2');
       deleteBtn.setAttribute('aria-label', 'Delete');
-      deleteBtn.addEventListener('click', async (e) => {
+      deleteBtn.addEventListener('click', (e) => { void (async () => {
         e.stopPropagation();
         if (state.isStreaming) return;
         try {
@@ -596,7 +596,7 @@ export class ConversationController {
         } catch {
           new Notice('Failed to delete conversation');
         }
-      });
+      })(); });
     }
   }
 
@@ -625,7 +625,7 @@ export class ConversationController {
     };
 
     input.addEventListener('blur', finishRename);
-    input.addEventListener('keydown', async (e) => {
+    input.addEventListener('keydown', (e) => {
       // Check !e.isComposing for IME support (Chinese, Japanese, Korean, etc.)
       if (e.key === 'Enter' && !e.isComposing) {
         input.blur();
@@ -701,11 +701,7 @@ export class ConversationController {
     const welcomeEl = this.deps.getWelcomeEl();
     if (!welcomeEl) return;
 
-    if (this.deps.state.messages.length === 0) {
-      welcomeEl.style.display = '';
-    } else {
-      welcomeEl.style.display = 'none';
-    }
+    welcomeEl.toggleClass('geminese-hidden', this.deps.state.messages.length > 0);
   }
 
   /**

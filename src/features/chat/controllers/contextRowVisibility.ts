@@ -5,11 +5,11 @@ export function updateContextRowHasContent(contextRowEl: HTMLElement): void {
   const fileIndicator = contextRowEl.querySelector('.geminese-file-indicator') as HTMLElement | null;
   const imagePreview = contextRowEl.querySelector('.geminese-image-preview') as HTMLElement | null;
 
-  const hasEditorSelection = editorIndicator?.style.display === 'block';
-  const hasBrowserSelection = browserIndicator !== null && browserIndicator.style.display === 'block';
-  const hasCanvasSelection = canvasIndicator?.style.display === 'block';
-  const hasFileChips = fileIndicator?.style.display === 'flex';
-  const hasImageChips = imagePreview?.style.display === 'flex';
+  const hasEditorSelection = editorIndicator !== null && !editorIndicator.classList.contains('geminese-hidden');
+  const hasBrowserSelection = browserIndicator !== null && !browserIndicator.classList.contains('geminese-hidden');
+  const hasCanvasSelection = canvasIndicator !== null && !canvasIndicator.classList.contains('geminese-hidden');
+  const hasFileChips = fileIndicator !== null && !fileIndicator.classList.contains('geminese-hidden');
+  const hasImageChips = imagePreview !== null && !imagePreview.classList.contains('geminese-hidden');
 
   contextRowEl.classList.toggle(
     'has-content',

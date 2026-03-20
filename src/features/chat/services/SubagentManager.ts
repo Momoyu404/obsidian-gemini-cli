@@ -1002,7 +1002,7 @@ export class SubagentManager {
     try {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
-        const textBlock = parsed.find((b: any) => b && typeof b.text === 'string');
+        const textBlock = parsed.find((b: unknown) => b !== null && typeof b === 'object' && typeof (b as Record<string, unknown>).text === 'string');
         if (textBlock?.text) return textBlock.text as string;
       } else if (parsed && typeof parsed === 'object' && typeof parsed.text === 'string') {
         return parsed.text;

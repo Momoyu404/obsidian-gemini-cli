@@ -350,7 +350,7 @@ export class TabManager implements TabManagerInterface {
     const isSameView = crossViewResult?.view === this.view;
     if (crossViewResult && !isSameView) {
       // Focus the other view and switch to its tab instead of opening duplicate
-      this.plugin.app.workspace.revealLeaf(crossViewResult.view.leaf);
+      void this.plugin.app.workspace.revealLeaf(crossViewResult.view.leaf);
       await crossViewResult.view.getTabManager()?.switchToTab(crossViewResult.tabId);
       return;
     }

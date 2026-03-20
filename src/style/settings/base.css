@@ -101,6 +101,31 @@
   width: 200px;
 }
 
+.geminese-bang-bash-validation,
+.geminese-max-tabs-warning,
+.geminese-path-validation {
+  font-size: 0.85em;
+  margin-top: -0.5em;
+  margin-bottom: 0.5em;
+}
+
+.geminese-bang-bash-validation,
+.geminese-path-validation {
+  color: var(--text-error);
+}
+
+.geminese-max-tabs-warning {
+  color: var(--text-warning);
+}
+
+.geminese-settings-cli-path-input {
+  width: 100%;
+}
+
+.geminese-input-error {
+  border-color: var(--text-error) !important;
+}
+
 /* ── Shared settings panel layout (used by slash-settings + agent-settings) ── */
 
 .geminese-sp-header {

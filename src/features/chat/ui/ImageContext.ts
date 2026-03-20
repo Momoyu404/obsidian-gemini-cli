@@ -39,7 +39,7 @@ export class ImageContextManager {
 
     // Create image preview in previewContainerEl, before file indicator if present
     const fileIndicator = this.previewContainerEl.querySelector('.geminese-file-indicator');
-    this.imagePreviewEl = this.previewContainerEl.createDiv({ cls: 'geminese-image-preview' });
+    this.imagePreviewEl = this.previewContainerEl.createDiv({ cls: 'geminese-image-preview geminese-hidden' });
     if (fileIndicator && fileIndicator.parentElement === this.previewContainerEl) {
       this.previewContainerEl.insertBefore(this.imagePreviewEl, fileIndicator);
     }
@@ -102,10 +102,10 @@ export class ImageContextManager {
 
     const dropZone = inputWrapper;
 
-    dropZone.addEventListener('dragenter', (e) => this.handleDragEnter(e as DragEvent));
-    dropZone.addEventListener('dragover', (e) => this.handleDragOver(e as DragEvent));
-    dropZone.addEventListener('dragleave', (e) => this.handleDragLeave(e as DragEvent));
-    dropZone.addEventListener('drop', (e) => this.handleDrop(e as DragEvent));
+    dropZone.addEventListener('dragenter', (e) => this.handleDragEnter(e));
+    dropZone.addEventListener('dragover', (e) => this.handleDragOver(e));
+    dropZone.addEventListener('dragleave', (e) => this.handleDragLeave(e));
+    dropZone.addEventListener('drop', (e) => this.handleDrop(e));
   }
 
   private handleDragEnter(e: DragEvent) {
@@ -160,7 +160,7 @@ export class ImageContextManager {
   }
 
   private setupPasteHandler() {
-    this.inputEl.addEventListener('paste', async (e) => {
+    this.inputEl.addEventListener('paste', (e) => { void (async () => {
       const items = e.clipboardData?.items;
       if (!items) return;
 
@@ -175,7 +175,7 @@ export class ImageContextManager {
           return;
         }
       }
-    });
+    })(); });
   }
 
   private isImageFile(file: File): boolean {
@@ -235,11 +235,11 @@ export class ImageContextManager {
     this.imagePreviewEl.empty();
 
     if (this.attachedImages.size === 0) {
-      this.imagePreviewEl.style.display = 'none';
+      this.imagePreviewEl.classList.add('geminese-hidden');
       return;
     }
 
-    this.imagePreviewEl.style.display = 'flex';
+    this.imagePreviewEl.classList.remove('geminese-hidden');
 
     for (const [id, image] of this.attachedImages) {
       this.renderImagePreview(id, image);

@@ -66,8 +66,7 @@ export function createTab(options: TabCreateOptions): TabData {
   const id = tabId ?? generateTabId();
 
   // Create per-tab content container (hidden by default)
-  const contentEl = containerEl.createDiv({ cls: 'geminese-tab-content' });
-  contentEl.style.display = 'none';
+  const contentEl = containerEl.createDiv({ cls: 'geminese-tab-content geminese-hidden' });
 
   // Create ChatState with callbacks
   const state = new ChatState({
@@ -147,12 +146,12 @@ export function createTab(options: TabCreateOptions): TabData {
 function autoResizeTextarea(textarea: HTMLTextAreaElement): void {
   const wrapper = textarea.closest('.geminese-input-wrapper') as HTMLElement;
   if (wrapper && wrapper.style.height) {
-    textarea.style.minHeight = '';
+    textarea.classList.remove('geminese-textarea-sized');
     return;
   }
 
   // Clear inline min-height to let flexbox compute natural allocation
-  textarea.style.minHeight = '';
+  textarea.classList.remove('geminese-textarea-sized');
 
   // Calculate max height: 55% of view height, minimum 150px
   const viewHeight = textarea.closest('.geminese-container')?.clientHeight ?? window.innerHeight;
@@ -167,7 +166,8 @@ function autoResizeTextarea(textarea: HTMLTextAreaElement): void {
   // Only set min-height if content exceeds flex allocation
   // This forces the wrapper to grow while letting it shrink when content reduces
   if (contentHeight > flexAllocatedHeight) {
-    textarea.style.minHeight = `${contentHeight}px`;
+    textarea.style.setProperty('--geminese-min-height', `${contentHeight}px`);
+    textarea.classList.add('geminese-textarea-sized');
   }
 
   // Always set max-height to enforce the cap
@@ -555,16 +555,13 @@ export function initializeTabUI(
   initializeContextManagers(tab, plugin);
 
   // Selection indicator - add to contextRowEl
-  dom.selectionIndicatorEl = dom.contextRowEl.createDiv({ cls: 'geminese-selection-indicator' });
-  dom.selectionIndicatorEl.style.display = 'none';
+  dom.selectionIndicatorEl = dom.contextRowEl.createDiv({ cls: 'geminese-selection-indicator geminese-hidden' });
 
   // Browser selection indicator
-  dom.browserIndicatorEl = dom.contextRowEl.createDiv({ cls: 'geminese-browser-selection-indicator' });
-  dom.browserIndicatorEl.style.display = 'none';
+  dom.browserIndicatorEl = dom.contextRowEl.createDiv({ cls: 'geminese-browser-selection-indicator geminese-hidden' });
 
   // Canvas selection indicator
-  dom.canvasIndicatorEl = dom.contextRowEl.createDiv({ cls: 'geminese-canvas-indicator' });
-  dom.canvasIndicatorEl.style.display = 'none';
+  dom.canvasIndicatorEl = dom.contextRowEl.createDiv({ cls: 'geminese-canvas-indicator geminese-hidden' });
 
   // Initialize slash commands with shared SDK commands callback and hidden commands
   initializeSlashCommands(
@@ -630,7 +627,8 @@ function initializeDragResize(tab: TabData): void {
       newHeight = Math.max(minHeight, Math.min(newHeight, maxHeight));
       
       dom.inputWrapper.style.height = `${newHeight}px`;
-      dom.inputWrapper.style.minHeight = `${newHeight}px`;
+      dom.inputWrapper.style.setProperty('--geminese-wrapper-min-height', `${newHeight}px`);
+      dom.inputWrapper.classList.add('geminese-wrapper-sized');
       dom.inputEl.style.maxHeight = `${newHeight - 40}px`;
     };
 
@@ -1167,7 +1165,7 @@ export function wireTabInputEvents(tab: TabData, plugin: GeminesePlugin): void {
  * Activates a tab (shows it and starts services).
  */
 export function activateTab(tab: TabData): void {
-  tab.dom.contentEl.style.display = 'flex';
+  tab.dom.contentEl.classList.remove('geminese-hidden');
   tab.controllers.selectionController?.start();
   tab.controllers.browserSelectionController?.start();
   tab.controllers.canvasSelectionController?.start();
@@ -1179,7 +1177,7 @@ export function activateTab(tab: TabData): void {
  * Deactivates a tab (hides it and stops services).
  */
 export function deactivateTab(tab: TabData): void {
-  tab.dom.contentEl.style.display = 'none';
+  tab.dom.contentEl.classList.add('geminese-hidden');
   tab.controllers.selectionController?.stop();
   tab.controllers.browserSelectionController?.stop();
   tab.controllers.canvasSelectionController?.stop();
@@ -1189,7 +1187,7 @@ export function deactivateTab(tab: TabData): void {
  * Cleans up a tab and releases all resources.
  * Made async to ensure proper cleanup ordering.
  */
-export async function destroyTab(tab: TabData): Promise<void> {
+export function destroyTab(tab: TabData): Promise<void> {
   // Stop polling
   tab.controllers.selectionController?.stop();
   tab.controllers.selectionController?.clear();
@@ -1241,6 +1239,7 @@ export async function destroyTab(tab: TabData): Promise<void> {
 
   // Remove DOM element
   tab.dom.contentEl.remove();
+  return Promise.resolve();
 }
 
 /**
@@ -1254,7 +1253,7 @@ export function getTabTitle(tab: TabData, plugin: GeminesePlugin): string {
       return conversation.title;
     }
   }
-  return 'New Chat';
+  return 'New chat';
 }
 
 /** Shared between Tab.ts and TabManager.ts to avoid duplication. */

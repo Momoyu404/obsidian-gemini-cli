@@ -207,7 +207,7 @@ export class MessageRenderer {
     for (let i = batchStart; i < batchEnd; i++) {
       // Create a temporary container, render the message, then insert before the insertion point
       const tempDiv = document.createElement('div');
-      tempDiv.style.display = 'contents';
+      tempDiv.classList.add('geminese-contents');
 
       // Save and restore messagesEl to render into the temp container
       const originalMessagesEl = this.messagesEl;
@@ -318,7 +318,9 @@ export class MessageRenderer {
     const msgEl = this.messagesEl.createDiv({ cls: 'geminese-message geminese-message-assistant' });
     const contentEl = msgEl.createDiv({ cls: 'geminese-message-content', attr: { dir: 'auto' } });
     const textEl = contentEl.createDiv({ cls: 'geminese-text-block' });
-    textEl.innerHTML = '<span class="geminese-interrupted">Interrupted</span> <span class="geminese-interrupted-hint">· What should Geminese do instead?</span>';
+    textEl.createSpan({ cls: 'geminese-interrupted', text: 'Interrupted' });
+    textEl.appendChild(document.createTextNode(' '));
+    textEl.createSpan({ cls: 'geminese-interrupted-hint', text: '· What should Geminese do instead?' });
   }
 
   /**
@@ -599,7 +601,7 @@ export class MessageRenderer {
         this.app,
         this.plugin.settings.mediaFolder
       );
-      await MarkdownRenderer.renderMarkdown(processedMarkdown, el, '', this.component);
+      await MarkdownRenderer.render(this.app, processedMarkdown, el, '', this.component);
 
       // Wrap pre elements and move buttons outside scroll area
       el.querySelectorAll('pre').forEach((pre) => {
@@ -622,7 +624,7 @@ export class MessageRenderer {
               text: match[1],
             });
             wrapper.appendChild(label);
-            label.addEventListener('click', async () => {
+            label.addEventListener('click', () => { void (async () => {
               try {
                 await navigator.clipboard.writeText(code.textContent || '');
                 label.setText('copied!');
@@ -630,7 +632,7 @@ export class MessageRenderer {
               } catch {
                 // Clipboard API may fail in non-secure contexts
               }
-            });
+            })(); });
           }
         }
 
@@ -658,6 +660,12 @@ export class MessageRenderer {
   /** Clipboard icon SVG for copy button. */
   private static readonly COPY_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
 
+  private static setSvgIcon(el: HTMLElement, svgStr: string): void {
+    el.empty();
+    const svgEl = new DOMParser().parseFromString(svgStr, 'image/svg+xml').documentElement;
+    el.appendChild(document.adoptNode(svgEl));
+  }
+
   /**
    * Adds a copy button to a text block.
    * Button shows clipboard icon on hover, changes to "copied!" on click.
@@ -666,36 +674,33 @@ export class MessageRenderer {
    */
   addTextCopyButton(textEl: HTMLElement, markdown: string): void {
     const copyBtn = textEl.createSpan({ cls: 'geminese-text-copy-btn' });
-    copyBtn.innerHTML = MessageRenderer.COPY_ICON;
+    MessageRenderer.setSvgIcon(copyBtn, MessageRenderer.COPY_ICON);
 
     let feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    copyBtn.addEventListener('click', async (e) => {
+    copyBtn.addEventListener('click', (e) => { void (async () => {
       e.stopPropagation();
 
       try {
         await navigator.clipboard.writeText(markdown);
       } catch {
-        // Clipboard API may fail in non-secure contexts
         return;
       }
 
-      // Clear any pending timeout from rapid clicks
       if (feedbackTimeout) {
         clearTimeout(feedbackTimeout);
       }
 
-      // Show "copied!" feedback
-      copyBtn.innerHTML = '';
+      copyBtn.empty();
       copyBtn.setText('copied!');
       copyBtn.classList.add('copied');
 
       feedbackTimeout = setTimeout(() => {
-        copyBtn.innerHTML = MessageRenderer.COPY_ICON;
+        MessageRenderer.setSvgIcon(copyBtn, MessageRenderer.COPY_ICON);
         copyBtn.classList.remove('copied');
         feedbackTimeout = null;
       }, 1500);
-    });
+    })(); });
   }
 
   refreshActionButtons(msg: ChatMessage, allMessages?: ChatMessage[], index?: number): void {
@@ -725,12 +730,12 @@ export class MessageRenderer {
   private addUserCopyButton(msgEl: HTMLElement, content: string): void {
     const toolbar = this.getOrCreateActionsToolbar(msgEl);
     const copyBtn = toolbar.createSpan({ cls: 'geminese-user-msg-copy-btn' });
-    copyBtn.innerHTML = MessageRenderer.COPY_ICON;
+    MessageRenderer.setSvgIcon(copyBtn, MessageRenderer.COPY_ICON);
     copyBtn.setAttribute('aria-label', 'Copy message');
 
     let feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    copyBtn.addEventListener('click', async (e) => {
+    copyBtn.addEventListener('click', (e) => { void (async () => {
       e.stopPropagation();
       try {
         await navigator.clipboard.writeText(content);
@@ -738,31 +743,31 @@ export class MessageRenderer {
         return;
       }
       if (feedbackTimeout) clearTimeout(feedbackTimeout);
-      copyBtn.innerHTML = '';
+      copyBtn.empty();
       copyBtn.setText('copied!');
       copyBtn.classList.add('copied');
       feedbackTimeout = setTimeout(() => {
-        copyBtn.innerHTML = MessageRenderer.COPY_ICON;
+        MessageRenderer.setSvgIcon(copyBtn, MessageRenderer.COPY_ICON);
         copyBtn.classList.remove('copied');
         feedbackTimeout = null;
       }, 1500);
-    });
+    })(); });
   }
 
   private addForkButton(msgEl: HTMLElement, messageId: string): void {
     const toolbar = this.getOrCreateActionsToolbar(msgEl);
     const btn = toolbar.createSpan({ cls: 'geminese-message-fork-btn' });
     if (toolbar.firstChild !== btn) toolbar.insertBefore(btn, toolbar.firstChild);
-    btn.innerHTML = MessageRenderer.FORK_ICON;
+    MessageRenderer.setSvgIcon(btn, MessageRenderer.FORK_ICON);
     btn.setAttribute('aria-label', t('chat.fork.ariaLabel'));
-    btn.addEventListener('click', async (e) => {
+    btn.addEventListener('click', (e) => { void (async () => {
       e.stopPropagation();
       try {
         await this.forkCallback?.(messageId);
       } catch (err) {
         new Notice(t('chat.fork.failed', { error: err instanceof Error ? err.message : 'Unknown error' }));
       }
-    });
+    })(); });
   }
 
   // ============================================

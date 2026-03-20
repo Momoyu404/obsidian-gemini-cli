@@ -219,7 +219,7 @@ export function cliPathRequiresNode(cliPath: string): boolean {
       fd = fs.openSync(cliPath, 'r');
       const buffer = Buffer.alloc(200);
       const bytesRead = fs.readSync(fd, buffer, 0, buffer.length, 0);
-      const header = buffer.slice(0, bytesRead).toString('utf8');
+      const header = buffer.subarray(0, bytesRead).toString('utf8');
       return header.startsWith('#!') && header.toLowerCase().includes('node');
     } finally {
       if (fd !== null) {

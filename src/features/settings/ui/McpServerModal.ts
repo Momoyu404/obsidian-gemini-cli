@@ -75,7 +75,7 @@ export class McpServerModal extends Modal {
   }
 
   onOpen() {
-    this.setTitle(this.existingServer ? 'Edit MCP Server' : 'Add MCP Server');
+    this.setTitle(this.existingServer ? 'Edit MCP server' : 'Add MCP server');
     this.modalEl.addClass('geminese-mcp-modal');
 
     const { contentEl } = this;

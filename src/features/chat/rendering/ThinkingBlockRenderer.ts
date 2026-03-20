@@ -114,7 +114,7 @@ export function renderStoredThinkingBlock(
 
   // Collapsible content
   const contentEl = wrapperEl.createDiv({ cls: 'geminese-thinking-content' });
-  renderContent(contentEl, content);
+  void renderContent(contentEl, content);
 
   // Setup collapsible behavior (handles click, keyboard, ARIA, CSS)
   const state = { isExpanded: false };

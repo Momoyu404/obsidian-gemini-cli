@@ -1,11 +1,39 @@
 import { Notice, setIcon } from 'obsidian';
 
-import type { GeminesePlugin as GeminesePluginType } from '../../../core/types';
+import type { GemineseExtension } from '../../../core/types';
 import type GeminesePlugin from '../../../main';
 
 export class PluginSettingsManager {
   private containerEl: HTMLElement;
   private plugin: GeminesePlugin;
+
+  private getExtensions(): GemineseExtension[] {
+    const pluginManagerWithLegacy = this.plugin.pluginManager as typeof this.plugin.pluginManager & {
+      getPlugins?: () => GemineseExtension[];
+    };
+    return typeof pluginManagerWithLegacy.getExtensions === 'function'
+      ? pluginManagerWithLegacy.getExtensions()
+      : pluginManagerWithLegacy.getPlugins?.() ?? [];
+  }
+
+  private async toggleExtensionState(extensionId: string): Promise<void> {
+    const pluginManagerWithLegacy = this.plugin.pluginManager as typeof this.plugin.pluginManager & {
+      togglePlugin?: (pluginId: string) => Promise<void>;
+    };
+
+    if (typeof pluginManagerWithLegacy.toggleExtension === 'function') {
+      await pluginManagerWithLegacy.toggleExtension(extensionId);
+      return;
+    }
+
+    if (typeof pluginManagerWithLegacy.togglePlugin === 'function') {
+      await pluginManagerWithLegacy.togglePlugin(extensionId);
+    }
+  }
+
+  private async reloadExtensions(): Promise<void> {
+    await this.plugin.pluginManager.loadExtensions();
+  }
 
   constructor(containerEl: HTMLElement, plugin: GeminesePlugin) {
     this.containerEl = containerEl;
@@ -17,7 +45,7 @@ export class PluginSettingsManager {
     this.containerEl.empty();
 
     const headerEl = this.containerEl.createDiv({ cls: 'geminese-plugin-header' });
-    headerEl.createSpan({ text: 'Gemini CLI Plugins', cls: 'geminese-plugin-label' });
+    headerEl.createSpan({ text: 'Gemini CLI plugins', cls: 'geminese-plugin-label' });
 
     const refreshBtn = headerEl.createEl('button', {
       cls: 'geminese-settings-action-btn',
@@ -26,7 +54,7 @@ export class PluginSettingsManager {
     setIcon(refreshBtn, 'refresh-cw');
     refreshBtn.addEventListener('click', () => this.refreshPlugins());
 
-    const plugins = this.plugin.pluginManager.getPlugins();
+    const plugins = this.getExtensions();
 
     if (plugins.length === 0) {
       const emptyEl = this.containerEl.createDiv({ cls: 'geminese-plugin-empty' });
@@ -41,7 +69,7 @@ export class PluginSettingsManager {
 
     if (projectPlugins.length > 0) {
       const sectionHeader = listEl.createDiv({ cls: 'geminese-plugin-section-header' });
-      sectionHeader.setText('Project Plugins');
+      sectionHeader.setText('Project plugins');
 
       for (const plugin of projectPlugins) {
         this.renderPluginItem(listEl, plugin);
@@ -50,7 +78,7 @@ export class PluginSettingsManager {
 
     if (userPlugins.length > 0) {
       const sectionHeader = listEl.createDiv({ cls: 'geminese-plugin-section-header' });
-      sectionHeader.setText('User Plugins');
+      sectionHeader.setText('User plugins');
 
       for (const plugin of userPlugins) {
         this.renderPluginItem(listEl, plugin);
@@ -58,7 +86,7 @@ export class PluginSettingsManager {
     }
   }
 
-  private renderPluginItem(listEl: HTMLElement, plugin: GeminesePluginType) {
+  private renderPluginItem(listEl: HTMLElement, plugin: GemineseExtension) {
     const itemEl = listEl.createDiv({ cls: 'geminese-plugin-item' });
     if (!plugin.enabled) {
       itemEl.addClass('geminese-plugin-item-disabled');
@@ -85,15 +113,15 @@ export class PluginSettingsManager {
       attr: { 'aria-label': plugin.enabled ? 'Disable' : 'Enable' },
     });
     setIcon(toggleBtn, plugin.enabled ? 'toggle-right' : 'toggle-left');
-    toggleBtn.addEventListener('click', () => this.togglePlugin(plugin.id));
+    toggleBtn.addEventListener('click', () => this.toggleExtension(plugin.id));
   }
 
-  private async togglePlugin(pluginId: string) {
-    const plugin = this.plugin.pluginManager.getPlugins().find(p => p.id === pluginId);
+  private async toggleExtension(pluginId: string) {
+    const plugin = this.getExtensions().find(p => p.id === pluginId);
     const wasEnabled = plugin?.enabled ?? false;
 
     try {
-      await this.plugin.pluginManager.togglePlugin(pluginId);
+      await this.toggleExtensionState(pluginId);
       await this.plugin.agentManager.loadAgents();
 
       const view = this.plugin.getView();
@@ -110,7 +138,7 @@ export class PluginSettingsManager {
 
       new Notice(`Plugin "${pluginId}" ${wasEnabled ? 'disabled' : 'enabled'}`);
     } catch (err) {
-      await this.plugin.pluginManager.togglePlugin(pluginId);
+      await this.toggleExtensionState(pluginId);
       const message = err instanceof Error ? err.message : 'Unknown error';
       new Notice(`Failed to toggle plugin: ${message}`);
     } finally {
@@ -120,7 +148,7 @@ export class PluginSettingsManager {
 
   private async refreshPlugins() {
     try {
-      await this.plugin.pluginManager.loadPlugins();
+      await this.reloadExtensions();
       await this.plugin.agentManager.loadAgents();
 
       new Notice('Plugin list refreshed');

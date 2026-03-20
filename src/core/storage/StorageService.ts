@@ -18,11 +18,11 @@ import type { App, Plugin } from 'obsidian';
 import { Notice } from 'obsidian';
 
 import type {
+  CCPermissions,
   Conversation,
   GeminiCLISettings,
   GeminiModel,
   GeminiPermissions,
-  LegacyPermission,
   SlashCommand,
 } from '../types';
 import {
@@ -76,7 +76,7 @@ interface LegacySettingsJson {
   thinkingBudget?: string;
   permissionMode?: string;
   lastNonPlanPermissionMode?: string;
-  permissions?: LegacyPermission[];
+  permissions?: CCPermissions[];
   excludedTags?: string[];
   mediaFolder?: string;
   environmentVariables?: string;

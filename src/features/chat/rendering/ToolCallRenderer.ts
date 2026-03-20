@@ -27,7 +27,8 @@ import { renderTodoItems } from './todoUtils';
 export function setToolIcon(el: HTMLElement, name: string): void {
   const icon = getToolIcon(name);
   if (icon === MCP_ICON_MARKER) {
-    el.innerHTML = MCP_ICON_SVG;
+    const mcpSvg = new DOMParser().parseFromString(MCP_ICON_SVG, 'image/svg+xml').documentElement;
+    el.appendChild(document.adoptNode(mcpSvg));
   } else {
     setIcon(el, icon);
   }
@@ -98,9 +99,9 @@ export function getToolLabel(name: string, input: Record<string, unknown>): stri
       return `Bash: ${cmd.length > 40 ? cmd.substring(0, 40) + '...' : cmd}`;
     }
     case TOOL_GLOB:
-      return `Glob: ${input.pattern || 'files'}`;
+      return `Glob: ${typeof input.pattern === 'string' ? input.pattern : 'files'}`;
     case TOOL_GREP:
-      return `Grep: ${input.pattern || 'pattern'}`;
+      return `Grep: ${typeof input.pattern === 'string' ? input.pattern : 'pattern'}`;
     case TOOL_WEB_SEARCH: {
       const query = (input.query as string) || 'search';
       return `WebSearch: ${query.length > 40 ? query.substring(0, 40) + '...' : query}`;
@@ -274,8 +275,7 @@ function renderWebFetchExpanded(container: HTMLElement, result: string): void {
   const maxChars = 500;
   const linesEl = container.createDiv({ cls: 'geminese-tool-lines' });
   const lineEl = linesEl.createDiv({ cls: 'geminese-tool-line' });
-  lineEl.style.whiteSpace = 'pre-wrap';
-  lineEl.style.wordBreak = 'break-word';
+  lineEl.classList.add('geminese-tool-line-pre-wrap');
 
   if (result.length > maxChars) {
     lineEl.setText(result.slice(0, maxChars));
@@ -508,10 +508,10 @@ function createTodoToggleHandler(
   return (expanded: boolean) => {
     if (onExpandChange) onExpandChange(expanded);
     if (currentTaskEl) {
-      currentTaskEl.style.display = expanded ? 'none' : '';
+      currentTaskEl.toggleClass('geminese-hidden', expanded);
     }
     if (statusEl) {
-      statusEl.style.display = expanded ? 'none' : '';
+      statusEl.toggleClass('geminese-hidden', expanded);
     }
   };
 }

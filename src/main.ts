@@ -24,7 +24,6 @@ import type {
 import {
   DEFAULT_GEMINI_MODELS,
   DEFAULT_SETTINGS,
-  getCliPlatformKey,
   getHostnameKey,
   VIEW_TYPE_GEMINIAN,
 } from './core/types';
@@ -69,7 +68,7 @@ export default class GeminesePlugin extends Plugin {
     await this.mcpManager.loadServers();
 
     // Initialize plugin manager (reads from installed_plugins.json + settings.json)
-    const vaultPath = (this.app.vault.adapter as any).basePath;
+    const vaultPath = getVaultPath(this.app) ?? '';
     this.pluginManager = new PluginManager(vaultPath, this.storage.geminiCliSettings);
     await this.pluginManager.loadExtensions();
 
@@ -83,16 +82,19 @@ export default class GeminesePlugin extends Plugin {
     );
 
     const ribbonEl = this.addRibbonIcon('bot', 'Open Geminese', () => {
-      this.activateView();
+      void this.activateView();
     });
     const iconWrap = ribbonEl?.querySelector('.svg-icon') ?? ribbonEl?.firstElementChild;
-    if (iconWrap) iconWrap.innerHTML = GEMINI_LOGO_SVG;
+    if (iconWrap) {
+      const logoSvg = new DOMParser().parseFromString(GEMINI_LOGO_SVG, 'image/svg+xml').documentElement;
+      iconWrap.appendChild(document.adoptNode(logoSvg));
+    }
 
     this.addCommand({
       id: 'open-view',
       name: 'Open chat view',
       callback: () => {
-        this.activateView();
+        void this.activateView();
       },
     });
 
@@ -148,7 +150,7 @@ export default class GeminesePlugin extends Plugin {
         if (!tabManager.canCreateTab()) return false;
 
         if (!checking) {
-          tabManager.createTab();
+          void tabManager.createTab();
         }
         return true;
       },
@@ -171,7 +173,7 @@ export default class GeminesePlugin extends Plugin {
         if (activeTab.state.isStreaming) return false;
 
         if (!checking) {
-          tabManager.createNewConversation();
+          void tabManager.createNewConversation();
         }
         return true;
       },
@@ -192,7 +194,7 @@ export default class GeminesePlugin extends Plugin {
           const activeTabId = tabManager.getActiveTabId();
           if (activeTabId) {
             // When closing the last tab, TabManager will create a new empty one
-            tabManager.closeTab(activeTabId);
+            void tabManager.closeTab(activeTabId);
           }
         }
         return true;
@@ -202,15 +204,17 @@ export default class GeminesePlugin extends Plugin {
     this.addSettingTab(new GemineseSettingTab(this.app, this));
   }
 
-  async onunload() {
+  onunload() {
     // Ensures state is saved even if Obsidian quits without calling onClose()
-    for (const view of this.getAllViews()) {
-      const tabManager = view.getTabManager();
-      if (tabManager) {
-        const state = tabManager.getPersistedState();
-        await this.storage.setTabManagerState(state);
+    void (async () => {
+      for (const view of this.getAllViews()) {
+        const tabManager = view.getTabManager();
+        if (tabManager) {
+          const state = tabManager.getPersistedState();
+          await this.storage.setTabManagerState(state);
+        }
       }
-    }
+    })();
   }
 
   async activateView() {
@@ -231,7 +235,7 @@ export default class GeminesePlugin extends Plugin {
     }
 
     if (leaf) {
-      workspace.revealLeaf(leaf);
+      void workspace.revealLeaf(leaf);
     }
   }
 
@@ -261,9 +265,7 @@ export default class GeminesePlugin extends Plugin {
     let didMigrateCliPath = false;
 
     if (!this.settings.geminiCliPathsByHost[hostname]) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const platformPaths = (this.settings as any).geminiCliPaths as Record<string, string> | undefined;
-      const migratedPath = platformPaths?.[getCliPlatformKey()]?.trim() || this.settings.geminiCliPath?.trim();
+      const migratedPath = this.settings.geminiCliPath?.trim();
 
       if (migratedPath) {
         this.settings.geminiCliPathsByHost[hostname] = migratedPath;
@@ -272,8 +274,7 @@ export default class GeminesePlugin extends Plugin {
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    delete (this.settings as any).geminiCliPaths;
+    delete (this.settings as unknown as Record<string, unknown>).geminiCliPaths;
 
     // Load all conversations from session files (legacy JSONL + native metadata)
     const { conversations: legacyConversations, failedCount } = await this.storage.sessions.loadAllConversations();
@@ -393,13 +394,14 @@ export default class GeminesePlugin extends Plugin {
     return updated;
   }
 
-  /** Persists settings to storage. */
-  async saveSettings() {
-    // Save settings (excluding slashCommands which are stored separately)
-    const {
-      slashCommands: _,
-      ...settingsToSave
-    } = this.settings;
+   /** Persists settings to storage. */
+   async saveSettings() {
+     // Save settings (excluding slashCommands which are stored separately)
+     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- slashCommands stored separately
+     const {
+       slashCommands,
+       ...settingsToSave
+     } = this.settings;
 
     await this.storage.saveGemineseSettings(settingsToSave);
   }

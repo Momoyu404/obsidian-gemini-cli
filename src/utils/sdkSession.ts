@@ -84,7 +84,7 @@ export interface SDKNativeContentBlock {
   name?: string;
   input?: Record<string, unknown>;
   tool_use_id?: string;
-  content?: string | unknown;
+  content?: string | Record<string, unknown>;
   is_error?: boolean;
   // Image block fields
   source?: {

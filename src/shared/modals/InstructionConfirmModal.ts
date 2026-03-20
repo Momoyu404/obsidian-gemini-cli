@@ -59,7 +59,7 @@ export class InstructionModal extends Modal {
   onOpen() {
     const { contentEl } = this;
     contentEl.addClass('geminese-instruction-modal');
-    this.setTitle('Add Custom Instruction');
+    this.setTitle('Add custom instruction');
 
     // User input section (always visible)
     const inputSection = contentEl.createDiv({ cls: 'geminese-instruction-section' });
@@ -77,8 +77,7 @@ export class InstructionModal extends Modal {
     this.loadingEl.createSpan({ text: 'Processing your instruction...' });
 
     // Clarification state (hidden initially)
-    this.clarificationEl = this.contentSectionEl.createDiv({ cls: 'geminese-instruction-clarification-section' });
-    this.clarificationEl.style.display = 'none';
+    this.clarificationEl = this.contentSectionEl.createDiv({ cls: 'geminese-instruction-clarification-section geminese-hidden' });
     this.clarificationTextEl = this.clarificationEl.createDiv({ cls: 'geminese-instruction-clarification' });
 
     const responseSection = this.clarificationEl.createDiv({ cls: 'geminese-instruction-section' });
@@ -99,8 +98,7 @@ export class InstructionModal extends Modal {
     });
 
     // Confirmation state (hidden initially)
-    this.confirmationEl = this.contentSectionEl.createDiv({ cls: 'geminese-instruction-confirmation-section' });
-    this.confirmationEl.style.display = 'none';
+    this.confirmationEl = this.contentSectionEl.createDiv({ cls: 'geminese-instruction-confirmation-section geminese-hidden' });
 
     // Refined instruction display/edit
     const refinedSection = this.confirmationEl.createDiv({ cls: 'geminese-instruction-section' });
@@ -108,8 +106,7 @@ export class InstructionModal extends Modal {
     refinedLabel.setText('Refined snippet:');
 
     this.refinedDisplayEl = refinedSection.createDiv({ cls: 'geminese-instruction-refined' });
-    this.editContainerEl = refinedSection.createDiv({ cls: 'geminese-instruction-edit-container' });
-    this.editContainerEl.style.display = 'none';
+    this.editContainerEl = refinedSection.createDiv({ cls: 'geminese-instruction-edit-container geminese-hidden' });
 
     this.editTextarea = new TextAreaComponent(this.editContainerEl);
     this.editTextarea.inputEl.addClass('geminese-instruction-edit-textarea');
@@ -167,13 +164,13 @@ export class InstructionModal extends Modal {
     this.state = state;
 
     if (this.loadingEl) {
-      this.loadingEl.style.display = state === 'loading' ? 'flex' : 'none';
+      this.loadingEl.toggleClass('geminese-hidden', state !== 'loading');
     }
     if (this.clarificationEl) {
-      this.clarificationEl.style.display = state === 'clarification' ? 'block' : 'none';
+      this.clarificationEl.toggleClass('geminese-hidden', state !== 'clarification');
     }
     if (this.confirmationEl) {
-      this.confirmationEl.style.display = state === 'confirmation' ? 'block' : 'none';
+      this.confirmationEl.toggleClass('geminese-hidden', state !== 'confirmation');
     }
 
     this.updateButtons();
@@ -234,8 +231,8 @@ export class InstructionModal extends Modal {
     this.isEditing = !this.isEditing;
 
     if (this.isEditing) {
-      if (this.refinedDisplayEl) this.refinedDisplayEl.style.display = 'none';
-      if (this.editContainerEl) this.editContainerEl.style.display = 'block';
+      if (this.refinedDisplayEl) this.refinedDisplayEl.classList.add('geminese-hidden');
+      if (this.editContainerEl) this.editContainerEl.classList.remove('geminese-hidden');
       if (this.editBtnEl) this.editBtnEl.setText('Preview');
       this.editTextarea?.inputEl.focus();
     } else {
@@ -243,9 +240,9 @@ export class InstructionModal extends Modal {
       this.refinedInstruction = edited;
       if (this.refinedDisplayEl) {
         this.refinedDisplayEl.setText(edited);
-        this.refinedDisplayEl.style.display = 'block';
+        this.refinedDisplayEl.classList.remove('geminese-hidden');
       }
-      if (this.editContainerEl) this.editContainerEl.style.display = 'none';
+      if (this.editContainerEl) this.editContainerEl.classList.add('geminese-hidden');
       if (this.editBtnEl) this.editBtnEl.setText('Edit');
     }
   }

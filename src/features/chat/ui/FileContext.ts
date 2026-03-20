@@ -72,17 +72,19 @@ export class FileContextManager {
           this.refreshCurrentNoteChip();
         }
       },
-      onOpenFile: async (filePath) => {
-        const file = this.app.vault.getAbstractFileByPath(filePath);
-        if (!(file instanceof TFile)) {
-          new Notice(`Could not open file: ${filePath}`);
-          return;
-        }
-        try {
-          await this.app.workspace.getLeaf().openFile(file);
-        } catch (error) {
-          new Notice(`Failed to open file: ${error instanceof Error ? error.message : String(error)}`);
-        }
+      onOpenFile: (filePath) => {
+        void (async () => {
+          const file = this.app.vault.getAbstractFileByPath(filePath);
+          if (!(file instanceof TFile)) {
+            new Notice(`Could not open file: ${filePath}`);
+            return;
+          }
+          try {
+            await this.app.workspace.getLeaf().openFile(file);
+          } catch (error) {
+            new Notice(`Failed to open file: ${error instanceof Error ? error.message : String(error)}`);
+          }
+        })();
       },
     });
 
@@ -208,9 +210,9 @@ export class FileContextManager {
   }
 
   /** Handles files dropped from OS or Obsidian into the chat input/card. */
-  async handleFileDrop(e: DragEvent): Promise<void> {
+  handleFileDrop(e: DragEvent): Promise<void> {
     const dataTransfer = e.dataTransfer;
-    if (!dataTransfer) return;
+    if (!dataTransfer) return Promise.resolve();
 
     let attached = false;
     let hasNonVaultDrop = false;
@@ -248,7 +250,7 @@ export class FileContextManager {
           continue;
         }
 
-        const rawPath = (file as any).path ?? file.name;
+        const rawPath = (file as File & { path?: string }).path ?? file.name;
         const normalizedPath = this.normalizePathForVault(rawPath);
         if (normalizedPath) {
           this.state.attachFile(normalizedPath);
@@ -264,6 +266,7 @@ export class FileContextManager {
     } else if (hasNonVaultDrop) {
       new Notice('Dropped file is not inside the current vault.');
     }
+    return Promise.resolve();
   }
 
   /** Handles keyboard navigation in mention dropdown. Returns true if handled. */

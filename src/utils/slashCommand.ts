@@ -1,4 +1,4 @@
-import type { GeminiModel, SlashCommand } from '../core/types';
+import type { SlashCommand } from '../core/types';
 import {
   extractBoolean,
   extractString,
@@ -45,7 +45,7 @@ export function parsedToSlashCommand(
     description: parsed.description,
     argumentHint: parsed.argumentHint,
     allowedTools: parsed.allowedTools,
-    model: parsed.model as GeminiModel | undefined,
+    model: parsed.model,
     content: parsed.promptContent,
     disableModelInvocation: parsed.disableModelInvocation,
     userInvocable: parsed.userInvocable,

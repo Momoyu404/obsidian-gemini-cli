@@ -104,7 +104,7 @@ export class QueryOptionsBuilder {
     const allDisallowedTools = ctx.mcpManager.getAllDisallowedMcpTools();
     const disallowedToolsKey = allDisallowedTools.join('|');
 
-    const pluginsKey = ctx.pluginManager.getPluginsKey();
+    const pluginsKey = ctx.pluginManager.getExtensionsKey();
 
     return {
       model: ctx.settings.model,

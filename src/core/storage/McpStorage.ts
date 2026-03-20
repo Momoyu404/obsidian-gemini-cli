@@ -135,10 +135,11 @@ export class McpStorage {
         ? (existing._geminese as Record<string, unknown>)
         : null;
 
-    if (Object.keys(gemineseServers).length > 0) {
-      file._geminese = { ...(existingGeminese ?? {}), servers: gemineseServers };
-    } else if (existingGeminese) {
-      const { servers: _servers, ...rest } = existingGeminese;
+     if (Object.keys(gemineseServers).length > 0) {
+       file._geminese = { ...(existingGeminese ?? {}), servers: gemineseServers };
+     } else if (existingGeminese) {
+       // eslint-disable-next-line @typescript-eslint/no-unused-vars -- servers field excluded from rest
+       const { servers, ...rest } = existingGeminese;
       if (Object.keys(rest).length > 0) {
         file._geminese = rest;
       } else {
@@ -179,7 +180,7 @@ export class McpStorage {
 
         for (const [name, config] of Object.entries(parsed.mcpServers)) {
           if (isValidMcpServerConfig(config)) {
-            servers.push({ name, config: config as McpServerConfig });
+            servers.push({ name, config });
           }
         }
 
@@ -194,7 +195,7 @@ export class McpStorage {
       // { "command": "...", "args": [...] } or { "type": "sse", "url": "..." }
       if (isValidMcpServerConfig(parsed)) {
         return {
-          servers: [{ name: '', config: parsed as McpServerConfig }],
+          servers: [{ name: '', config: parsed }],
           needsName: true,
         };
       }
@@ -206,7 +207,7 @@ export class McpStorage {
         const [name, config] = entries[0];
         if (isValidMcpServerConfig(config)) {
           return {
-            servers: [{ name, config: config as McpServerConfig }],
+            servers: [{ name, config }],
             needsName: false,
           };
         }
@@ -217,7 +218,7 @@ export class McpStorage {
       const servers: Array<{ name: string; config: McpServerConfig }> = [];
       for (const [name, config] of entries) {
         if (isValidMcpServerConfig(config)) {
-          servers.push({ name, config: config as McpServerConfig });
+          servers.push({ name, config });
         }
       }
 

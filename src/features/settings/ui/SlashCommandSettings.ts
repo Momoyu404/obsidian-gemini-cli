@@ -38,7 +38,7 @@ export class SlashCommandModal extends Modal {
     const existingIsSkill = this.existingCmd ? isSkill(this.existingCmd) : false;
     let selectedType: 'command' | 'skill' = existingIsSkill ? 'skill' : 'command';
 
-    const typeLabel = () => selectedType === 'skill' ? 'Skill' : 'Slash Command';
+    const typeLabel = () => selectedType === 'skill' ? 'skill' : 'Slash command';
 
     this.setTitle(this.existingCmd ? `Edit ${typeLabel()}` : `Add ${typeLabel()}`);
     this.modalEl.addClass('geminese-sp-modal');
@@ -52,17 +52,16 @@ export class SlashCommandModal extends Modal {
     let toolsInput: HTMLInputElement;
     let disableModelToggle: boolean = this.existingCmd?.disableModelInvocation ?? false;
     let disableUserInvocation: boolean = this.existingCmd?.userInvocable === false;
-    let contextValue: 'fork' | '' = this.existingCmd?.context ?? '';
-    let agentInput: HTMLInputElement;
+     let contextValue: 'fork' | '' = this.existingCmd?.context ?? '';
+     let agentInput: HTMLInputElement;
 
-    /* eslint-disable prefer-const -- assigned in Setting callbacks */
-    let disableUserSetting!: Setting;
-    let disableUserToggle!: ToggleComponent;
-    /* eslint-enable prefer-const */
+     // eslint-disable-next-line prefer-const -- assigned in Setting callbacks
+     let disableUserSetting!: Setting;
+     let disableUserToggle!: ToggleComponent;
 
     const updateSkillOnlyFields = () => {
       const isSkillType = selectedType === 'skill';
-      disableUserSetting.settingEl.style.display = isSkillType ? '' : 'none';
+      disableUserSetting.settingEl.toggleClass('geminese-hidden', !isSkillType);
       if (!isSkillType) {
         disableUserInvocation = false;
         disableUserToggle.setValue(false);
@@ -166,7 +165,7 @@ export class SlashCommandModal extends Modal {
         toggle.setValue(contextValue === 'fork')
           .onChange(value => {
             contextValue = value ? 'fork' : '';
-            agentSetting.settingEl.style.display = value ? '' : 'none';
+            agentSetting.settingEl.toggleClass('geminese-hidden', !value);
           });
       });
 
@@ -178,7 +177,7 @@ export class SlashCommandModal extends Modal {
         text.setValue(this.existingCmd?.agent || '')
           .setPlaceholder('code-reviewer');
       });
-    agentSetting.settingEl.style.display = contextValue === 'fork' ? '' : 'none';
+    agentSetting.settingEl.toggleClass('geminese-hidden', contextValue !== 'fork');
 
     new Setting(contentEl)
       .setName('Prompt template')
@@ -208,7 +207,7 @@ export class SlashCommandModal extends Modal {
       text: 'Save',
       cls: 'geminese-save-btn',
     });
-    saveBtn.addEventListener('click', async () => {
+    saveBtn.addEventListener('click', () => { void (async () => {
       const name = nameInput.value.trim();
       const nameError = validateCommandName(name);
       if (nameError) {
@@ -263,7 +262,7 @@ export class SlashCommandModal extends Modal {
         return;
       }
       this.close();
-    });
+    })(); });
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -358,13 +357,13 @@ export class SlashCommandSettings {
         attr: { 'aria-label': 'Convert to skill' },
       });
       setIcon(convertBtn, 'package');
-      convertBtn.addEventListener('click', async () => {
+      convertBtn.addEventListener('click', () => { void (async () => {
         try {
           await this.transformToSkill(cmd);
         } catch {
           new Notice('Failed to convert to skill');
         }
-      });
+      })(); });
     }
 
     const deleteBtn = actionsEl.createEl('button', {
@@ -372,14 +371,14 @@ export class SlashCommandSettings {
       attr: { 'aria-label': 'Delete' },
     });
     setIcon(deleteBtn, 'trash-2');
-    deleteBtn.addEventListener('click', async () => {
+    deleteBtn.addEventListener('click', () => { void (async () => {
       try {
         await this.deleteCommand(cmd);
       } catch {
         const label = isSkill(cmd) ? 'skill' : 'slash command';
         new Notice(`Failed to delete ${label}`);
       }
-    });
+    })(); });
   }
 
   private openCommandModal(existingCmd: SlashCommand | null): void {

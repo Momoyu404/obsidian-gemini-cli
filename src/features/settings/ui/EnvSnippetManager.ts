@@ -4,6 +4,7 @@ import { Modal, Notice, setIcon, Setting } from 'obsidian';
 import type { EnvSnippet } from '../../../core/types';
 import { t } from '../../../i18n';
 import type GeminesePlugin from '../../../main';
+import { confirmDelete } from '../../../shared/modals/ConfirmModal';
 import { formatContextLimit, getCustomModelIds, parseContextLimit, parseEnvironmentVariables } from '../../../utils/env';
 import type { GemineseView } from '../../chat/ClaudianView';
 
@@ -81,11 +82,11 @@ export class EnvSnippetModal extends Modal {
       const uniqueModelIds = getCustomModelIds(envVars);
 
       if (uniqueModelIds.size === 0) {
-        contextLimitsContainer.style.display = 'none';
+        contextLimitsContainer.classList.add('geminese-hidden');
         return;
       }
 
-      contextLimitsContainer.style.display = 'block';
+      contextLimitsContainer.classList.remove('geminese-hidden');
 
       const existingLimits = this.snippet?.contextLimits ?? this.plugin.settings.customContextLimits ?? {};
 
@@ -226,13 +227,13 @@ export class EnvSnippetManager {
         attr: { 'aria-label': 'Insert' },
       });
       setIcon(restoreBtn, 'clipboard-paste');
-      restoreBtn.addEventListener('click', async () => {
+      restoreBtn.addEventListener('click', () => { void (async () => {
         try {
           await this.insertSnippet(snippet);
         } catch {
           new Notice('Failed to insert snippet');
         }
-      });
+      })(); });
 
       const editBtn = actionsEl.createEl('button', {
         cls: 'geminese-settings-action-btn',
@@ -248,19 +249,19 @@ export class EnvSnippetManager {
         attr: { 'aria-label': 'Delete' },
       });
       setIcon(deleteBtn, 'trash-2');
-      deleteBtn.addEventListener('click', async () => {
+      deleteBtn.addEventListener('click', () => { void (async () => {
         try {
-          if (confirm(`Delete environment snippet "${snippet.name}"?`)) {
+          if (await confirmDelete(this.plugin.app, `Delete environment snippet "${snippet.name}"?`)) {
             await this.deleteSnippet(snippet);
           }
         } catch {
           new Notice('Failed to delete snippet');
         }
-      });
+      })(); });
     }
   }
 
-  private async saveCurrentEnv() {
+  private saveCurrentEnv(): Promise<void> {
     const modal = new EnvSnippetModal(
       this.plugin.app,
       this.plugin,
@@ -273,6 +274,7 @@ export class EnvSnippetManager {
       }
     );
     modal.open();
+    return Promise.resolve();
   }
 
   private async insertSnippet(snippet: EnvSnippet) {

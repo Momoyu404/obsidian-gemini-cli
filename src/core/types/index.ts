@@ -31,6 +31,7 @@ export { type BlockedUserMessage, isBlockedMessage } from './sdk';
 // Settings types
 export {
   type ApprovalDecision,
+  type CCPermissions,
   type CliPlatformKey,
   createPermissionRule,
   DEFAULT_GEMINI_CLI_SETTINGS,
@@ -41,7 +42,7 @@ export {
   type GeminiCLISettings,
   type GeminiPermissions,
   getBashToolBlockedCommands,
-  getCliPlatformKey,  // Kept for migration
+  getCliPlatformKey,
   getCurrentPlatformBlockedCommands,
   getCurrentPlatformKey,
   getDefaultBlockedCommands,
@@ -55,7 +56,6 @@ export {
   type PermissionMode,
   type PermissionRule,
   type PlatformBlockedCommands,
-  type PlatformCliPaths,  // Kept for migration
   type SlashCommand,
   type TabBarPosition,
 } from './settings';
@@ -105,13 +105,8 @@ export {
 export {
   type ExtensionScope,
   type GemineseExtension,
-  // Backwards-compatible aliases
-  type GeminesePlugin,
   type InstalledExtensionEntry,
   type InstalledExtensionsFile,
-  type InstalledPluginEntry,
-  type InstalledPluginsFile,
-  type PluginScope,
 } from './plugins';
 
 // Agent types

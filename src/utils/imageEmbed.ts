@@ -83,7 +83,7 @@ function createFallbackHtml(wikilink: string): string {
 }
 
 /**
- * Call before MarkdownRenderer.renderMarkdown().
+ * Call before MarkdownRenderer.render().
  * Non-image embeds (e.g., ![[note.md]]) pass through unchanged.
  */
 export function replaceImageEmbedsWithHtml(

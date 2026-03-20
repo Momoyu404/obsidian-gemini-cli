@@ -5,6 +5,7 @@ import { McpStorage } from '../../../core/storage';
 import type { GemineseMcpServer, McpServerConfig, McpServerType } from '../../../core/types';
 import { DEFAULT_MCP_SERVER, getMcpServerType } from '../../../core/types';
 import type GeminesePlugin from '../../../main';
+import { confirmDelete } from '../../../shared/modals/ConfirmModal';
 import { McpServerModal } from './McpServerModal';
 import { McpTestModal } from './McpTestModal';
 
@@ -29,7 +30,7 @@ export class McpSettingsManager {
   constructor(containerEl: HTMLElement, plugin: GeminesePlugin) {
     this.containerEl = containerEl;
     this.plugin = plugin;
-    this.loadAndRender();
+    void this.loadAndRender();
   }
 
   private async loadAndRender() {
@@ -41,7 +42,7 @@ export class McpSettingsManager {
     this.containerEl.empty();
 
     const headerEl = this.containerEl.createDiv({ cls: 'geminese-mcp-header' });
-    headerEl.createSpan({ text: 'MCP Servers', cls: 'geminese-mcp-label' });
+    headerEl.createSpan({ text: 'MCP servers', cls: 'geminese-mcp-label' });
 
     const addContainer = headerEl.createDiv({ cls: 'geminese-mcp-add-container' });
     const addBtn = addContainer.createEl('button', {
@@ -73,7 +74,7 @@ export class McpSettingsManager {
     importOption.createSpan({ text: 'Import from clipboard' });
     importOption.addEventListener('click', () => {
       dropdown.removeClass('is-visible');
-      this.importFromClipboard();
+      void this.importFromClipboard();
     });
 
     addBtn.addEventListener('click', (e) => {
@@ -375,7 +376,7 @@ export class McpSettingsManager {
   }
 
   private async deleteServer(server: GemineseMcpServer) {
-    if (!confirm(`Delete MCP server "${server.name}"?`)) {
+    if (!await confirmDelete(this.plugin.app, `Delete MCP server "${server.name}"?`)) {
       return;
     }
 
@@ -388,6 +389,6 @@ export class McpSettingsManager {
 
   /** Refresh the server list (call after external changes). */
   public refresh() {
-    this.loadAndRender();
+    void this.loadAndRender();
   }
 }

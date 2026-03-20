@@ -26,14 +26,14 @@ const mockFs = fs as jest.Mocked<typeof fs>;
 // Create a mock CCSettingsStorage
 function createMockCCSettingsStorage() {
   return {
-    getEnabledPlugins: jest.fn().mockResolvedValue({}),
-    setPluginEnabled: jest.fn().mockResolvedValue(undefined),
+    getEnabledExtensions: jest.fn().mockResolvedValue({}),
+    setExtensionEnabled: jest.fn().mockResolvedValue(undefined),
   } as any;
 }
 
-const installedPluginsPath = path.join(homeDir, '.claude', 'plugins', 'installed_plugins.json');
-const globalSettingsPath = path.join(homeDir, '.claude', 'settings.json');
-const projectSettingsPath = path.join(vaultPath, '.claude', 'settings.json');
+const installedPluginsPath = path.join(homeDir, '.gemini', 'extensions', 'installed_extensions.json');
+const globalSettingsPath = path.join(homeDir, '.gemini', 'settings.json');
+const projectSettingsPath = path.join(vaultPath, '.gemini', 'settings.json');
 
 describe('PluginManager', () => {
   beforeEach(() => {
@@ -54,7 +54,7 @@ describe('PluginManager', () => {
     it('loads plugins from installed_plugins.json with enabled state from settings', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'test-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/test-plugin',
@@ -65,7 +65,7 @@ describe('PluginManager', () => {
         },
       };
       const globalSettings = {
-        enabledPlugins: { 'test-plugin@marketplace': true },
+        enabledExtensions: { 'test-plugin@marketplace': true },
       };
 
       mockFs.existsSync.mockReturnValue(true);
@@ -92,7 +92,7 @@ describe('PluginManager', () => {
     it('defaults to enabled for installed plugins not in settings', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'new-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/new-plugin',
@@ -121,7 +121,7 @@ describe('PluginManager', () => {
     it('project false overrides global true', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'plugin-a@marketplace': [{
             scope: 'user',
             installPath: '/path/to/plugin-a',
@@ -132,10 +132,10 @@ describe('PluginManager', () => {
         },
       };
       const globalSettings = {
-        enabledPlugins: { 'plugin-a@marketplace': true },
+        enabledExtensions: { 'plugin-a@marketplace': true },
       };
       const projectSettings = {
-        enabledPlugins: { 'plugin-a@marketplace': false },
+        enabledExtensions: { 'plugin-a@marketplace': false },
       };
 
       mockFs.existsSync.mockReturnValue(true);
@@ -159,7 +159,7 @@ describe('PluginManager', () => {
     it('extracts plugin name from ID correctly', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'feature-dev@claude-plugins-official': [{
             scope: 'user',
             installPath: '/path/to/feature-dev',
@@ -184,10 +184,10 @@ describe('PluginManager', () => {
       expect(plugins[0].name).toBe('feature-dev');
     });
 
-    it('sorts plugins: project first, then user', async () => {
+    it('sorts extensions: project first, then user', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'user-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/user-plugin',
@@ -225,7 +225,7 @@ describe('PluginManager', () => {
     it('excludes project plugins installed for other vaults', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'other-project-plugin@marketplace': [{
             scope: 'project',
             installPath: '/path/to/other-project-plugin',
@@ -253,7 +253,7 @@ describe('PluginManager', () => {
     it('prefers project plugin entry for the current vault', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'multi-scope-plugin@marketplace': [
             {
               scope: 'user',
@@ -295,7 +295,7 @@ describe('PluginManager', () => {
     it('disables an enabled plugin', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'test-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/test-plugin',
@@ -320,7 +320,7 @@ describe('PluginManager', () => {
       await manager.togglePlugin('test-plugin@marketplace');
 
       expect(manager.getPlugins()[0].enabled).toBe(false);
-      expect(ccSettings.setPluginEnabled).toHaveBeenCalledWith('test-plugin@marketplace', false);
+      expect(ccSettings.setExtensionEnabled).toHaveBeenCalledWith('test-plugin@marketplace', false);
     });
 
     it('does nothing when plugin not found', async () => {
@@ -331,7 +331,7 @@ describe('PluginManager', () => {
       await manager.loadPlugins();
       await manager.togglePlugin('nonexistent-plugin');
 
-      expect(ccSettings.setPluginEnabled).not.toHaveBeenCalled();
+      expect(ccSettings.setExtensionEnabled).not.toHaveBeenCalled();
     });
   });
 
@@ -339,7 +339,7 @@ describe('PluginManager', () => {
     it('returns empty string when no plugins are enabled', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'test-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/test-plugin',
@@ -350,7 +350,7 @@ describe('PluginManager', () => {
         },
       };
       const globalSettings = {
-        enabledPlugins: { 'test-plugin@marketplace': false },
+        enabledExtensions: { 'test-plugin@marketplace': false },
       };
 
       mockFs.existsSync.mockReturnValue(true);
@@ -371,7 +371,7 @@ describe('PluginManager', () => {
     it('returns stable key for enabled plugins', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'plugin-b@marketplace': [{
             scope: 'user',
             installPath: '/path/to/plugin-b',
@@ -409,7 +409,7 @@ describe('PluginManager', () => {
     it('returns true when at least one plugin is enabled', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'test-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/test-plugin',
@@ -436,7 +436,7 @@ describe('PluginManager', () => {
     it('returns false when all plugins are disabled', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'test-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/test-plugin',
@@ -447,7 +447,7 @@ describe('PluginManager', () => {
         },
       };
       const globalSettings = {
-        enabledPlugins: { 'test-plugin@marketplace': false },
+        enabledExtensions: { 'test-plugin@marketplace': false },
       };
 
       mockFs.existsSync.mockReturnValue(true);
@@ -470,7 +470,7 @@ describe('PluginManager', () => {
     it('enables a disabled plugin', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'test-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/test-plugin',
@@ -481,7 +481,7 @@ describe('PluginManager', () => {
         },
       };
       const globalSettings = {
-        enabledPlugins: { 'test-plugin@marketplace': false },
+        enabledExtensions: { 'test-plugin@marketplace': false },
       };
 
       mockFs.existsSync.mockReturnValue(true);
@@ -500,13 +500,13 @@ describe('PluginManager', () => {
       await manager.enablePlugin('test-plugin@marketplace');
 
       expect(manager.getPlugins()[0].enabled).toBe(true);
-      expect(ccSettings.setPluginEnabled).toHaveBeenCalledWith('test-plugin@marketplace', true);
+      expect(ccSettings.setExtensionEnabled).toHaveBeenCalledWith('test-plugin@marketplace', true);
     });
 
     it('does nothing when plugin is already enabled', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'test-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/test-plugin',
@@ -528,7 +528,7 @@ describe('PluginManager', () => {
       await manager.loadPlugins();
       await manager.enablePlugin('test-plugin@marketplace');
 
-      expect(ccSettings.setPluginEnabled).not.toHaveBeenCalled();
+      expect(ccSettings.setExtensionEnabled).not.toHaveBeenCalled();
     });
 
     it('does nothing for nonexistent plugin', async () => {
@@ -539,7 +539,7 @@ describe('PluginManager', () => {
       await manager.loadPlugins();
       await manager.enablePlugin('nonexistent');
 
-      expect(ccSettings.setPluginEnabled).not.toHaveBeenCalled();
+      expect(ccSettings.setExtensionEnabled).not.toHaveBeenCalled();
     });
   });
 
@@ -547,7 +547,7 @@ describe('PluginManager', () => {
     it('disables an enabled plugin', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'test-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/test-plugin',
@@ -572,13 +572,13 @@ describe('PluginManager', () => {
       await manager.disablePlugin('test-plugin@marketplace');
 
       expect(manager.getPlugins()[0].enabled).toBe(false);
-      expect(ccSettings.setPluginEnabled).toHaveBeenCalledWith('test-plugin@marketplace', false);
+      expect(ccSettings.setExtensionEnabled).toHaveBeenCalledWith('test-plugin@marketplace', false);
     });
 
     it('does nothing when plugin is already disabled', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'test-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/test-plugin',
@@ -589,7 +589,7 @@ describe('PluginManager', () => {
         },
       };
       const globalSettings = {
-        enabledPlugins: { 'test-plugin@marketplace': false },
+        enabledExtensions: { 'test-plugin@marketplace': false },
       };
 
       mockFs.existsSync.mockReturnValue(true);
@@ -605,7 +605,7 @@ describe('PluginManager', () => {
       await manager.loadPlugins();
       await manager.disablePlugin('test-plugin@marketplace');
 
-      expect(ccSettings.setPluginEnabled).not.toHaveBeenCalled();
+      expect(ccSettings.setExtensionEnabled).not.toHaveBeenCalled();
     });
 
     it('does nothing for nonexistent plugin', async () => {
@@ -616,7 +616,7 @@ describe('PluginManager', () => {
       await manager.loadPlugins();
       await manager.disablePlugin('nonexistent');
 
-      expect(ccSettings.setPluginEnabled).not.toHaveBeenCalled();
+      expect(ccSettings.setExtensionEnabled).not.toHaveBeenCalled();
     });
   });
 
@@ -624,7 +624,7 @@ describe('PluginManager', () => {
     it('returns count of enabled plugins', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'plugin-a@marketplace': [{
             scope: 'user',
             installPath: '/path/to/a',
@@ -642,7 +642,7 @@ describe('PluginManager', () => {
         },
       };
       const globalSettings = {
-        enabledPlugins: {
+        enabledExtensions: {
           'plugin-a@marketplace': true,
           'plugin-b@marketplace': false,
         },
@@ -678,7 +678,7 @@ describe('PluginManager', () => {
     it('returns true when plugins exist', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'test-plugin@marketplace': [{
             scope: 'user',
             installPath: '/path/to/test-plugin',
@@ -717,7 +717,7 @@ describe('PluginManager', () => {
     it('loads plugin when entries is a single object instead of array', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'solo-plugin@marketplace': {
             scope: 'user',
             installPath: '/path/to/solo-plugin',
@@ -768,7 +768,7 @@ describe('PluginManager', () => {
     it('returns full ID when no @ is present', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'simple-plugin': [{
             scope: 'user' as const,
             installPath: '/path/to/simple-plugin',
@@ -800,7 +800,7 @@ describe('PluginManager', () => {
     it('uses realpathSync when available', async () => {
       const installedPlugins = {
         version: 2,
-        plugins: {
+        extensions: {
           'project-plugin@marketplace': [{
             scope: 'project' as const,
             installPath: '/path/to/project-plugin',

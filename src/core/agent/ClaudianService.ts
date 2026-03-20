@@ -133,12 +133,12 @@ export class GemineseService {
     return conv.sessionId ?? conv.forkSource?.sessionId ?? null;
   }
 
-  async ensureReady(options?: EnsureReadyOptions): Promise<boolean> {
+  ensureReady(options?: EnsureReadyOptions): Promise<boolean> {
     const vaultPath = getVaultPath(this.plugin.app);
-    if (!vaultPath) return false;
+    if (!vaultPath) return Promise.resolve(false);
 
     const cliPath = this.plugin.getResolvedGeminiCliPath();
-    if (!cliPath) return false;
+    if (!cliPath) return Promise.resolve(false);
 
     if (options?.sessionId) {
       this.sessionManager.setSessionId(options.sessionId, this.plugin.settings.model);
@@ -151,7 +151,7 @@ export class GemineseService {
     this.vaultPath = vaultPath;
     this.ready = true;
     this.notifyReadyStateChange();
-    return true;
+    return Promise.resolve(true);
   }
 
   isPersistentQueryActive(): boolean {
@@ -402,8 +402,8 @@ export class GemineseService {
     return this.sessionManager.consumeInvalidation();
   }
 
-  async getSupportedCommands(): Promise<SlashCommand[]> {
-    return [];
+  getSupportedCommands(): Promise<SlashCommand[]> {
+    return Promise.resolve([]);
   }
 
   setSessionId(id: string | null, externalContextPaths?: string[]): void {

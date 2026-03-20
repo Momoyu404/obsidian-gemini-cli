@@ -86,55 +86,55 @@
     },
     "hotkeys": "Hotkeys",
     "inlineEditHotkey": {
-      "name": "Inline Edit",
+      "name": "Inline edit",
       "descWithKey": "Current hotkey: {hotkey}",
       "descNoKey": "No hotkey set",
       "btnChange": "Change",
       "btnSet": "Set hotkey"
     },
     "openChatHotkey": {
-      "name": "Open Chat",
+      "name": "Open chat",
       "descWithKey": "Current hotkey: {hotkey}",
       "descNoKey": "No hotkey set",
       "btnChange": "Change",
       "btnSet": "Set hotkey"
     },
     "newSessionHotkey": {
-      "name": "New Session",
+      "name": "New session",
       "descWithKey": "Current hotkey: {hotkey}",
       "descNoKey": "No hotkey set",
       "btnChange": "Change",
       "btnSet": "Set hotkey"
     },
     "newTabHotkey": {
-      "name": "New Tab",
+      "name": "New tab",
       "descWithKey": "Current hotkey: {hotkey}",
       "descNoKey": "No hotkey set",
       "btnChange": "Change",
       "btnSet": "Set hotkey"
     },
     "closeTabHotkey": {
-      "name": "Close Tab",
+      "name": "Close tab",
       "descWithKey": "Current hotkey: {hotkey}",
       "descNoKey": "No hotkey set",
       "btnChange": "Change",
       "btnSet": "Set hotkey"
     },
     "slashCommands": {
-      "name": "Commands and Skills",
+      "name": "Commands and skills",
       "desc": "Define custom commands and skills triggered by /name."
     },
     "hiddenSlashCommands": {
-      "name": "Hidden Commands",
+      "name": "Hidden commands",
       "desc": "Hide specific slash commands from the dropdown. Useful for hiding Gemini CLI commands that are not relevant to Geminese. Enter command names without the leading slash, one per line.",
       "placeholder": "commit\nbuild\ntest"
     },
     "mcpServers": {
-      "name": "MCP Servers",
+      "name": "MCP servers",
       "desc": "Configure Model Context Protocol servers to extend Gemini's capabilities with external tools and data sources. Servers with context-saving mode require @mention to activate."
     },
     "plugins": {
-      "name": "Gemini CLI Plugins",
+      "name": "Gemini CLI plugins",
       "desc": "Enable or disable Gemini CLI plugins discovered from ~/.gemini/plugins. Enabled plugins are stored per vault."
     },
     "subagents": {
@@ -153,8 +153,8 @@
       "descriptionRequired": "Description is required",
       "promptRequired": "System prompt is required",
       "modal": {
-        "titleEdit": "Edit Subagent",
-        "titleAdd": "Add Subagent",
+        "titleEdit": "Edit subagent",
+        "titleAdd": "Add subagent",
         "name": "Name",
         "nameDesc": "Lowercase letters, numbers, and hyphens only",
         "namePlaceholder": "code-reviewer",
@@ -219,7 +219,7 @@
       }
     },
     "customContextLimits": {
-      "name": "Custom Context Limits",
+      "name": "Custom context limits",
       "desc": "Set context window sizes for your custom models. Leave empty to use the default (200k tokens).",
       "invalid": "Invalid format. Use: 256k, 1m, or exact count (1000-10000000)."
     },

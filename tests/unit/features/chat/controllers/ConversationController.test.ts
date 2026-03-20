@@ -247,7 +247,7 @@ describe('ConversationController', () => {
 
         controller.updateWelcomeVisibility();
 
-        expect(welcomeEl.style.display).toBe('none');
+        expect(welcomeEl.classList.contains('geminese-hidden')).toBe(true);
       });
 
       it('should show welcome when no messages exist', () => {
@@ -256,8 +256,8 @@ describe('ConversationController', () => {
 
         controller.updateWelcomeVisibility();
 
-        // When no messages, welcome should not be 'none' (either 'block' or empty string)
-        expect(welcomeEl.style.display).not.toBe('none');
+        // When no messages, welcome should not have the hidden class
+        expect(welcomeEl.classList.contains('geminese-hidden')).toBe(false);
       });
 
       it('should update welcome visibility after switching to conversation with messages', async () => {
@@ -273,7 +273,7 @@ describe('ConversationController', () => {
 
         expect(deps.state.messages.length).toBe(1);
         const welcomeEl = deps.getWelcomeEl()!;
-        expect(welcomeEl.style.display).toBe('none');
+        expect(welcomeEl.classList.contains('geminese-hidden')).toBe(true);
       });
     });
   });
@@ -747,6 +747,7 @@ describe('ConversationController', () => {
       expect(clickHandlers).toBeDefined();
 
       await clickHandlers![0]({ stopPropagation: jest.fn() });
+      await new Promise<void>(resolve => setImmediate(resolve));
 
       expect(deps.plugin.switchConversation).toHaveBeenCalledWith('conv-2');
     });
@@ -880,7 +881,7 @@ describe('ConversationController', () => {
       await controller.loadActive();
 
       const welcomeEl = deps.getWelcomeEl();
-      expect(welcomeEl?.style.display).not.toBe('none');
+      expect(welcomeEl?.classList.contains('geminese-hidden')).toBe(false);
     });
   });
 

@@ -88,9 +88,10 @@ export class GemineseSettingsStorage {
       return this.getDefaults();
     }
 
-    const content = await this.adapter.read(GEMINIAN_SETTINGS_PATH);
-    const stored = JSON.parse(content) as Record<string, unknown>;
-    const { activeConversationId: _activeConversationId, ...storedWithoutLegacy } = stored;
+     const content = await this.adapter.read(GEMINIAN_SETTINGS_PATH);
+     const stored = JSON.parse(content) as Record<string, unknown>;
+     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- legacy field excluded from stored settings
+     const { activeConversationId, ...storedWithoutLegacy } = stored;
 
     const blockedCommands = normalizeBlockedCommands(stored.blockedCommands);
     const hostnameCliPaths = normalizeHostnameCliPaths(stored.geminiCliPathsByHost);
@@ -174,11 +175,12 @@ export class GemineseSettingsStorage {
   /**
    * Get default settings (excluding separately loaded fields).
    */
-  private getDefaults(): StoredGemineseSettings {
-    const {
-      slashCommands: _,
-      ...defaults
-    } = DEFAULT_SETTINGS;
+   private getDefaults(): StoredGemineseSettings {
+     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- slashCommands stored separately
+     const {
+       slashCommands,
+       ...defaults
+     } = DEFAULT_SETTINGS;
 
     return defaults;
   }

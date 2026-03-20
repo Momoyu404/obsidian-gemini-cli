@@ -5,6 +5,8 @@ import { QueryOptionsBuilder } from '@/core/agent/QueryOptionsBuilder';
 import type { PersistentQueryConfig } from '@/core/agent/types';
 import type { GemineseSettings } from '@/core/types';
 
+jest.mock('@/utils/externalContext', () => ({ filterValidFiles: jest.fn((paths) => paths) }));
+
 jest.mock('fs', () => ({
   mkdirSync: jest.fn(),
   writeFileSync: jest.fn(),
@@ -325,7 +327,7 @@ describe('QueryOptionsBuilder', () => {
       const result: GeminiCliArgs = QueryOptionsBuilder.buildPersistentCliArgs(ctx);
 
       expect(result.args).toContain('--include-directories');
-      expect(result.args[result.args.indexOf('--include-directories') + 1]).toBe('/external/path1,/external/path2');
+      expect(result.args[result.args.indexOf('--include-directories') + 1]).toBe('/external');
     });
 
     it('does not include --include-directories when externalContextPaths is empty', () => {
@@ -502,7 +504,7 @@ describe('QueryOptionsBuilder', () => {
       const result: GeminiCliArgs = QueryOptionsBuilder.buildColdStartCliArgs(ctx, 'hello');
 
       expect(result.args).toContain('--include-directories');
-      expect(result.args[result.args.indexOf('--include-directories') + 1]).toBe('/external/path');
+      expect(result.args[result.args.indexOf('--include-directories') + 1]).toBe('/external');
     });
 
     it('does not include --include-directories when externalContextPaths is empty', () => {

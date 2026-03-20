@@ -16,7 +16,7 @@ import * as path from 'path';
 export function getVaultPath(app: App): string | null {
   const adapter = app.vault.adapter;
   if ('basePath' in adapter) {
-    return (adapter as any).basePath;
+    return (adapter as unknown as { basePath: string }).basePath;
   }
   return null;
 }
@@ -484,8 +484,8 @@ function resolveRealPath(p: string): string {
     let current = absolute;
     const suffix: string[] = [];
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+     // eslint-disable-next-line no-constant-condition -- intentional infinite loop with break conditions
+     while (true) {
       try {
         if (fs.existsSync(current)) {
           const resolvedExisting = realpathFn(current);

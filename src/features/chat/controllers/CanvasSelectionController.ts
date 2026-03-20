@@ -1,4 +1,9 @@
-import type { App, ItemView } from 'obsidian';
+import type { App, ItemView, WorkspaceLeaf } from 'obsidian';
+
+interface CanvasViewInternal {
+  canvas?: { selection?: Set<{ id: string }> };
+  file?: { path?: string };
+}
 
 import type { CanvasSelectionContext } from '../../../utils/canvas';
 import { updateContextRowHasContent } from './contextRowVisibility';
@@ -46,11 +51,11 @@ export class CanvasSelectionController {
     const canvasView = this.getCanvasView();
     if (!canvasView) return;
 
-    const canvas = (canvasView as any).canvas;
+    const canvas = (canvasView as unknown as CanvasViewInternal).canvas;
     if (!canvas?.selection) return;
 
     const selection: Set<{ id: string }> = canvas.selection;
-    const canvasPath = (canvasView as any).file?.path;
+    const canvasPath = (canvasView as unknown as CanvasViewInternal).file?.path;
     if (!canvasPath) return;
 
     const nodeIds = [...selection].map(node => node.id).filter(Boolean);
@@ -74,15 +79,15 @@ export class CanvasSelectionController {
   }
 
   private getCanvasView(): ItemView | null {
-    const activeLeaf = (this.app.workspace as any).activeLeaf ?? this.app.workspace.getMostRecentLeaf?.();
+    const activeLeaf = (this.app.workspace as unknown as { activeLeaf?: WorkspaceLeaf }).activeLeaf ?? this.app.workspace.getMostRecentLeaf?.();
     const activeView = activeLeaf?.view as ItemView | undefined;
-    if (activeView?.getViewType?.() === 'canvas' && (activeView as any).file) {
+    if (activeView?.getViewType?.() === 'canvas' && (activeView as unknown as CanvasViewInternal).file) {
       return activeView;
     }
 
     const leaves = this.app.workspace.getLeavesOfType('canvas');
     if (leaves.length === 0) return null;
-    const leaf = leaves.find(l => (l.view as any).file);
+    const leaf = leaves.find(l => (l.view as unknown as CanvasViewInternal).file);
     return leaf ? (leaf.view as ItemView) : null;
   }
 
@@ -94,9 +99,9 @@ export class CanvasSelectionController {
       this.indicatorEl.textContent = nodeIds.length === 1
         ? `node "${nodeIds[0]}" selected`
         : `${nodeIds.length} nodes selected`;
-      this.indicatorEl.style.display = 'block';
+      this.indicatorEl.classList.remove('geminese-hidden');
     } else {
-      this.indicatorEl.style.display = 'none';
+      this.indicatorEl.classList.add('geminese-hidden');
     }
     this.updateContextRowVisibility();
   }

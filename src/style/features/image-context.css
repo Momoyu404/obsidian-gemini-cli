@@ -2,7 +2,7 @@
 
 /* Image preview container (in input area) */
 .geminese-image-preview {
-  display: none;
+  display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 8px 0;

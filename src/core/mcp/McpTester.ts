@@ -202,42 +202,7 @@ async function getRequestBody(body: BodyInit | null | undefined): Promise<Buffer
 
 const nodeFetch = createNodeFetch();
 
-export async function testMcpServer(server: GemineseMcpServer): Promise<McpTestResult> {
-  const type = getMcpServerType(server.config);
-
-  let transport;
-  try {
-    if (type === 'stdio') {
-      const config = server.config as { command: string; args?: string[]; env?: Record<string, string> };
-      const { cmd, args } = parseCommand(config.command, config.args);
-      if (!cmd) {
-        return { success: false, tools: [], error: 'Missing command' };
-      }
-      transport = new StdioClientTransport({
-        command: cmd,
-        args,
-        env: { ...process.env, ...config.env, PATH: getEnhancedPath(config.env?.PATH) } as Record<string, string>,
-        stderr: 'ignore',
-      });
-    } else {
-      const config = server.config as UrlServerConfig;
-      const url = new URL(config.url);
-      const options = {
-        fetch: nodeFetch,
-        requestInit: config.headers ? { headers: config.headers } : undefined,
-      };
-      transport = type === 'sse'
-        ? new SSEClientTransport(url, options)
-        : new StreamableHTTPClientTransport(url, options);
-    }
-  } catch (error) {
-    return {
-      success: false,
-      tools: [],
-      error: error instanceof Error ? error.message : 'Invalid server configuration',
-    };
-  }
-
+async function runTransportTest(transport: StdioClientTransport | StreamableHTTPClientTransport | SSEClientTransport): Promise<McpTestResult> {
   const client = new Client({ name: 'geminese-tester', version: '1.0.0' });
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
@@ -280,5 +245,58 @@ export async function testMcpServer(server: GemineseMcpServer): Promise<McpTestR
     } catch {
       // Ignore close errors
     }
+  }
+}
+
+export async function testMcpServer(server: GemineseMcpServer): Promise<McpTestResult> {
+  const type = getMcpServerType(server.config);
+
+  try {
+    if (type === 'stdio') {
+      const config = server.config as { command: string; args?: string[]; env?: Record<string, string> };
+      const { cmd, args } = parseCommand(config.command, config.args);
+      if (!cmd) {
+        return { success: false, tools: [], error: 'Missing command' };
+      }
+      const transport = new StdioClientTransport({
+        command: cmd,
+        args,
+        env: { ...process.env, ...config.env, PATH: getEnhancedPath(config.env?.PATH) } as Record<string, string>,
+        stderr: 'ignore',
+      });
+
+      return runTransportTest(transport);
+    } else {
+      const config = server.config as UrlServerConfig;
+      const url = new URL(config.url);
+      const options = {
+        fetch: nodeFetch,
+        requestInit: config.headers ? { headers: config.headers } : undefined,
+      };
+
+      const primaryTransport = new StreamableHTTPClientTransport(url, options);
+      const primaryResult = await runTransportTest(primaryTransport);
+      if (primaryResult.success) {
+        return primaryResult;
+      }
+
+      const fallbackTransport = new SSEClientTransport(url, options);
+      const fallbackResult = await runTransportTest(fallbackTransport);
+      if (fallbackResult.success) {
+        return fallbackResult;
+      }
+
+      return {
+        success: false,
+        tools: [],
+        error: `Streamable HTTP failed: ${primaryResult.error ?? 'Unknown error'}; SSE fallback failed: ${fallbackResult.error ?? 'Unknown error'}`,
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      tools: [],
+      error: error instanceof Error ? error.message : 'Invalid server configuration',
+    };
   }
 }

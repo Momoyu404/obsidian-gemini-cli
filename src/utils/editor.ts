@@ -12,7 +12,7 @@ import type { Editor } from 'obsidian';
  * Obsidian's Editor type doesn't expose the internal `.cm` property.
  */
 export function getEditorView(editor: Editor): EditorView | undefined {
-  return (editor as unknown as { cm?: EditorView }).cm;
+  return (editor as { cm?: EditorView }).cm;
 }
 
 export interface CursorContext {

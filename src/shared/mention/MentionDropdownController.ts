@@ -411,7 +411,8 @@ export class MentionDropdownController {
       renderItem: (item, itemEl) => {
         const iconEl = itemEl.createSpan({ cls: 'geminese-mention-icon' });
         if (item.type === 'mcp-server') {
-          iconEl.innerHTML = MCP_ICON_SVG;
+          const mcpSvg = new DOMParser().parseFromString(MCP_ICON_SVG, 'image/svg+xml').documentElement;
+          iconEl.appendChild(document.adoptNode(mcpSvg));
         } else if (item.type === 'folder') {
           setIcon(iconEl, 'folder');
         } else if (item.type === 'agent' || item.type === 'agent-folder') {
@@ -486,12 +487,10 @@ export class MentionDropdownController {
     if (!dropdownEl) return;
 
     const inputRect = this.inputEl.getBoundingClientRect();
-    dropdownEl.style.position = 'fixed';
+    dropdownEl.classList.add('geminese-mention-dropdown-fixed');
     dropdownEl.style.bottom = `${window.innerHeight - inputRect.top + 4}px`;
     dropdownEl.style.left = `${inputRect.left}px`;
-    dropdownEl.style.right = 'auto';
-    dropdownEl.style.width = `${Math.max(inputRect.width, 280)}px`;
-    dropdownEl.style.zIndex = '10001';
+    dropdownEl.style.setProperty('--geminese-dropdown-width', `${Math.max(inputRect.width, 280)}px`);
   }
 
   private returnToFirstLevel(): void {

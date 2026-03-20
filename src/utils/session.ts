@@ -63,7 +63,7 @@ function formatToolInput(input: Record<string, unknown>, maxLength = 200): strin
       if (typeof value === 'string') {
         valueStr = value.length > 100 ? `${value.slice(0, 100)}...` : value;
       } else if (typeof value === 'object') {
-        valueStr = '[object]';
+        valueStr = JSON.stringify(value);
       } else {
         valueStr = String(value);
       }

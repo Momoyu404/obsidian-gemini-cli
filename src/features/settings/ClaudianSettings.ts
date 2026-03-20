@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import type { App } from 'obsidian';
-import { Notice, PluginSettingTab, Setting } from 'obsidian';
+import { Notice, Platform, PluginSettingTab, Setting } from 'obsidian';
 
 import { getCurrentPlatformKey, getHostnameKey } from '../../core/types';
 import { DEFAULT_GEMINI_MODELS } from '../../core/types/models';
@@ -18,7 +18,7 @@ import { PluginSettingsManager } from './ui/PluginSettingsManager';
 import { SlashCommandSettings } from './ui/SlashCommandSettings';
 
 function formatHotkey(hotkey: { modifiers: string[]; key: string }): string {
-  const isMac = navigator.platform.includes('Mac');
+  const isMac = Platform.isMacOS;
   const modMap: Record<string, string> = isMac
     ? { Mod: '⌘', Ctrl: '⌃', Alt: '⌥', Shift: '⇧', Meta: '⌘' }
     : { Mod: 'Ctrl', Ctrl: 'Ctrl', Alt: 'Alt', Shift: 'Shift', Meta: 'Win' };
@@ -29,8 +29,23 @@ function formatHotkey(hotkey: { modifiers: string[]; key: string }): string {
   return isMac ? [...mods, key].join('') : [...mods, key].join('+');
 }
 
+interface ObsidianSettingAPI {
+  open(): void;
+  openTabById(id: string): void;
+  activeTab?: {
+    searchInputEl?: HTMLInputElement;
+    searchComponent?: { inputEl: HTMLInputElement };
+    updateHotkeyVisibility?: () => void;
+  };
+}
+
+interface ObsidianHotkeyAPI {
+  customKeys?: Record<string, Array<{ modifiers: string[]; key: string }>>;
+  defaultKeys?: Record<string, Array<{ modifiers: string[]; key: string }>>;
+}
+
 function openHotkeySettings(app: App): void {
-  const setting = (app as any).setting;
+  const setting = (app as unknown as { setting: ObsidianSettingAPI }).setting;
   setting.open();
   setting.openTabById('hotkeys');
   setTimeout(() => {
@@ -47,12 +62,12 @@ function openHotkeySettings(app: App): void {
 }
 
 function getHotkeyForCommand(app: App, commandId: string): string | null {
-  const hotkeyManager = (app as any).hotkeyManager;
+  const hotkeyManager = (app as unknown as { hotkeyManager?: ObsidianHotkeyAPI }).hotkeyManager;
   if (!hotkeyManager) return null;
 
   const customHotkeys = hotkeyManager.customKeys?.[commandId];
   const defaultHotkeys = hotkeyManager.defaultKeys?.[commandId];
-  const hotkeys = customHotkeys?.length > 0 ? customHotkeys : defaultHotkeys;
+  const hotkeys = (customHotkeys?.length ?? 0) > 0 ? customHotkeys : defaultHotkeys;
 
   if (!hotkeys || hotkeys.length === 0) return null;
 
@@ -278,9 +293,7 @@ export class GemineseSettingTab extends PluginSettingTab {
           });
 
         text.inputEl.rows = 3;
-        text.inputEl.addEventListener('blur', async () => {
-          await commitValue(true);
-        });
+        text.inputEl.addEventListener('blur', () => { void commitValue(true); });
       });
 
     // Tab bar position setting
@@ -498,10 +511,10 @@ export class GemineseSettingTab extends PluginSettingTab {
         text.inputEl.rows = 6;
         text.inputEl.cols = 50;
         text.inputEl.addClass('geminese-settings-env-textarea');
-        text.inputEl.addEventListener('blur', async () => {
+        text.inputEl.addEventListener('blur', () => { void (async () => {
           await this.plugin.applyEnvironmentVariables(text.inputEl.value);
           this.renderContextLimitsSection();
-        });
+        })(); });
       });
 
     this.contextLimitsContainer = containerEl.createDiv({ cls: 'geminese-context-limits-container' });
@@ -521,13 +534,13 @@ export class GemineseSettingTab extends PluginSettingTab {
         toggle
           .setValue(this.plugin.settings.enableBangBash ?? false)
           .onChange(async (value) => {
-            bangBashValidationEl.style.display = 'none';
+            bangBashValidationEl.classList.add('geminese-hidden');
             if (value) {
               const enhancedPath = getEnhancedPath();
               const nodePath = findNodeExecutable(enhancedPath);
               if (!nodePath) {
                 bangBashValidationEl.setText(t('settings.enableBangBash.validation.noNode'));
-                bangBashValidationEl.style.display = 'block';
+                bangBashValidationEl.classList.remove('geminese-hidden');
                 toggle.setValue(false);
                 return;
               }
@@ -537,27 +550,17 @@ export class GemineseSettingTab extends PluginSettingTab {
           })
       );
 
-    const bangBashValidationEl = containerEl.createDiv({ cls: 'geminese-bang-bash-validation' });
-    bangBashValidationEl.style.color = 'var(--text-error)';
-    bangBashValidationEl.style.fontSize = '0.85em';
-    bangBashValidationEl.style.marginTop = '-0.5em';
-    bangBashValidationEl.style.marginBottom = '0.5em';
-    bangBashValidationEl.style.display = 'none';
+    const bangBashValidationEl = containerEl.createDiv({ cls: 'geminese-bang-bash-validation geminese-hidden' });
 
     const maxTabsSetting = new Setting(containerEl)
       .setName(t('settings.maxTabs.name'))
       .setDesc(t('settings.maxTabs.desc'));
 
-    const maxTabsWarningEl = containerEl.createDiv({ cls: 'geminese-max-tabs-warning' });
-    maxTabsWarningEl.style.color = 'var(--text-warning)';
-    maxTabsWarningEl.style.fontSize = '0.85em';
-    maxTabsWarningEl.style.marginTop = '-0.5em';
-    maxTabsWarningEl.style.marginBottom = '0.5em';
-    maxTabsWarningEl.style.display = 'none';
+    const maxTabsWarningEl = containerEl.createDiv({ cls: 'geminese-max-tabs-warning geminese-hidden' });
     maxTabsWarningEl.setText(t('settings.maxTabs.warning'));
 
     const updateMaxTabsWarning = (value: number): void => {
-      maxTabsWarningEl.style.display = value > 5 ? 'block' : 'none';
+      maxTabsWarningEl.toggleClass('geminese-hidden', value <= 5);
     };
 
     maxTabsSetting.addSlider((slider) => {
@@ -584,12 +587,7 @@ export class GemineseSettingTab extends PluginSettingTab {
       .setName(`${t('settings.cliPath.name')} (${hostnameKey})`)
       .setDesc(cliPathDescription);
 
-    const validationEl = containerEl.createDiv({ cls: 'geminese-path-validation' });
-    validationEl.style.color = 'var(--text-error)';
-    validationEl.style.fontSize = '0.85em';
-    validationEl.style.marginTop = '-0.5em';
-    validationEl.style.marginBottom = '0.5em';
-    validationEl.style.display = 'none';
+    const validationEl = containerEl.createDiv({ cls: 'geminese-path-validation geminese-hidden' });
 
     const validatePath = (value: string): string | null => {
       const trimmed = value.trim();
@@ -621,11 +619,11 @@ export class GemineseSettingTab extends PluginSettingTab {
           const error = validatePath(value);
           if (error) {
             validationEl.setText(error);
-            validationEl.style.display = 'block';
-            text.inputEl.style.borderColor = 'var(--text-error)';
+            validationEl.classList.remove('geminese-hidden');
+            text.inputEl.classList.add('geminese-input-error');
           } else {
-            validationEl.style.display = 'none';
-            text.inputEl.style.borderColor = '';
+            validationEl.classList.add('geminese-hidden');
+            text.inputEl.classList.remove('geminese-input-error');
           }
 
           const trimmed = value.trim();
@@ -641,13 +639,12 @@ export class GemineseSettingTab extends PluginSettingTab {
           );
         });
       text.inputEl.addClass('geminese-settings-cli-path-input');
-      text.inputEl.style.width = '100%';
 
       const initialError = validatePath(currentValue);
       if (initialError) {
         validationEl.setText(initialError);
-        validationEl.style.display = 'block';
-        text.inputEl.style.borderColor = 'var(--text-error)';
+        validationEl.classList.remove('geminese-hidden');
+        text.inputEl.classList.add('geminese-input-error');
       }
     });
   }
@@ -691,9 +688,9 @@ export class GemineseSettingTab extends PluginSettingTab {
       });
 
       // Validation element
-      const validationEl = inputWrapper.createDiv({ cls: 'geminese-context-limit-validation' });
+      const validationEl = inputWrapper.createDiv({ cls: 'geminese-context-limit-validation geminese-hidden' });
 
-      inputEl.addEventListener('input', async () => {
+      inputEl.addEventListener('input', () => { void (async () => {
         const trimmed = inputEl.value.trim();
 
         if (!this.plugin.settings.customContextLimits) {
@@ -703,24 +700,24 @@ export class GemineseSettingTab extends PluginSettingTab {
         if (!trimmed) {
           // Empty = use default (remove from custom limits)
           delete this.plugin.settings.customContextLimits[modelId];
-          validationEl.style.display = 'none';
+          validationEl.classList.add('geminese-hidden');
           inputEl.classList.remove('geminese-input-error');
         } else {
           const parsed = parseContextLimit(trimmed);
           if (parsed === null) {
             validationEl.setText(t('settings.customContextLimits.invalid'));
-            validationEl.style.display = 'block';
+            validationEl.classList.remove('geminese-hidden');
             inputEl.classList.add('geminese-input-error');
             return; // Don't save invalid value
           }
 
           this.plugin.settings.customContextLimits[modelId] = parsed;
-          validationEl.style.display = 'none';
+          validationEl.classList.add('geminese-hidden');
           inputEl.classList.remove('geminese-input-error');
         }
 
         await this.plugin.saveSettings();
-      });
+      })(); });
     }
   }
 

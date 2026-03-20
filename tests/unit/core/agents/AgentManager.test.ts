@@ -15,7 +15,7 @@ const mockFs = jest.mocked(fs);
 // Create a mock PluginManager
 function createMockPluginManager(plugins: Array<{ name: string; enabled: boolean; installPath: string }> = []): PluginManager {
   return {
-    getPlugins: jest.fn().mockReturnValue(plugins.map(p => ({
+    getExtensions: jest.fn().mockReturnValue(plugins.map(p => ({
       id: `${p.name}@test`,
       name: p.name,
       enabled: p.enabled,
@@ -74,8 +74,8 @@ Body.`;
 describe('AgentManager', () => {
   const VAULT_PATH = '/test/vault';
   const HOME_DIR = '/home/user';
-  const GLOBAL_AGENTS_DIR = path.join(HOME_DIR, '.claude', 'agents');
-  const VAULT_AGENTS_DIR = path.join(VAULT_PATH, '.claude/agents');
+  const GLOBAL_AGENTS_DIR = path.join(HOME_DIR, '.gemini', 'agents');
+  const VAULT_AGENTS_DIR = path.join(VAULT_PATH, '.gemini/agents');
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -560,7 +560,7 @@ describe('AgentManager', () => {
       // Vault has an agent file matching an init agent name
       mockFs.existsSync.mockReturnValue(true);
       (mockFs.readdirSync as jest.Mock).mockImplementation((dir: string) => {
-        if (dir.includes('.claude/agents')) {
+        if (dir.includes('.gemini/agents')) {
           return [createMockDirent('custom.md', true)];
         }
         return [];

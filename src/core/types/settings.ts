@@ -127,12 +127,15 @@ export type ApprovalDecision = 'allow' | 'allow-always' | 'deny' | 'cancel';
  * Legacy permission format (pre-CC compatibility).
  * @deprecated Use CCPermissions instead
  */
-export interface LegacyPermission {
+export interface CCPermissions {
   toolName: string;
   pattern: string;
   approvedAt: number;
   scope: 'session' | 'always';
 }
+
+/** @deprecated Used by tests. */
+export type LegacyPermission = CCPermissions;
 
 /**
  * CC-compatible permission rule string.
@@ -388,7 +391,7 @@ export interface InstructionRefineResult {
  *   { toolName: "Read", pattern: "/path/to/file" } → "Read(/path/to/file)"
  *   { toolName: "WebSearch", pattern: "*" } → "WebSearch"
  */
-export function legacyPermissionToCCRule(legacy: LegacyPermission): PermissionRule {
+export function legacyPermissionToCCRule(legacy: CCPermissions): PermissionRule {
   const pattern = legacy.pattern.trim();
 
   // If pattern is empty, wildcard, or JSON object (old format), just use tool name
@@ -404,7 +407,7 @@ export function legacyPermissionToCCRule(legacy: LegacyPermission): PermissionRu
  * Only 'always' scope permissions are converted (session = ephemeral).
  */
 export function legacyPermissionsToCCPermissions(
-  legacyPermissions: LegacyPermission[]
+  legacyPermissions: CCPermissions[]
 ): GeminiPermissions {
   const allow: PermissionRule[] = [];
 

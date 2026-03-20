@@ -1,4 +1,4 @@
-import type { App, ItemView } from 'obsidian';
+import type { App, ItemView, WorkspaceLeaf } from 'obsidian';
 
 import type { BrowserSelectionContext } from '../../../utils/browser';
 import { updateContextRowHasContent } from './contextRowVisibility';
@@ -99,7 +99,7 @@ export class BrowserSelectionController {
   }
 
   private getActiveBrowserView(): { view: ItemView; viewType: string; containerEl: HTMLElement } | null {
-    const activeLeaf = (this.app.workspace as any).activeLeaf ?? this.app.workspace.getMostRecentLeaf?.();
+    const activeLeaf = (this.app.workspace as unknown as { activeLeaf?: WorkspaceLeaf }).activeLeaf ?? this.app.workspace.getMostRecentLeaf?.();
     const activeView = activeLeaf?.view as ItemView | undefined;
     const containerEl = (activeView as unknown as { containerEl?: HTMLElement }).containerEl;
     if (!activeView || !containerEl) return null;
@@ -237,7 +237,7 @@ export class BrowserSelectionController {
       }
     }
 
-    const embeddableEl = containerEl.querySelector('iframe[src], webview[src]') as HTMLElement | null;
+    const embeddableEl = containerEl.querySelector('iframe[src], webview[src]');
     const embeddedSrc = embeddableEl?.getAttribute('src');
     if (embeddedSrc?.trim()) {
       return embeddedSrc.trim();
@@ -273,9 +273,9 @@ export class BrowserSelectionController {
       const lineLabel = lineCount === 1 ? 'line' : 'lines';
       this.indicatorEl.textContent = `${lineCount} ${lineLabel} selected`;
       this.indicatorEl.setAttribute('title', this.buildIndicatorTitle());
-      this.indicatorEl.style.display = 'block';
+      this.indicatorEl.classList.remove('geminese-hidden');
     } else {
-      this.indicatorEl.style.display = 'none';
+      this.indicatorEl.classList.add('geminese-hidden');
       this.indicatorEl.textContent = '';
       this.indicatorEl.removeAttribute('title');
     }

@@ -23,13 +23,3 @@ export interface InstalledExtensionsFile {
   version: number;
   extensions: Record<string, InstalledExtensionEntry[]>;
 }
-
-// Backwards-compatible aliases
-/** @deprecated Use ExtensionScope */
-export type PluginScope = ExtensionScope;
-/** @deprecated Use GemineseExtension */
-export type GeminesePlugin = GemineseExtension;
-/** @deprecated Use InstalledExtensionEntry */
-export type InstalledPluginEntry = InstalledExtensionEntry;
-/** @deprecated Use InstalledExtensionsFile */
-export type InstalledPluginsFile = InstalledExtensionsFile;

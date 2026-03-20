@@ -122,7 +122,7 @@ export function buildInlineEditPrompt(request: InlineEditRequest): string {
 export function createReadOnlyHook(): HookCallbackMatcher {
   return {
     hooks: [
-      async (hookInput) => {
+      (hookInput) => {
         const input = hookInput as {
           tool_name: string;
           tool_input: Record<string, unknown>;
@@ -130,17 +130,17 @@ export function createReadOnlyHook(): HookCallbackMatcher {
         const toolName = input.tool_name;
 
         if (isReadOnlyTool(toolName)) {
-          return { continue: true };
+          return Promise.resolve({ continue: true });
         }
 
-        return {
+        return Promise.resolve({
           continue: false,
           hookSpecificOutput: {
             hookEventName: 'PreToolUse' as const,
             permissionDecision: 'deny' as const,
             permissionDecisionReason: `Inline edit mode: tool "${toolName}" is not allowed (read-only)`,
           },
-        };
+        });
       },
     ],
   };
@@ -151,7 +151,7 @@ export function createVaultRestrictionHook(vaultPath: string): HookCallbackMatch
 
   return {
     hooks: [
-      async (hookInput) => {
+      (hookInput) => {
         const input = hookInput as {
           tool_name: string;
           tool_input: Record<string, unknown>;
@@ -159,53 +159,63 @@ export function createVaultRestrictionHook(vaultPath: string): HookCallbackMatch
 
         const toolName = input.tool_name;
         if (!fileTools.includes(toolName as (typeof fileTools)[number])) {
-          return { continue: true };
+          return Promise.resolve({ continue: true });
         }
 
         const filePath = getPathFromToolInput(toolName, input.tool_input);
         if (!filePath) {
-          return {
+          return Promise.resolve({
             continue: false,
             hookSpecificOutput: {
               hookEventName: 'PreToolUse' as const,
               permissionDecision: 'deny' as const,
               permissionDecisionReason: `Access denied: Could not determine path for "${toolName}" tool.`,
             },
-          };
+          });
         }
 
         let accessType: PathAccessType;
         try {
           accessType = getPathAccessType(filePath, undefined, undefined, vaultPath);
         } catch {
-          return {
+          return Promise.resolve({
             continue: false,
             hookSpecificOutput: {
               hookEventName: 'PreToolUse' as const,
               permissionDecision: 'deny' as const,
               permissionDecisionReason: `Access denied: Failed to validate path "${filePath}".`,
             },
-          };
+          });
         }
 
         if (accessType === 'vault' || accessType === 'context' || accessType === 'readwrite') {
-          return { continue: true };
+          return Promise.resolve({ continue: true });
         }
 
-        return {
+        return Promise.resolve({
           continue: false,
           hookSpecificOutput: {
             hookEventName: 'PreToolUse' as const,
             permissionDecision: 'deny' as const,
             permissionDecisionReason: `Access denied: Path "${filePath}" is outside allowed paths. Inline edit is restricted to vault and ~/.claude/ directories.`,
           },
-        };
+        });
       },
     ],
   };
 }
 
-export function extractTextFromSdkMessage(message: any): string | null {
+interface SdkStreamMessage {
+  type: string;
+  message?: { content?: Array<{ type: string; text?: string }> };
+  event?: {
+    type?: string;
+    content_block?: { type?: string; text?: string };
+    delta?: { type?: string; text?: string };
+  };
+}
+
+export function extractTextFromSdkMessage(message: SdkStreamMessage): string | null {
   if (message.type === 'assistant' && message.message?.content) {
     for (const block of message.message.content) {
       if (block.type === 'text' && block.text) {

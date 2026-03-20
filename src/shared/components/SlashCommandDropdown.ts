@@ -338,12 +338,10 @@ export class SlashCommandDropdown {
     if (!this.dropdownEl || !this.isFixed) return;
 
     const inputRect = this.inputEl.getBoundingClientRect();
-    this.dropdownEl.style.position = 'fixed';
+    this.dropdownEl.classList.add('geminese-slash-dropdown-fixed');
     this.dropdownEl.style.bottom = `${window.innerHeight - inputRect.top + 4}px`;
     this.dropdownEl.style.left = `${inputRect.left}px`;
-    this.dropdownEl.style.right = 'auto';
-    this.dropdownEl.style.width = `${Math.max(inputRect.width, 280)}px`;
-    this.dropdownEl.style.zIndex = '10001'; // Above CM6 widgets
+    this.dropdownEl.style.setProperty('--geminese-dropdown-width', `${Math.max(inputRect.width, 280)}px`);
   }
 
   private navigate(direction: number): void {

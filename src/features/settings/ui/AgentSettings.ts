@@ -139,7 +139,7 @@ class AgentModal extends Modal {
       text: t('common.save'),
       cls: 'geminese-save-btn',
     });
-    saveBtn.addEventListener('click', async () => {
+    saveBtn.addEventListener('click', () => { void (async () => {
       const name = nameInput.value.trim();
       const nameError = validateAgentName(name);
       if (nameError) {
@@ -199,7 +199,7 @@ class AgentModal extends Modal {
         return;
       }
       this.close();
-    });
+    })(); });
   }
 
   onClose() {
@@ -284,7 +284,7 @@ export class AgentSettings {
       attr: { 'aria-label': t('common.delete') },
     });
     setIcon(deleteBtn, 'trash-2');
-    deleteBtn.addEventListener('click', async () => {
+    deleteBtn.addEventListener('click', () => { void (async () => {
       const confirmed = await confirmDelete(
         this.plugin.app,
         t('settings.subagents.deleteConfirm', { name: agent.name })
@@ -296,7 +296,7 @@ export class AgentSettings {
         const message = err instanceof Error ? err.message : 'Unknown error';
         new Notice(t('settings.subagents.deleteFailed', { message }));
       }
-    });
+    })(); });
   }
 
   private async refreshAgents(): Promise<void> {

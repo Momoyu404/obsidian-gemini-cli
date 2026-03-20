@@ -124,12 +124,12 @@ export class ModelSelector {
         sub.setText(` — ${resolved}`);
       }
 
-      option.addEventListener('click', async (e) => {
+      option.addEventListener('click', (e) => { void (async () => {
         e.stopPropagation();
         await this.callbacks.onModelChange(model.value);
         this.updateDisplay();
         this.renderOptions();
-      });
+      })(); });
     }
   }
 }
@@ -173,11 +173,11 @@ export class ThinkingBudgetSelector {
         gearEl.addClass('selected');
       }
 
-      gearEl.addEventListener('click', async (e) => {
+      gearEl.addEventListener('click', (e) => { void (async () => {
         e.stopPropagation();
         await this.callbacks.onThinkingBudgetChange(budget.value);
         this.updateDisplay();
-      });
+      })(); });
     }
   }
 
@@ -243,12 +243,12 @@ export class PermissionToggle {
 
       option.createSpan({ text: mode.label });
 
-      option.addEventListener('click', async (e) => {
+      option.addEventListener('click', (e) => { void (async () => {
         e.stopPropagation();
         await this.callbacks.onPermissionModeChange(mode.value);
         this.updateDisplay();
         this.renderOptions();
-      });
+      })(); });
     }
   }
 }
@@ -451,7 +451,7 @@ export class ExternalContextSelector {
     // Click to open native file picker
     iconWrapper.addEventListener('click', (e) => {
       e.stopPropagation();
-      this.openFilePicker();
+      void this.openFilePicker();
     });
 
     this.dropdownEl = this.container.createDiv({ cls: 'geminese-external-context-dropdown' });
@@ -459,13 +459,13 @@ export class ExternalContextSelector {
   }
 
   private async openFilePicker() {
-    try {
-      // Access Electron's dialog through remote
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { remote } = require('electron');
+     try {
+       // Access Electron's dialog through remote
+       // eslint-disable-next-line @typescript-eslint/no-require-imports -- Electron remote API required for file picker
+       const { remote } = require('electron');
       const result = await remote.dialog.showOpenDialog({
         properties: ['openFile', 'multiSelections'],
-        title: 'Select External Files',
+        title: 'Select external files',
       });
 
       if (!result.canceled && result.filePaths.length > 0) {
@@ -509,7 +509,7 @@ export class ExternalContextSelector {
 
     // Header
     const headerEl = this.dropdownEl.createDiv({ cls: 'geminese-external-context-header' });
-    headerEl.setText('External Contexts');
+    headerEl.setText('External contexts');
 
     // Path list
     const listEl = this.dropdownEl.createDiv({ cls: 'geminese-external-context-list' });
@@ -552,10 +552,10 @@ export class ExternalContextSelector {
   }
 
   /** Shorten path for display (replace home dir with ~) */
-  private shortenPath(fullPath: string): string {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const os = require('os');
+   private shortenPath(fullPath: string): string {
+     try {
+       // eslint-disable-next-line @typescript-eslint/no-require-imports -- Node.js os module required for home directory detection
+       const os = require('os');
       const homeDir = os.homedir();
       const normalize = (value: string) => value.replace(/\\/g, '/');
       const normalizedFull = normalize(fullPath);
@@ -678,7 +678,8 @@ export class McpServerSelector {
     const iconWrapper = this.container.createDiv({ cls: 'geminese-mcp-selector-icon-wrapper' });
 
     this.iconEl = iconWrapper.createDiv({ cls: 'geminese-mcp-selector-icon' });
-    this.iconEl.innerHTML = MCP_ICON_SVG;
+    const mcpSvg = new DOMParser().parseFromString(MCP_ICON_SVG, 'image/svg+xml').documentElement;
+    this.iconEl.appendChild(document.adoptNode(mcpSvg));
 
     this.badgeEl = iconWrapper.createDiv({ cls: 'geminese-mcp-selector-badge' });
 
@@ -700,7 +701,7 @@ export class McpServerSelector {
 
     // Header
     const headerEl = this.dropdownEl.createDiv({ cls: 'geminese-mcp-selector-header' });
-    headerEl.setText('MCP Servers');
+    headerEl.setText('MCP servers');
 
     // Server list
     const listEl = this.dropdownEl.createDiv({ cls: 'geminese-mcp-selector-list' });
@@ -731,7 +732,8 @@ export class McpServerSelector {
     // Checkbox
     const checkEl = itemEl.createDiv({ cls: 'geminese-mcp-selector-check' });
     if (isEnabled) {
-      checkEl.innerHTML = CHECK_ICON_SVG;
+      const checkSvg = new DOMParser().parseFromString(CHECK_ICON_SVG, 'image/svg+xml').documentElement;
+      checkEl.appendChild(document.adoptNode(checkSvg));
     }
 
     // Info
@@ -764,14 +766,18 @@ export class McpServerSelector {
 
     // Update item visually in-place (immediate feedback)
     const isEnabled = this.enabledServers.has(name);
-    const checkEl = itemEl.querySelector('.geminese-mcp-selector-check') as HTMLElement | null;
+    const checkEl = itemEl.querySelector('.geminese-mcp-selector-check');
 
     if (isEnabled) {
       itemEl.addClass('enabled');
-      if (checkEl) checkEl.innerHTML = CHECK_ICON_SVG;
+      if (checkEl) {
+        checkEl.replaceChildren();
+        const checkSvg = new DOMParser().parseFromString(CHECK_ICON_SVG, 'image/svg+xml').documentElement;
+        checkEl.appendChild(document.adoptNode(checkSvg));
+      }
     } else {
       itemEl.removeClass('enabled');
-      if (checkEl) checkEl.innerHTML = '';
+      if (checkEl) checkEl.replaceChildren();
     }
 
     this.updateDisplay();
@@ -787,10 +793,10 @@ export class McpServerSelector {
 
     // Show/hide container based on whether there are servers
     if (!hasServers) {
-      this.container.style.display = 'none';
+      this.container.classList.add('geminese-hidden');
       return;
     }
-    this.container.style.display = '';
+    this.container.classList.remove('geminese-hidden');
 
     if (count > 0) {
       this.iconEl.addClass('active');
@@ -821,7 +827,7 @@ export class ContextUsageMeter {
     this.container = parentEl.createDiv({ cls: 'geminese-context-meter' });
     this.render();
     // Initially hidden
-    this.container.style.display = 'none';
+    this.container.classList.add('geminese-hidden');
   }
 
   private render() {
@@ -846,28 +852,39 @@ export class ContextUsageMeter {
     const y2 = cy + radius * Math.sin(endRad);
 
     const gaugeEl = this.container.createDiv({ cls: 'geminese-context-meter-gauge' });
-    gaugeEl.innerHTML = `
-      <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-        <path class="geminese-meter-bg"
-          d="M ${x1} ${y1} A ${radius} ${radius} 0 1 1 ${x2} ${y2}"
-          fill="none" stroke-width="${strokeWidth}" stroke-linecap="round"/>
-        <path class="geminese-meter-fill"
-          d="M ${x1} ${y1} A ${radius} ${radius} 0 1 1 ${x2} ${y2}"
-          fill="none" stroke-width="${strokeWidth}" stroke-linecap="round"
-          stroke-dasharray="${this.circumference}" stroke-dashoffset="${this.circumference}"/>
-      </svg>
-    `;
-    this.fillPath = gaugeEl.querySelector('.geminese-meter-fill');
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svgEl = document.createElementNS(svgNS, 'svg');
+    svgEl.setAttribute('width', String(size));
+    svgEl.setAttribute('height', String(size));
+    svgEl.setAttribute('viewBox', `0 0 ${size} ${size}`);
+    const bgPath = document.createElementNS(svgNS, 'path');
+    bgPath.setAttribute('class', 'geminese-meter-bg');
+    bgPath.setAttribute('d', `M ${x1} ${y1} A ${radius} ${radius} 0 1 1 ${x2} ${y2}`);
+    bgPath.setAttribute('fill', 'none');
+    bgPath.setAttribute('stroke-width', String(strokeWidth));
+    bgPath.setAttribute('stroke-linecap', 'round');
+    svgEl.appendChild(bgPath);
+    const fillPath = document.createElementNS(svgNS, 'path');
+    fillPath.setAttribute('class', 'geminese-meter-fill');
+    fillPath.setAttribute('d', `M ${x1} ${y1} A ${radius} ${radius} 0 1 1 ${x2} ${y2}`);
+    fillPath.setAttribute('fill', 'none');
+    fillPath.setAttribute('stroke-width', String(strokeWidth));
+    fillPath.setAttribute('stroke-linecap', 'round');
+    fillPath.setAttribute('stroke-dasharray', String(this.circumference));
+    fillPath.setAttribute('stroke-dashoffset', String(this.circumference));
+    svgEl.appendChild(fillPath);
+    gaugeEl.appendChild(svgEl);
+    this.fillPath = fillPath;
 
     this.percentEl = this.container.createSpan({ cls: 'geminese-context-meter-percent' });
   }
 
   update(usage: UsageInfo | null): void {
     if (!usage || usage.contextTokens <= 0) {
-      this.container.style.display = 'none';
+      this.container.classList.add('geminese-hidden');
       return;
     }
-    this.container.style.display = 'flex';
+    this.container.classList.remove('geminese-hidden');
     const fillLength = (usage.percentage / 100) * this.circumference;
     if (this.fillPath) {
       this.fillPath.style.strokeDashoffset = String(this.circumference - fillLength);

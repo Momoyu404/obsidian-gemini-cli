@@ -77,9 +77,11 @@ export class McpTestModal extends Modal {
     const loadingEl = this.contentEl_.createDiv({ cls: 'geminese-mcp-test-loading' });
 
     const spinnerEl = loadingEl.createDiv({ cls: 'geminese-mcp-test-spinner' });
-    spinnerEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-    </svg>`;
+    const spinnerSvg = new DOMParser().parseFromString(
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`,
+      'image/svg+xml'
+    ).documentElement;
+    spinnerEl.appendChild(document.adoptNode(spinnerSvg));
 
     loadingEl.createSpan({ text: 'Connecting to MCP server...' });
   }
@@ -194,7 +196,7 @@ export class McpTestModal extends Modal {
         e.stopPropagation();
         if (checkbox.disabled) return;
         checkbox.checked = !checkbox.checked;
-        this.handleToolToggle(tool.name, checkbox, toggleContainer);
+        void this.handleToolToggle(tool.name, checkbox, toggleContainer);
       });
     }
 
@@ -256,10 +258,10 @@ export class McpTestModal extends Modal {
     const allDisabled = this.disabledTools.size === this.result.tools.length;
 
     if (allEnabled) {
-      this.toggleAllBtn.setText('Disable All');
+      this.toggleAllBtn.setText('Disable all');
       this.toggleAllBtn.toggleClass('is-destructive', true);
     } else {
-      this.toggleAllBtn.setText(allDisabled ? 'Enable All' : 'Enable All');
+      this.toggleAllBtn.setText(allDisabled ? 'Enable all' : 'Enable all');
       this.toggleAllBtn.toggleClass('is-destructive', false);
     }
   }

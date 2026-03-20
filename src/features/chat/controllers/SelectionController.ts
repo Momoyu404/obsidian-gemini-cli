@@ -172,9 +172,9 @@ export class SelectionController {
     if (this.storedSelection) {
       const lineText = this.storedSelection.lineCount === 1 ? 'line' : 'lines';
       this.indicatorEl.textContent = `${this.storedSelection.lineCount} ${lineText} selected`;
-      this.indicatorEl.style.display = 'block';
+      this.indicatorEl.classList.remove('geminese-hidden');
     } else {
-      this.indicatorEl.style.display = 'none';
+      this.indicatorEl.classList.add('geminese-hidden');
     }
     this.updateContextRowVisibility();
   }

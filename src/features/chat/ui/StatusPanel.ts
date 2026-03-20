@@ -139,14 +139,12 @@ export class StatusPanel {
 
     // Async subagent container (above todos) - hidden by default
     this.subagentContainerEl = document.createElement('div');
-    this.subagentContainerEl.className = 'geminese-status-panel-subagents';
-    this.subagentContainerEl.style.display = 'none';
+    this.subagentContainerEl.className = 'geminese-status-panel-subagents geminese-hidden';
     this.panelEl.appendChild(this.subagentContainerEl);
 
     // Bash output container (between subagents and todos) - hidden by default
     this.bashOutputContainerEl = document.createElement('div');
-    this.bashOutputContainerEl.className = 'geminese-status-panel-bash';
-    this.bashOutputContainerEl.style.display = 'none';
+    this.bashOutputContainerEl.className = 'geminese-status-panel-bash geminese-hidden';
 
     this.bashHeaderEl = document.createElement('div');
     this.bashHeaderEl.className = 'geminese-tool-header geminese-status-panel-bash-header';
@@ -172,8 +170,7 @@ export class StatusPanel {
 
     // Todo container
     this.todoContainerEl = document.createElement('div');
-    this.todoContainerEl.className = 'geminese-status-panel-todos';
-    this.todoContainerEl.style.display = 'none';
+    this.todoContainerEl.className = 'geminese-status-panel-todos geminese-hidden';
     this.panelEl.appendChild(this.todoContainerEl);
 
     // Todo header (collapsed view)
@@ -196,8 +193,7 @@ export class StatusPanel {
 
     // Todo content (expanded list)
     this.todoContentEl = document.createElement('div');
-    this.todoContentEl.className = 'geminese-status-panel-content geminese-todo-list-container';
-    this.todoContentEl.style.display = 'none';
+    this.todoContentEl.className = 'geminese-status-panel-content geminese-todo-list-container geminese-hidden';
     this.todoContainerEl.appendChild(this.todoContentEl);
 
     this.containerEl.appendChild(this.panelEl);
@@ -218,13 +214,13 @@ export class StatusPanel {
     this.currentTodos = todos;
 
     if (!todos || todos.length === 0) {
-      this.todoContainerEl.style.display = 'none';
+      this.todoContainerEl.classList.add('geminese-hidden');
       this.todoHeaderEl.empty();
       this.todoContentEl.empty();
       return;
     }
 
-    this.todoContainerEl.style.display = 'block';
+    this.todoContainerEl.classList.remove('geminese-hidden');
 
     // Count completed and find current task
     const completedCount = todos.filter(t => t.status === 'completed').length;
@@ -306,7 +302,7 @@ export class StatusPanel {
     if (!this.todoContentEl || !this.todoHeaderEl) return;
 
     // Show/hide content
-    this.todoContentEl.style.display = this.isTodoExpanded ? 'block' : 'none';
+    this.todoContentEl.toggleClass('geminese-hidden', !this.isTodoExpanded);
 
     // Re-render header to update current task visibility
     if (this.currentTodos && this.currentTodos.length > 0) {
@@ -442,11 +438,11 @@ export class StatusPanel {
 
     // Hide if nothing to show
     if (runningSubagents.length === 0 && completedSubagents.length === 0) {
-      this.subagentContainerEl.style.display = 'none';
+      this.subagentContainerEl.classList.add('geminese-hidden');
       return;
     }
 
-    this.subagentContainerEl.style.display = 'block';
+    this.subagentContainerEl.classList.remove('geminese-hidden');
     this.subagentContainerEl.empty();
 
     // If we have both done and running, render last done row with running on same line
@@ -542,11 +538,11 @@ export class StatusPanel {
     const scroll = options.scroll ?? true;
 
     if (this.currentBashOutputs.size === 0) {
-      this.bashOutputContainerEl.style.display = 'none';
+      this.bashOutputContainerEl.classList.add('geminese-hidden');
       return;
     }
 
-    this.bashOutputContainerEl.style.display = 'block';
+    this.bashOutputContainerEl.classList.remove('geminese-hidden');
     this.bashHeaderEl.empty();
     this.bashContentEl.empty();
 
@@ -569,7 +565,7 @@ export class StatusPanel {
 
     const previewEl = document.createElement('span');
     previewEl.className = 'geminese-tool-current';
-    previewEl.style.display = this.isBashExpanded ? '' : 'none';
+    previewEl.toggleClass('geminese-hidden', !this.isBashExpanded);
     this.bashHeaderEl.appendChild(previewEl);
 
     const summaryStatusEl = document.createElement('span');
@@ -580,7 +576,7 @@ export class StatusPanel {
       if (latest.status === 'completed') setIcon(summaryStatusEl, 'check');
       if (latest.status === 'error') setIcon(summaryStatusEl, 'x');
     } else {
-      summaryStatusEl.style.display = 'none';
+      summaryStatusEl.classList.add('geminese-hidden');
     }
     this.bashHeaderEl.appendChild(summaryStatusEl);
 
@@ -596,7 +592,7 @@ export class StatusPanel {
     });
     this.bashHeaderEl.appendChild(actionsEl);
 
-    this.bashContentEl.style.display = this.isBashExpanded ? 'block' : 'none';
+    this.bashContentEl.toggleClass('geminese-hidden', !this.isBashExpanded);
 
     if (!this.isBashExpanded) {
       return;
@@ -645,7 +641,7 @@ export class StatusPanel {
     const contentEl = document.createElement('div');
     contentEl.className = 'geminese-tool-content';
     const isEntryExpanded = this.bashEntryExpanded.get(info.id) ?? true;
-    contentEl.style.display = isEntryExpanded ? 'block' : 'none';
+    contentEl.toggleClass('geminese-hidden', !isEntryExpanded);
     entryHeaderEl.setAttribute('aria-expanded', String(isEntryExpanded));
     entryHeaderEl.setAttribute('aria-label', isEntryExpanded ? t('chat.bangBash.collapseOutput') : t('chat.bangBash.expandOutput'));
     entryHeaderEl.addEventListener('click', () => {

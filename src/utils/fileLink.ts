@@ -166,7 +166,7 @@ function processTextNode(app: App, node: Text): boolean {
 }
 
 /**
- * Call after MarkdownRenderer.renderMarkdown().
+ * Call after MarkdownRenderer.render().
  * Catches wikilinks that Obsidian's renderer doesn't process (e.g., in code blocks).
  */
 export function processFileLinks(app: App, container: HTMLElement): void {

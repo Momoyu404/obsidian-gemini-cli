@@ -13,9 +13,9 @@
  */
 
 import type {
+  CCPermissions,
   GeminiCLISettings,
   GeminiPermissions,
-  LegacyPermission,
   PermissionRule,
 } from '../types';
 import {
@@ -40,7 +40,7 @@ function hasGemineseOnlyFields(data: Record<string, unknown>): boolean {
  * Check if a settings object uses the legacy Geminese permissions format.
  * Legacy format: permissions is an array of objects with toolName/pattern.
  */
-export function isLegacyPermissionsFormat(data: unknown): data is { permissions: LegacyPermission[] } {
+export function isLegacyPermissionsFormat(data: unknown): data is { permissions: CCPermissions[] } {
   if (!data || typeof data !== 'object') return false;
   const obj = data as Record<string, unknown>;
 
@@ -104,7 +104,7 @@ export class GeminiCLISettingsStorage {
 
     // Check for legacy format and migrate if needed
     if (isLegacyPermissionsFormat(stored)) {
-      const legacyPerms = stored.permissions as LegacyPermission[];
+      const legacyPerms = stored.permissions;
       const geminiPerms = legacyPermissionsToCCPermissions(legacyPerms);
 
       return {

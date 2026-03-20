@@ -151,7 +151,7 @@ export class InlineAskUserQuestion {
     if (typeof obj.value === 'string') return obj.value;
     if (typeof obj.text === 'string') return obj.text;
     if (typeof obj.name === 'string') return obj.name;
-    return String(obj);
+    return JSON.stringify(obj);
   }
 
   private renderTabBar(): void {

@@ -19,18 +19,17 @@ import { getVaultPath, normalizePathForVault } from '../../../utils/path';
 import { loadSubagentFinalResult, loadSubagentToolCalls } from '../../../utils/sdkSession';
 import { FLAVOR_TEXTS } from '../constants';
 import {
-  appendThinkingContent,
-  createThinkingBlock,
-  createWriteEditBlock,
-  finalizeThinkingBlock,
-  finalizeWriteEditBlock,
-  getToolName,
-  getToolSummary,
-  isBlockedToolResult,
-  renderToolCall,
-  updateToolCallResult,
-  updateWriteEditWithDiff,
-} from '../rendering';
+   createThinkingBlock,
+   createWriteEditBlock,
+   finalizeThinkingBlock,
+   finalizeWriteEditBlock,
+   getToolName,
+   getToolSummary,
+   isBlockedToolResult,
+   renderToolCall,
+   updateToolCallResult,
+   updateWriteEditWithDiff,
+ } from '../rendering';
 import type { MessageRenderer } from '../rendering/MessageRenderer';
 import type { SubagentManager } from '../services/SubagentManager';
 import type { ChatState } from '../state/ChatState';
@@ -627,9 +626,9 @@ export class StreamController {
     }
   }
 
-  private async handleSubagentChunk(chunk: StreamChunk, msg: ChatMessage): Promise<void> {
+  private handleSubagentChunk(chunk: StreamChunk, msg: ChatMessage): Promise<void> {
     if (!('parentToolUseId' in chunk) || !chunk.parentToolUseId) {
-      return;
+      return Promise.resolve();
     }
     const parentToolUseId = chunk.parentToolUseId;
     const { subagentManager } = this.deps;
@@ -642,7 +641,7 @@ export class StreamController {
     const subagentState = subagentManager.getSyncSubagent(parentToolUseId);
 
     if (!subagentState) {
-      return;
+      return Promise.resolve();
     }
 
     switch (chunk.type) {
@@ -674,6 +673,7 @@ export class StreamController {
       case 'thinking':
         break;
     }
+    return Promise.resolve();
   }
 
   /** Finalizes a sync subagent when its Agent tool_result is received. */
@@ -1004,7 +1004,7 @@ export class StreamController {
       state.flavorTimerInterval = setInterval(updateTimer, 1000);
 
       // Queue indicator line (initially hidden)
-      state.queueIndicatorEl = state.thinkingEl.createDiv({ cls: 'geminese-queue-indicator' });
+      state.queueIndicatorEl = state.thinkingEl.createDiv({ cls: 'geminese-queue-indicator geminese-hidden' });
       this.deps.updateQueueIndicator();
     }, StreamController.THINKING_INDICATOR_DELAY);
   }

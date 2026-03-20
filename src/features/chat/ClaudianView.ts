@@ -50,8 +50,8 @@ export class GemineseView extends ItemView {
       value: async () => {
         // Ensure containerEl exists before any patched load code tries to use it
         if (!this.containerEl) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (this as any).containerEl = createDiv({ cls: 'view-content' });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Hover Editor compatibility: containerEl must be set before patched load code runs
+          (this as unknown as { containerEl: HTMLElement }).containerEl = createDiv({ cls: 'view-content' });
         }
         // Wrap in try-catch to prevent Hover Editor errors from breaking our view
         try {
@@ -236,8 +236,7 @@ export class GemineseView extends ItemView {
     this.titleTextEl = this.titleSlotEl.createEl('h4', { text: 'Obsidian Gemini', cls: 'geminese-title-text' });
 
     // Header actions container (for header mode - initially hidden)
-    this.headerActionsEl = header.createDiv({ cls: 'geminese-header-actions geminese-header-actions-slot' });
-    this.headerActionsEl.style.display = 'none';
+    this.headerActionsEl = header.createDiv({ cls: 'geminese-header-actions geminese-header-actions-slot geminese-hidden' });
   }
 
   /**
@@ -253,8 +252,8 @@ export class GemineseView extends ItemView {
     this.tabBarContainerEl.className = 'geminese-tab-bar-container';
     this.tabBar = new TabBar(this.tabBarContainerEl, {
       onTabClick: (tabId) => this.handleTabClick(tabId),
-      onTabClose: (tabId) => this.handleTabClose(tabId),
-      onNewTab: () => this.handleNewTab(),
+      onTabClose: (tabId) => { void this.handleTabClose(tabId); },
+      onNewTab: () => { void this.handleNewTab(); },
     });
     fragment.appendChild(this.tabBarContainerEl);
 
@@ -266,17 +265,17 @@ export class GemineseView extends ItemView {
     const newTabBtn = this.headerActionsContent.createDiv({ cls: 'geminese-header-btn geminese-new-tab-btn' });
     setIcon(newTabBtn, 'square-plus');
     newTabBtn.setAttribute('aria-label', 'New tab');
-    newTabBtn.addEventListener('click', async () => {
-      await this.handleNewTab();
-    });
+    newTabBtn.addEventListener('click', () => { void this.handleNewTab(); });
 
     // New conversation button (square-pen icon - new conversation in current tab)
     const newBtn = this.headerActionsContent.createDiv({ cls: 'geminese-header-btn' });
     setIcon(newBtn, 'square-pen');
     newBtn.setAttribute('aria-label', 'New conversation');
-    newBtn.addEventListener('click', async () => {
-      await this.tabManager?.createNewConversation();
-      this.updateHistoryDropdown();
+    newBtn.addEventListener('click', () => {
+      void (async () => {
+        await this.tabManager?.createNewConversation();
+        this.updateHistoryDropdown();
+      })();
     });
 
     // History dropdown
@@ -296,7 +295,7 @@ export class GemineseView extends ItemView {
 
     // Create a wrapper div to hold the fragment (for input mode nav row)
     const wrapper = document.createElement('div');
-    wrapper.style.display = 'contents';
+    wrapper.classList.add('geminese-contents');
     wrapper.appendChild(fragment);
     return wrapper;
   }
@@ -318,7 +317,7 @@ export class GemineseView extends ItemView {
       }
       if (this.headerActionsEl) {
         this.headerActionsEl.appendChild(this.headerActionsContent);
-        this.headerActionsEl.style.display = 'flex';
+        this.headerActionsEl.classList.remove('geminese-hidden');
       }
     } else {
       // Input mode: Both go to active tab's navRowEl via the wrapper
@@ -331,7 +330,7 @@ export class GemineseView extends ItemView {
       }
       // Hide header actions slot when in input mode
       if (this.headerActionsEl) {
-        this.headerActionsEl.style.display = 'none';
+        this.headerActionsEl.classList.add('geminese-hidden');
       }
     }
   }
@@ -360,7 +359,7 @@ export class GemineseView extends ItemView {
   // ============================================
 
   private handleTabClick(tabId: TabId): void {
-    this.tabManager?.switchToTab(tabId);
+    void this.tabManager?.switchToTab(tabId);
   }
 
   private async handleTabClose(tabId: TabId): Promise<void> {
@@ -407,16 +406,16 @@ export class GemineseView extends ItemView {
     const isHeaderMode = this.plugin.settings.tabBarPosition === 'header';
 
     // Hide tab badges when only 1 tab, show when 2+
-    this.tabBarContainerEl.style.display = showTabBar ? 'flex' : 'none';
+    this.tabBarContainerEl.toggleClass('geminese-hidden', !showTabBar);
 
     // In header mode, badges replace logo/title in the same location
     // In input mode, keep logo/title visible (badges are in nav row)
     const hideBranding = showTabBar && isHeaderMode;
     if (this.logoEl) {
-      this.logoEl.style.display = hideBranding ? 'none' : '';
+      this.logoEl.toggleClass('geminese-hidden', hideBranding);
     }
     if (this.titleTextEl) {
-      this.titleTextEl.style.display = hideBranding ? 'none' : '';
+      this.titleTextEl.toggleClass('geminese-hidden', hideBranding);
     }
   }
 
@@ -459,7 +458,7 @@ export class GemineseView extends ItemView {
           const crossViewResult = this.plugin.findConversationAcrossViews(conversationId);
           if (crossViewResult && crossViewResult.view !== this) {
             // Focus the other view's leaf and switch to the tab
-            this.plugin.app.workspace.revealLeaf(crossViewResult.view.leaf);
+            void this.plugin.app.workspace.revealLeaf(crossViewResult.view.leaf);
             await crossViewResult.view.getTabManager()?.switchToTab(crossViewResult.tabId);
             this.historyDropdown?.removeClass('visible');
             return;
