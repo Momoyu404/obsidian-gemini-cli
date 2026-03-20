@@ -152,8 +152,6 @@ export interface TabDOMElements {
 
   inputContainerEl: HTMLElement;
   inputWrapper: HTMLElement;
-  /** Drag handle for resizing the input wrapper. */
-  dragHandleEl: HTMLElement;
   /** Card container for file context and indicators (inside input wrapper, above textarea). */
   contextCardEl: HTMLElement;
   inputEl: HTMLTextAreaElement;

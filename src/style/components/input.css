@@ -104,10 +104,6 @@
   min-height: var(--geminese-min-height) !important;
 }
 
-.geminese-wrapper-sized {
-  min-height: var(--geminese-wrapper-min-height) !important;
-}
-
 .geminese-input {
   width: 100%;
   flex: 1 1 0;
