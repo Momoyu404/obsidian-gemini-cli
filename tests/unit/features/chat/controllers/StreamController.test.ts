@@ -1603,7 +1603,7 @@ describe('StreamController - Text Content', () => {
       const nameChild = toolEl.createDiv({ cls: 'geminese-tool-name' });
       nameChild.setText('Read');
       const summaryChild = toolEl.createDiv({ cls: 'geminese-tool-summary' });
-      summaryChild.setText('test.md');
+      summaryChild.setText('Test.md');
       deps.state.toolCallElements.set('read-1', toolEl);
 
       getToolName.mockReturnValueOnce('Read');

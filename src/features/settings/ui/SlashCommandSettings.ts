@@ -92,7 +92,7 @@ export class SlashCommandModal extends Modal {
       .addText(text => {
         nameInput = text.inputEl;
         text.setValue(this.existingCmd?.name || '')
-          .setPlaceholder('review-code');
+          .setPlaceholder('Review-code');
       });
 
     new Setting(contentEl)
@@ -128,7 +128,7 @@ export class SlashCommandModal extends Modal {
       .addText(text => {
         modelInput = text.inputEl;
         text.setValue(this.existingCmd?.model || '')
-          .setPlaceholder('gemini-2.5-pro');
+          .setPlaceholder('Gemini-2.5-pro');
       });
 
     new Setting(details)
@@ -175,7 +175,7 @@ export class SlashCommandModal extends Modal {
       .addText(text => {
         agentInput = text.inputEl;
         text.setValue(this.existingCmd?.agent || '')
-          .setPlaceholder('code-reviewer');
+          .setPlaceholder('Code-reviewer');
       });
     agentSetting.settingEl.toggleClass('geminese-hidden', contextValue !== 'fork');
 
@@ -187,6 +187,7 @@ export class SlashCommandModal extends Modal {
       cls: 'geminese-sp-content-area',
       attr: {
         rows: '10',
+        // eslint-disable-next-line obsidianmd/ui/sentence-case -- placeholder contains template variables ($ARGUMENTS) which use uppercase by convention
         placeholder: 'Review this code for:\n$ARGUMENTS\n\n@$1',
       },
     });

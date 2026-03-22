@@ -69,13 +69,13 @@ class DiffWidget extends WidgetType {
     const rejectBtn = document.createElement('button');
     rejectBtn.className = 'geminese-inline-diff-btn reject';
     rejectBtn.textContent = '✕';
-    rejectBtn.title = 'Reject (Esc)';
+    rejectBtn.title = 'Reject (esc)';
     rejectBtn.onclick = () => this.controller.reject();
 
     const acceptBtn = document.createElement('button');
     acceptBtn.className = 'geminese-inline-diff-btn accept';
     acceptBtn.textContent = '✓';
-    acceptBtn.title = 'Accept (Enter)';
+    acceptBtn.title = 'Accept (enter)';
     acceptBtn.onclick = () => this.controller.accept();
 
     btns.appendChild(rejectBtn);

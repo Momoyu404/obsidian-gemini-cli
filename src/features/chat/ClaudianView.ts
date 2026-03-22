@@ -70,7 +70,7 @@ export class GemineseView extends ItemView {
   }
 
   getDisplayText(): string {
-    return 'Obsidian Gemini';
+    return 'Obsidian gemini';
   }
 
   getIcon(): string {
@@ -233,7 +233,7 @@ export class GemineseView extends ItemView {
     this.logoEl.appendChild(svg);
 
     // Title text (hidden in header mode when 2+ tabs)
-    this.titleTextEl = this.titleSlotEl.createEl('h4', { text: 'Obsidian Gemini', cls: 'geminese-title-text' });
+    this.titleTextEl = this.titleSlotEl.createEl('h4', { text: 'Obsidian gemini', cls: 'geminese-title-text' });
 
     // Header actions container (for header mode - initially hidden)
     this.headerActionsEl = header.createDiv({ cls: 'geminese-header-actions geminese-header-actions-slot geminese-hidden' });

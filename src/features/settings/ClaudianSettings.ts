@@ -149,7 +149,7 @@ export class GemineseSettingTab extends PluginSettingTab {
       .setDesc(t('settings.excludedTags.desc'))
       .addTextArea((text) => {
         text
-          .setPlaceholder('system\nprivate\ndraft')
+          .setPlaceholder('System\nprivate\ndraft')
           .setValue(this.plugin.settings.excludedTags.join('\n'))
           .onChange(async (value) => {
             this.plugin.settings.excludedTags = value
@@ -167,7 +167,7 @@ export class GemineseSettingTab extends PluginSettingTab {
       .setDesc(t('settings.mediaFolder.desc'))
       .addText((text) => {
         text
-          .setPlaceholder('attachments')
+          .setPlaceholder('Attachments')
           .setValue(this.plugin.settings.mediaFolder)
           .onChange(async (value) => {
             this.plugin.settings.mediaFolder = value.trim();
@@ -285,7 +285,8 @@ export class GemineseSettingTab extends PluginSettingTab {
         };
 
         text
-          .setPlaceholder('map w scrollUp\nmap s scrollDown\nmap i focusInput')
+          // eslint-disable-next-line obsidianmd/ui/sentence-case -- placeholder contains key binding examples with camelCase command identifiers
+          .setPlaceholder('Map w scrollup\nmap s scrolldown\nmap i focusInput')
           .setValue(pendingValue)
           .onChange((value) => {
             pendingValue = value;
@@ -463,7 +464,7 @@ export class GemineseSettingTab extends PluginSettingTab {
         .setDesc(t('settings.blockedCommands.unixDesc'))
         .addTextArea((text) => {
           text
-            .setPlaceholder('rm -rf\nchmod 777\nmkfs')
+            .setPlaceholder('Rm -rf\nchmod 777\nmkfs')
             .setValue(this.plugin.settings.blockedCommands.unix.join('\n'))
             .onChange(async (value) => {
               this.plugin.settings.blockedCommands.unix = value

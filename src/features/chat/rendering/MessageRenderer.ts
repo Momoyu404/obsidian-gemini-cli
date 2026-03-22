@@ -627,7 +627,7 @@ export class MessageRenderer {
             label.addEventListener('click', () => { void (async () => {
               try {
                 await navigator.clipboard.writeText(code.textContent || '');
-                label.setText('copied!');
+                label.setText('Copied!');
                 setTimeout(() => label.setText(match[1]), 1500);
               } catch {
                 // Clipboard API may fail in non-secure contexts
@@ -691,15 +691,15 @@ export class MessageRenderer {
         clearTimeout(feedbackTimeout);
       }
 
-      copyBtn.empty();
-      copyBtn.setText('copied!');
-      copyBtn.classList.add('copied');
+       copyBtn.empty();
+       copyBtn.setText('Copied!');
+       copyBtn.classList.add('copied');
 
-      feedbackTimeout = setTimeout(() => {
-        MessageRenderer.setSvgIcon(copyBtn, MessageRenderer.COPY_ICON);
-        copyBtn.classList.remove('copied');
-        feedbackTimeout = null;
-      }, 1500);
+       feedbackTimeout = setTimeout(() => {
+         MessageRenderer.setSvgIcon(copyBtn, MessageRenderer.COPY_ICON);
+         copyBtn.classList.remove('copied');
+         feedbackTimeout = null;
+       }, 1500);
     })(); });
   }
 
@@ -742,15 +742,15 @@ export class MessageRenderer {
       } catch {
         return;
       }
-      if (feedbackTimeout) clearTimeout(feedbackTimeout);
-      copyBtn.empty();
-      copyBtn.setText('copied!');
-      copyBtn.classList.add('copied');
-      feedbackTimeout = setTimeout(() => {
-        MessageRenderer.setSvgIcon(copyBtn, MessageRenderer.COPY_ICON);
-        copyBtn.classList.remove('copied');
-        feedbackTimeout = null;
-      }, 1500);
+       if (feedbackTimeout) clearTimeout(feedbackTimeout);
+       copyBtn.empty();
+       copyBtn.setText('Copied!');
+       copyBtn.classList.add('copied');
+       feedbackTimeout = setTimeout(() => {
+         MessageRenderer.setSvgIcon(copyBtn, MessageRenderer.COPY_ICON);
+         copyBtn.classList.remove('copied');
+         feedbackTimeout = null;
+       }, 1500);
     })(); });
   }
 

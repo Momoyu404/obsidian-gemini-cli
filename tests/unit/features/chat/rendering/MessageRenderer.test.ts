@@ -1397,7 +1397,7 @@ describe('MessageRenderer', () => {
       (MarkdownRenderer.render as jest.Mock).mockImplementationOnce(
         async (_md: string, container: any) => {
           const pre = container.createEl('pre');
-          pre.createEl('code', { text: 'console.log("hello")' });
+          pre.createEl('code', { text: 'Console.log("hello")' });
         }
       );
 
@@ -1477,7 +1477,8 @@ describe('MessageRenderer', () => {
           const pre = container.createEl('pre');
           const code = pre.createEl('code');
           code.className = 'language-typescript';
-          code.textContent = 'const x = 1;';
+          // eslint-disable-next-line obsidianmd/ui/sentence-case -- test assertion string, not UI text
+          code.textContent = 'Const x = 1;';
         }
       );
 
@@ -1494,7 +1495,7 @@ describe('MessageRenderer', () => {
       (MarkdownRenderer.render as jest.Mock).mockImplementationOnce(
         async (_md: string, container: any) => {
           const pre = container.createEl('pre');
-          pre.createEl('code', { text: 'some code' });
+          pre.createEl('code', { text: 'Some code' });
           const copyBtn = pre.createEl('button');
           copyBtn.className = 'copy-code-button';
         }

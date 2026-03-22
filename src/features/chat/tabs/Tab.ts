@@ -209,6 +209,7 @@ function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
   const inputEl = inputWrapper.createEl('textarea', {
     cls: 'geminese-input',
     attr: {
+      // eslint-disable-next-line obsidianmd/ui/sentence-case -- "I" is the English pronoun, always capitalized
       placeholder: 'How can I help you today?',
       rows: '3',
       dir: 'auto',

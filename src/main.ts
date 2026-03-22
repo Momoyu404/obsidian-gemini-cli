@@ -81,7 +81,7 @@ export default class GeminesePlugin extends Plugin {
       (leaf) => new GemineseView(leaf, this)
     );
 
-    const ribbonEl = this.addRibbonIcon('bot', 'Open Geminese', () => {
+    const ribbonEl = this.addRibbonIcon('bot', 'Open geminese', () => {
       void this.activateView();
     });
     const iconWrap = ribbonEl?.querySelector('.svg-icon') ?? ribbonEl?.firstElementChild;
