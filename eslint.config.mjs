@@ -84,4 +84,16 @@ export default defineConfig([
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
+  // Disable obsidianmd plugin-specific rules in test files
+  // These rules enforce plugin production code patterns that are intentionally
+  // violated in test fixtures (mock TFile/TFolder objects, test style checks, etc.)
+  {
+    files: ["tests/**/*.ts"],
+    rules: {
+      "obsidianmd/no-tfile-tfolder-cast": "off",
+      "obsidianmd/no-static-styles-assignment": "off",
+      "obsidianmd/hardcoded-config-path": "off",
+      "obsidianmd/no-forbidden-elements": "off",
+    },
+  },
 ]);
