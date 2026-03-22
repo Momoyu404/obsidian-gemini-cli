@@ -49,7 +49,7 @@ npm install -g @google/gemini-cli
    ```
 3. **IMPORTANT:** Fully restart Obsidian after installation to ensure it picks up the new environment variables.
 
-Then authenticate (on any platform):
+Then authenticate (on Terminal):
 
 ```bash
 gemini

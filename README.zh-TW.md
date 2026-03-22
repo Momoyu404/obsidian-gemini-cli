@@ -43,7 +43,7 @@ npm install -g @google/gemini-cli
    ```
 3. **重要：** 安裝後請完整重新啟動 Obsidian，以確保它能讀取新的環境變數。
 
-接著在任一平台執行驗證：
+接著在Terminal中執行驗證：
 
 ```bash
 gemini
