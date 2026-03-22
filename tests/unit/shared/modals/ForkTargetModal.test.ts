@@ -91,7 +91,7 @@ describe('ForkTargetModal', () => {
     });
 
     it('should create two list options with correct labels', () => {
-      chooseForkTarget(mockApp);
+      void chooseForkTarget(mockApp);
       const items = getOptionItems();
       expect(items).toHaveLength(2);
       expect(items[0].text).toBe('Current tab');

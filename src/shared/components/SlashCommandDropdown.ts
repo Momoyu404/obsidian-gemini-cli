@@ -109,7 +109,7 @@ export class SlashCommandDropdown {
     }
 
     this.slashStartIndex = slashIndex;
-    this.showDropdown(searchText);
+    void this.showDropdown(searchText);
   }
 
   handleKeydown(e: KeyboardEvent): boolean {

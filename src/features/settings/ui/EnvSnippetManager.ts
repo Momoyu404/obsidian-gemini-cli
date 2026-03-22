@@ -195,7 +195,7 @@ export class EnvSnippetManager {
       attr: { 'aria-label': t('settings.envSnippets.addBtn') },
     });
     setIcon(saveBtn, 'plus');
-    saveBtn.addEventListener('click', () => this.saveCurrentEnv());
+    saveBtn.addEventListener('click', () => void this.saveCurrentEnv());
 
     const snippets = this.plugin.settings.envSnippets;
 
@@ -266,11 +266,13 @@ export class EnvSnippetManager {
       this.plugin.app,
       this.plugin,
       null,
-      async (snippet) => {
-        this.plugin.settings.envSnippets.push(snippet);
-        await this.plugin.saveSettings();
-        this.render();
-        new Notice(`Environment snippet "${snippet.name}" saved`);
+      (snippet) => {
+        void (async () => {
+          this.plugin.settings.envSnippets.push(snippet);
+          await this.plugin.saveSettings();
+          this.render();
+          new Notice(`Environment snippet "${snippet.name}" saved`);
+        })();
       }
     );
     modal.open();
@@ -307,14 +309,16 @@ export class EnvSnippetManager {
       this.plugin.app,
       this.plugin,
       snippet,
-      async (updatedSnippet) => {
-        const index = this.plugin.settings.envSnippets.findIndex(s => s.id === snippet.id);
-        if (index !== -1) {
-          this.plugin.settings.envSnippets[index] = updatedSnippet;
-          await this.plugin.saveSettings();
-          this.render();
-          new Notice(`Environment snippet "${updatedSnippet.name}" updated`);
-        }
+      (updatedSnippet) => {
+        void (async () => {
+          const index = this.plugin.settings.envSnippets.findIndex(s => s.id === snippet.id);
+          if (index !== -1) {
+            this.plugin.settings.envSnippets[index] = updatedSnippet;
+            await this.plugin.saveSettings();
+            this.render();
+            new Notice(`Environment snippet "${updatedSnippet.name}" updated`);
+          }
+        })();
       }
     );
     modal.open();

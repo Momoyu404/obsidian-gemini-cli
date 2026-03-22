@@ -1296,6 +1296,7 @@ describe('InputController - Message Queue', () => {
       deps = createSendableDeps();
 
       ((deps as any).mockAgentService.query as jest.Mock).mockImplementation(() => {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error -- intentionally mocking non-Error throw to test resilience
         throw 'string error';
       });
 

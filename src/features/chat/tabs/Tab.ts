@@ -526,9 +526,11 @@ function initializeInputToolbar(tab: TabData, plugin: GeminesePlugin): void {
   );
 
   // Wire persistence changes
-  tab.ui.externalContextSelector.setOnPersistenceChange(async (paths) => {
-    plugin.settings.persistentExternalContextPaths = paths;
-    await plugin.saveSettings();
+  tab.ui.externalContextSelector.setOnPersistenceChange((paths) => {
+    void (async () => {
+      plugin.settings.persistentExternalContextPaths = paths;
+      await plugin.saveSettings();
+    })();
   });
 
   dom.inputWrapper.toggleClass('geminese-input-plan-mode', plugin.settings.permissionMode === 'plan');

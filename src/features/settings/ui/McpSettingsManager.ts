@@ -140,14 +140,14 @@ export class McpSettingsManager {
       attr: { 'aria-label': 'Verify (show tools)' },
     });
     setIcon(testBtn, 'zap');
-    testBtn.addEventListener('click', () => this.testServer(server));
+    testBtn.addEventListener('click', () => void this.testServer(server));
 
     const toggleBtn = actionsEl.createEl('button', {
       cls: 'geminese-mcp-action-btn',
       attr: { 'aria-label': server.enabled ? 'Disable' : 'Enable' },
     });
     setIcon(toggleBtn, server.enabled ? 'toggle-right' : 'toggle-left');
-    toggleBtn.addEventListener('click', () => this.toggleServer(server));
+    toggleBtn.addEventListener('click', () => void this.toggleServer(server));
 
     const editBtn = actionsEl.createEl('button', {
       cls: 'geminese-mcp-action-btn',
@@ -161,7 +161,7 @@ export class McpSettingsManager {
       attr: { 'aria-label': 'Delete' },
     });
     setIcon(deleteBtn, 'trash-2');
-    deleteBtn.addEventListener('click', () => this.deleteServer(server));
+    deleteBtn.addEventListener('click', () => void this.deleteServer(server));
   }
 
   private async testServer(server: GemineseMcpServer) {
@@ -249,9 +249,7 @@ export class McpSettingsManager {
       this.plugin.app,
       this.plugin,
       existing,
-      async (server) => {
-        await this.saveServer(server, existing);
-      },
+      (server) => { void this.saveServer(server, existing); },
       initialType
     );
     modal.open();
@@ -278,9 +276,7 @@ export class McpSettingsManager {
           this.plugin.app,
           this.plugin,
           null,
-          async (savedServer) => {
-            await this.saveServer(savedServer, null);
-          },
+          (savedServer) => { void this.saveServer(savedServer, null); },
           type,
           server  // Pre-fill with parsed config
         );

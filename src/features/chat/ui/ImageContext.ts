@@ -105,7 +105,7 @@ export class ImageContextManager {
     dropZone.addEventListener('dragenter', (e) => this.handleDragEnter(e));
     dropZone.addEventListener('dragover', (e) => this.handleDragOver(e));
     dropZone.addEventListener('dragleave', (e) => this.handleDragLeave(e));
-    dropZone.addEventListener('drop', (e) => this.handleDrop(e));
+    dropZone.addEventListener('drop', (e) => void this.handleDrop(e));
   }
 
   private handleDragEnter(e: DragEvent) {

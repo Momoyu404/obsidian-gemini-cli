@@ -555,7 +555,7 @@ export class InputController {
     }
 
     setTimeout(
-      () => this.sendMessage({
+      () => void this.sendMessage({
         editorContextOverride: editorContext,
         browserContextOverride: browserContext ?? null,
         canvasContextOverride: canvasContext,
@@ -880,7 +880,7 @@ export class InputController {
       } catch (err) {
         setPending(null);
         this.restoreInputContainer(inputContainerEl);
-        reject(err);
+        reject(err instanceof Error ? err : new Error(String(err)));
       }
     });
   }
@@ -924,7 +924,7 @@ export class InputController {
       } catch (err) {
         this.pendingExitPlanModeInline = null;
         this.restoreInputContainer(inputContainerEl);
-        reject(err);
+        reject(err instanceof Error ? err : new Error(String(err)));
       }
     });
   }

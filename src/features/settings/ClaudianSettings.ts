@@ -141,7 +141,7 @@ export class GemineseSettingTab extends PluginSettingTab {
             this.plugin.settings.userName = value;
             await this.plugin.saveSettings();
           });
-        text.inputEl.addEventListener('blur', () => this.restartServiceForPromptChange());
+        text.inputEl.addEventListener('blur', () => void this.restartServiceForPromptChange());
       });
 
     new Setting(containerEl)
@@ -174,7 +174,7 @@ export class GemineseSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
         text.inputEl.addClass('geminese-settings-media-input');
-        text.inputEl.addEventListener('blur', () => this.restartServiceForPromptChange());
+        text.inputEl.addEventListener('blur', () => void this.restartServiceForPromptChange());
       });
 
     new Setting(containerEl)
@@ -190,7 +190,7 @@ export class GemineseSettingTab extends PluginSettingTab {
           });
         text.inputEl.rows = 6;
         text.inputEl.cols = 50;
-        text.inputEl.addEventListener('blur', () => this.restartServiceForPromptChange());
+        text.inputEl.addEventListener('blur', () => void this.restartServiceForPromptChange());
       });
 
     new Setting(containerEl)
@@ -496,7 +496,7 @@ export class GemineseSettingTab extends PluginSettingTab {
           });
         text.inputEl.rows = 4;
         text.inputEl.cols = 40;
-        text.inputEl.addEventListener('blur', () => this.restartServiceForPromptChange());
+        text.inputEl.addEventListener('blur', () => void this.restartServiceForPromptChange());
       });
 
     new Setting(containerEl).setName(t('settings.environment')).setHeading();

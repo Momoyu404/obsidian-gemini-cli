@@ -151,7 +151,7 @@ export class McpTestModal extends Modal {
         cls: 'geminese-mcp-toggle-all-btn',
       });
       this.updateToggleAllButton();
-      this.toggleAllBtn.addEventListener('click', () => this.handleToggleAll());
+      this.toggleAllBtn.addEventListener('click', () => void this.handleToggleAll());
     }
 
     const closeBtn = buttonContainer.createEl('button', {

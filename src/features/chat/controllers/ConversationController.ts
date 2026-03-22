@@ -624,7 +624,7 @@ export class ConversationController {
       }
     };
 
-    input.addEventListener('blur', finishRename);
+    input.addEventListener('blur', () => void finishRename());
     input.addEventListener('keydown', (e) => {
       // Check !e.isComposing for IME support (Chinese, Japanese, Korean, etc.)
       if (e.key === 'Enter' && !e.isComposing) {
