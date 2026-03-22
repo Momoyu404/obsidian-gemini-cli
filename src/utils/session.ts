@@ -185,7 +185,7 @@ export function buildContextFromHistory(messages: ChatMessage[]): string {
     if (message.role === 'assistant' && message.toolCalls?.length) {
       const toolLines = message.toolCalls
         .map(tc => formatToolCallForContext(tc))
-        .filter(Boolean) as string[];
+        .filter(Boolean);
       if (toolLines.length > 0) {
         lines.push(...toolLines);
       }

@@ -484,7 +484,7 @@ function resolveRealPath(p: string): string {
     let current = absolute;
     const suffix: string[] = [];
 
-     // eslint-disable-next-line no-constant-condition -- intentional infinite loop with break conditions
+      
      while (true) {
       try {
         if (fs.existsSync(current)) {

@@ -313,7 +313,7 @@ Do the thing`;
 
       await storage.save(command);
 
-      const written = mockAdapter.write.mock.calls[0][1] as string;
+      const written = mockAdapter.write.mock.calls[0][1];
       expect(written).toContain('disable-model-invocation: true');
       expect(written).toContain('user-invocable: false');
       expect(written).toContain('context: fork');
@@ -326,7 +326,7 @@ Do the thing`;
     it('omits skill fields when undefined', async () => {
       await storage.save(mockCommand1);
 
-      const written = mockAdapter.write.mock.calls[0][1] as string;
+      const written = mockAdapter.write.mock.calls[0][1];
       expect(written).not.toContain('disable-model-invocation');
       expect(written).not.toContain('user-invocable');
       expect(written).not.toContain('context');
@@ -343,7 +343,7 @@ Do the thing`;
 
       await storage.save(command);
 
-      const written = mockAdapter.write.mock.calls[0][1] as string;
+      const written = mockAdapter.write.mock.calls[0][1];
       expect(written).toContain(`hooks: ${JSON.stringify(hooks)}`);
     });
 
@@ -361,7 +361,7 @@ Do the thing`;
 
       await storage.save(command);
 
-      const written = mockAdapter.write.mock.calls[0][1] as string;
+      const written = mockAdapter.write.mock.calls[0][1];
       mockAdapter.read.mockResolvedValue(written);
       mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/roundtrip.md']);
       const loaded = await storage.loadAll();
@@ -573,7 +573,7 @@ Do the thing`;
       await storage.save(commandNoMetadata);
 
       const writeCall = mockAdapter.write.mock.calls[0];
-      const writtenContent = writeCall[1] as string;
+      const writtenContent = writeCall[1];
 
       expect(writtenContent).toBe('---\nname: simple\n---\nJust a prompt');
     });
@@ -588,7 +588,7 @@ Do the thing`;
       await storage.save(commandNoMetadata);
 
       const writeCall = mockAdapter.write.mock.calls[0];
-      const writtenContent = writeCall[1] as string;
+      const writtenContent = writeCall[1];
 
       // Simulate loading it back - should parse correctly
       mockAdapter.read.mockResolvedValue(writtenContent);
@@ -603,7 +603,7 @@ Do the thing`;
       await storage.save(mockCommand1);
 
       const writeCall = mockAdapter.write.mock.calls[0];
-      const writtenContent = writeCall[1] as string;
+      const writtenContent = writeCall[1];
 
       // Should not have double newlines between description and ---
       expect(writtenContent).not.toMatch(/description: .*\n\n---/);

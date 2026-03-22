@@ -614,7 +614,7 @@ describe('InlineAskUserQuestion - immediateSelect mode', () => {
       const headerEl = createMockEl('div');
       headerEl.addClass('geminese-ask-approval-info');
       const input = makeInput([{ question: 'Pick', options: ['A'] }]);
-      const { container } = renderImmediateWidget(input, { headerEl: headerEl as any });
+      const { container } = renderImmediateWidget(input, { headerEl: headerEl });
       const root = findRoot(container);
       expect(root.children.some((c: any) => c.hasClass('geminese-ask-approval-info'))).toBe(true);
     });

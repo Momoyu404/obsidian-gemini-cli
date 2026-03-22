@@ -475,7 +475,7 @@ describe('Tab - Service Initialization', () => {
 
     it('should ensureReady without session ID (just spin up process)', async () => {
       const mockEnsureReady = jest.fn().mockResolvedValue(true);
-      const agentModule = jest.requireMock('@/core/agent') as { GemineseService: jest.Mock };
+      const agentModule = jest.requireMock('@/core/agent');
       agentModule.GemineseService.mockImplementationOnce(() => createMockGemineseService({ ensureReady: mockEnsureReady }));
 
       const options = createMockOptions();
@@ -491,7 +491,7 @@ describe('Tab - Service Initialization', () => {
 
     it('should ensureReady with saved external contexts for existing conversation', async () => {
       const mockEnsureReady = jest.fn().mockResolvedValue(true);
-      const agentModule = jest.requireMock('@/core/agent') as { GemineseService: jest.Mock };
+      const agentModule = jest.requireMock('@/core/agent');
       agentModule.GemineseService.mockImplementationOnce(() => createMockGemineseService({ ensureReady: mockEnsureReady }));
 
       const conversation = {
@@ -525,7 +525,7 @@ describe('Tab - Service Initialization', () => {
         return () => {};
       });
 
-      const agentModule = jest.requireMock('@/core/agent') as { GemineseService: jest.Mock };
+      const agentModule = jest.requireMock('@/core/agent');
       agentModule.GemineseService.mockImplementationOnce(() => createMockGemineseService({ onReadyStateChange: mockOnReadyStateChange }));
 
       const options = createMockOptions();
@@ -652,7 +652,7 @@ describe('Tab - Destruction', () => {
       const unsubscribeFn = jest.fn();
       const mockOnReadyStateChange = jest.fn(() => unsubscribeFn);
 
-      const agentModule = jest.requireMock('@/core/agent') as { GemineseService: jest.Mock };
+      const agentModule = jest.requireMock('@/core/agent');
       agentModule.GemineseService.mockImplementationOnce(() => createMockGemineseService({ onReadyStateChange: mockOnReadyStateChange }));
 
       const options = createMockOptions();
@@ -2037,7 +2037,7 @@ describe('Tab - handleForkRequest', () => {
     initializeTabControllers(tab, options.plugin, mockComponent, options.mcpManager, forkRequestCallback);
 
     // Extract the fork callback from the MessageRenderer constructor
-    const { MessageRenderer } = jest.requireMock('@/features/chat/rendering') as { MessageRenderer: jest.Mock };
+    const { MessageRenderer } = jest.requireMock('@/features/chat/rendering');
     const lastCall = MessageRenderer.mock.calls[MessageRenderer.mock.calls.length - 1];
     const forkCallback = lastCall[4]; // 5th argument is forkCallback
 
@@ -2303,7 +2303,7 @@ describe('Tab - handleForkRequest', () => {
     initializeTabUI(tab, options.plugin);
     initializeTabControllers(tab, options.plugin, mockComponent, options.mcpManager);
 
-    const { MessageRenderer } = jest.requireMock('@/features/chat/rendering') as { MessageRenderer: jest.Mock };
+    const { MessageRenderer } = jest.requireMock('@/features/chat/rendering');
     const lastCall = MessageRenderer.mock.calls[MessageRenderer.mock.calls.length - 1];
     const forkCallback = lastCall[4];
 
@@ -2323,7 +2323,7 @@ describe('Tab - handleForkAll (via /fork command)', () => {
     initializeTabControllers(tab, options.plugin, mockComponent, options.mcpManager, forkRequestCallback);
 
     // Extract onForkAll from InputController constructor call
-    const { InputController } = jest.requireMock('@/features/chat/controllers') as { InputController: jest.Mock };
+    const { InputController } = jest.requireMock('@/features/chat/controllers');
     const lastCall = InputController.mock.calls[InputController.mock.calls.length - 1];
     const config = lastCall[0];
     const onForkAll = config.onForkAll as (() => Promise<void>) | undefined;
@@ -2514,7 +2514,7 @@ describe('Tab - handleForkAll (via /fork command)', () => {
     initializeTabUI(tab, options.plugin);
     initializeTabControllers(tab, options.plugin, mockComponent, options.mcpManager);
 
-    const { InputController } = jest.requireMock('@/features/chat/controllers') as { InputController: jest.Mock };
+    const { InputController } = jest.requireMock('@/features/chat/controllers');
     const lastCall = InputController.mock.calls[InputController.mock.calls.length - 1];
     const config = lastCall[0];
     expect(config.onForkAll).toBeUndefined();

@@ -426,13 +426,13 @@ export class InlineAskUserQuestion {
       item.toggleClass('is-selected', isSelected);
 
       if (isMulti) {
-        const checkSpan = item.querySelector('.geminese-ask-check') as HTMLElement | null;
+        const checkSpan = item.querySelector('.geminese-ask-check');
         if (checkSpan) {
           checkSpan.textContent = isSelected ? '[\u2713] ' : '[ ] ';
           checkSpan.toggleClass('is-checked', isSelected);
         }
       } else {
-        const labelRow = item.querySelector('.geminese-ask-label-row') as HTMLElement | null;
+        const labelRow = item.querySelector('.geminese-ask-label-row');
         const existingMark = item.querySelector('.geminese-ask-check-mark');
         if (isSelected && !existingMark && labelRow) {
           labelRow.createSpan({ text: ' \u2713', cls: 'geminese-ask-check-mark' });

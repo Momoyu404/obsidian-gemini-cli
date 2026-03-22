@@ -526,7 +526,7 @@ describe('ImageContextManager - Private Helpers', () => {
 
     it('handleDrop should hide overlay and process image files', async () => {
       manager['dropOverlay']?.addClass('visible');
-      const addImageSpy = jest.spyOn(manager as any, 'addImageFromFile').mockResolvedValue(true);
+      const addImageSpy = jest.spyOn(manager, 'addImageFromFile').mockResolvedValue(true);
 
       const mockFile = { type: 'image/png', name: 'test.png', size: 1024 };
       const event = {
@@ -545,8 +545,8 @@ describe('ImageContextManager - Private Helpers', () => {
     });
 
     it('handleDrop should skip non-image files', async () => {
-      const addImageSpy = jest.spyOn(manager as any, 'addImageFromFile').mockResolvedValue(true);
-      jest.spyOn(manager as any, 'isImageFile').mockReturnValue(false);
+      const addImageSpy = jest.spyOn(manager, 'addImageFromFile').mockResolvedValue(true);
+      jest.spyOn(manager, 'isImageFile').mockReturnValue(false);
 
       const mockFile = { type: 'application/pdf', name: 'doc.pdf', size: 1024 };
       const event = {
@@ -581,7 +581,7 @@ describe('ImageContextManager - Private Helpers', () => {
     });
 
     it('paste handler should process image items', async () => {
-      const addImageSpy = jest.spyOn(manager as any, 'addImageFromFile').mockResolvedValue(true);
+      const addImageSpy = jest.spyOn(manager, 'addImageFromFile').mockResolvedValue(true);
       const mockFile = { name: 'pasted.png', type: 'image/png', size: 1024 };
       const pasteEvent = {
         type: 'paste',
@@ -607,7 +607,7 @@ describe('ImageContextManager - Private Helpers', () => {
     });
 
     it('paste handler should ignore non-image items', async () => {
-      const addImageSpy = jest.spyOn(manager as any, 'addImageFromFile').mockResolvedValue(true);
+      const addImageSpy = jest.spyOn(manager, 'addImageFromFile').mockResolvedValue(true);
       const pasteEvent = {
         type: 'paste',
         preventDefault: jest.fn(),
@@ -631,7 +631,7 @@ describe('ImageContextManager - Private Helpers', () => {
     });
 
     it('paste handler should handle null clipboardData', async () => {
-      const addImageSpy = jest.spyOn(manager as any, 'addImageFromFile').mockResolvedValue(true);
+      const addImageSpy = jest.spyOn(manager, 'addImageFromFile').mockResolvedValue(true);
       const pasteEvent = {
         type: 'paste',
         preventDefault: jest.fn(),

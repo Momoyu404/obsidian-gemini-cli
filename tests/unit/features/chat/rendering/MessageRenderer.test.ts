@@ -827,7 +827,7 @@ describe('MessageRenderer', () => {
       source: 'file',
     };
 
-    renderer.setImageSrc(imgEl as any, image);
+    renderer.setImageSrc(imgEl, image);
 
     expect(imgEl.getAttribute('src')).toBe('data:image/png;base64,abc123');
   });
@@ -1034,7 +1034,7 @@ describe('MessageRenderer', () => {
     const welcomeEl = renderer.renderMessages(messages, () => 'Good morning!');
 
     expect(welcomeEl).toBeDefined();
-    expect(welcomeEl!.hasClass('geminese-welcome')).toBe(true);
+    expect(welcomeEl.hasClass('geminese-welcome')).toBe(true);
   });
 
   it('renderMessages should hide welcome when messages exist', () => {
@@ -1060,7 +1060,7 @@ describe('MessageRenderer', () => {
     const welcomeEl = renderer.renderMessages([], () => 'Welcome');
 
     expect(welcomeEl).toBeDefined();
-    expect(welcomeEl!.hasClass('geminese-welcome')).toBe(true);
+    expect(welcomeEl.hasClass('geminese-welcome')).toBe(true);
   });
 
   // ============================================

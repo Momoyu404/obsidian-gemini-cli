@@ -608,7 +608,7 @@ describe('StatusPanel', () => {
 
       const doneText = containerEl.querySelector('.geminese-status-panel-done-text');
       expect(doneText?.textContent).toContain('...');
-      expect(doneText!.textContent!.length).toBeLessThan(longDescription.length);
+      expect(doneText!.textContent.length).toBeLessThan(longDescription.length);
     });
 
     it('should not truncate short descriptions', () => {

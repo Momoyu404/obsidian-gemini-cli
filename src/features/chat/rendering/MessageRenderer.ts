@@ -722,7 +722,7 @@ export class MessageRenderer {
   }
 
   private getOrCreateActionsToolbar(msgEl: HTMLElement): HTMLElement {
-    const existing = msgEl.querySelector('.geminese-user-msg-actions') as HTMLElement | null;
+    const existing = msgEl.querySelector('.geminese-user-msg-actions');
     if (existing) return existing;
     return msgEl.createDiv({ cls: 'geminese-user-msg-actions' });
   }

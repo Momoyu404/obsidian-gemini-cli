@@ -2546,7 +2546,7 @@ describe('GemineseService', () => {
       jest.spyOn(sdkModule, 'query' as any).mockImplementation(() => {
         // eslint-disable-next-line require-yield
         const gen = (async function* () {
-          throw 'string error';  // eslint-disable-line no-throw-literal
+          throw 'string error';   
         })() as any;
         gen.interrupt = jest.fn();
         gen.setModel = jest.fn();

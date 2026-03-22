@@ -230,13 +230,13 @@ export class StreamController {
         // If already rendered, update the header name + summary
         const toolEl = state.toolCallElements.get(chunk.id);
         if (toolEl) {
-          const nameEl = toolEl.querySelector('.geminese-tool-name') as HTMLElement | null
-            ?? toolEl.querySelector('.geminese-write-edit-name') as HTMLElement | null;
+          const nameEl = toolEl.querySelector('.geminese-tool-name')
+            ?? toolEl.querySelector('.geminese-write-edit-name');
           if (nameEl) {
             nameEl.setText(getToolName(existingToolCall.name, existingToolCall.input));
           }
-          const summaryEl = toolEl.querySelector('.geminese-tool-summary') as HTMLElement | null
-            ?? toolEl.querySelector('.geminese-write-edit-summary') as HTMLElement | null;
+          const summaryEl = toolEl.querySelector('.geminese-tool-summary')
+            ?? toolEl.querySelector('.geminese-write-edit-summary');
           if (summaryEl) {
             summaryEl.setText(getToolSummary(existingToolCall.name, existingToolCall.input));
           }

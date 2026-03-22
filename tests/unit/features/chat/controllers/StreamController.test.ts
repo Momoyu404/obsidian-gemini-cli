@@ -355,8 +355,8 @@ describe('StreamController - Text Content', () => {
         msg
       );
 
-      expect(msg.toolCalls![0].status).toBe('completed');
-      expect(msg.toolCalls![0].result).toBe('ok');
+      expect(msg.toolCalls[0].status).toBe('completed');
+      expect(msg.toolCalls[0].result).toBe('ok');
     });
 
     it('should add subagent entry to contentBlocks for Task tool', async () => {
@@ -1660,10 +1660,10 @@ describe('StreamController - Text Content', () => {
         undefined
       );
 
-      expect(msg.toolCalls![0].status).toBe('completed');
-      expect(msg.toolCalls![0].result).toBe('Task completed successfully');
-      expect(msg.toolCalls![0].subagent?.status).toBe('completed');
-      expect(msg.toolCalls![0].subagent?.result).toBe('Task completed successfully');
+      expect(msg.toolCalls[0].status).toBe('completed');
+      expect(msg.toolCalls[0].result).toBe('Task completed successfully');
+      expect(msg.toolCalls[0].subagent?.status).toBe('completed');
+      expect(msg.toolCalls[0].subagent?.result).toBe('Task completed successfully');
     });
   });
 
@@ -1915,7 +1915,7 @@ describe('StreamController - Plan Mode', () => {
         msg
       );
 
-      expect(msg.toolCalls![0].resolvedAnswers).toEqual({ 'Color?': 'Blue' });
+      expect(msg.toolCalls[0].resolvedAnswers).toEqual({ 'Color?': 'Blue' });
     });
 
     it('should not mark AskUserQuestion as blocked even when result looks blocked', async () => {
@@ -1935,7 +1935,7 @@ describe('StreamController - Plan Mode', () => {
         msg
       );
 
-      expect(msg.toolCalls![0].status).toBe('completed');
+      expect(msg.toolCalls[0].status).toBe('completed');
     });
 
     it('should not mark ExitPlanMode as blocked even when result looks blocked', async () => {
@@ -1955,7 +1955,7 @@ describe('StreamController - Plan Mode', () => {
         msg
       );
 
-      expect(msg.toolCalls![0].status).toBe('completed');
+      expect(msg.toolCalls[0].status).toBe('completed');
     });
 
     it('should mark regular tool as blocked when result is blocked', async () => {
@@ -1975,7 +1975,7 @@ describe('StreamController - Plan Mode', () => {
         msg
       );
 
-      expect(msg.toolCalls![0].status).toBe('blocked');
+      expect(msg.toolCalls[0].status).toBe('blocked');
     });
   });
 });

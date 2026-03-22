@@ -175,7 +175,7 @@ Be strict.`;
         source: 'vault',
       });
 
-      const written = mockAdapter.write.mock.calls[0][1] as string;
+      const written = mockAdapter.write.mock.calls[0][1];
       expect(written).toContain('name: my-agent');
       expect(written).toContain('description: My agent');
       expect(written).toContain('model: opus');

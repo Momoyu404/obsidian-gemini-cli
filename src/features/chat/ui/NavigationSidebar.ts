@@ -67,7 +67,7 @@ export class NavigationSidebar {
    * Scrolls to previous or next user message, skipping assistant messages.
    */
   private scrollToMessage(direction: 'prev' | 'next'): void {
-    const messages = Array.from(this.messagesEl.querySelectorAll('.geminese-message-user')) as HTMLElement[];
+    const messages = Array.from(this.messagesEl.querySelectorAll('.geminese-message-user'));
 
     if (messages.length === 0) return;
 

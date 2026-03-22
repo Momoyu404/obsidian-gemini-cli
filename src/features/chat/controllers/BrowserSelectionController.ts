@@ -178,7 +178,7 @@ export class BrowserSelectionController {
   }
 
   private async extractSelectionFromWebviews(containerEl: HTMLElement): Promise<string | null> {
-    const webviews = Array.from(containerEl.querySelectorAll('webview')) as BrowserLikeWebview[];
+    const webviews = Array.from(containerEl.querySelectorAll('webview'));
     for (const webview of webviews) {
       if (typeof webview.executeJavaScript !== 'function') continue;
       try {

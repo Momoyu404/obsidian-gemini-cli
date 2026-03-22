@@ -90,7 +90,7 @@ export class GemineseSettingsStorage {
 
      const content = await this.adapter.read(GEMINIAN_SETTINGS_PATH);
      const stored = JSON.parse(content) as Record<string, unknown>;
-     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- legacy field excluded from stored settings
+      
      const { activeConversationId, ...storedWithoutLegacy } = stored;
 
     const blockedCommands = normalizeBlockedCommands(stored.blockedCommands);
@@ -176,7 +176,7 @@ export class GemineseSettingsStorage {
    * Get default settings (excluding separately loaded fields).
    */
    private getDefaults(): StoredGemineseSettings {
-     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- slashCommands stored separately
+      
      const {
        slashCommands,
        ...defaults

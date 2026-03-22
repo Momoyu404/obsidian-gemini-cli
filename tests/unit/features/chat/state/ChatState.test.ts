@@ -276,7 +276,7 @@ describe('ChatState', () => {
       const todos = [{ content: 'Test', status: 'pending' as const, activeForm: 'Testing' }];
       chatState.currentTodos = todos;
 
-      const retrieved = chatState.currentTodos!;
+      const retrieved = chatState.currentTodos;
       retrieved.push({ content: 'Other', status: 'pending' as const, activeForm: 'Othering' });
 
       expect(chatState.currentTodos).toHaveLength(1);

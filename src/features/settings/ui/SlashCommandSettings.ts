@@ -55,7 +55,7 @@ export class SlashCommandModal extends Modal {
      let contextValue: 'fork' | '' = this.existingCmd?.context ?? '';
      let agentInput: HTMLInputElement;
 
-     // eslint-disable-next-line prefer-const -- assigned in Setting callbacks
+      
      let disableUserSetting!: Setting;
      let disableUserToggle!: ToggleComponent;
 

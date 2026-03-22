@@ -138,7 +138,7 @@ export class McpStorage {
      if (Object.keys(gemineseServers).length > 0) {
        file._geminese = { ...(existingGeminese ?? {}), servers: gemineseServers };
      } else if (existingGeminese) {
-       // eslint-disable-next-line @typescript-eslint/no-unused-vars -- servers field excluded from rest
+        
        const { servers, ...rest } = existingGeminese;
       if (Object.keys(rest).length > 0) {
         file._geminese = rest;

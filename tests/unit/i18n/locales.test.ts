@@ -82,7 +82,7 @@ function flattenTranslations(
   for (const [key, value] of Object.entries(translations)) {
     const nextKey = prefix ? `${prefix}.${key}` : key;
     if (value && typeof value === 'object') {
-      flattenTranslations(value as TranslationTree, nextKey, out);
+      flattenTranslations(value, nextKey, out);
       continue;
     }
 

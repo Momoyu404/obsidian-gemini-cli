@@ -226,9 +226,9 @@ export class GemineseService {
       conversationHistory && conversationHistory.length > 0;
 
     if (noSessionButHasHistory) {
-      const historyContext = buildContextFromHistory(conversationHistory!);
+      const historyContext = buildContextFromHistory(conversationHistory);
       const actualPrompt = stripCurrentNoteContext(prompt);
-      promptToSend = buildPromptWithHistoryContext(historyContext, prompt, actualPrompt, conversationHistory!);
+      promptToSend = buildPromptWithHistoryContext(historyContext, prompt, actualPrompt, conversationHistory);
     }
 
     // Write image attachments to temp files and reference them in the prompt

@@ -398,7 +398,7 @@ export default class GeminesePlugin extends Plugin {
    /** Persists settings to storage. */
    async saveSettings() {
      // Save settings (excluding slashCommands which are stored separately)
-     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- slashCommands stored separately
+      
      const {
        slashCommands,
        ...settingsToSave

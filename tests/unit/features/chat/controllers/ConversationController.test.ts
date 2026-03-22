@@ -69,10 +69,10 @@ function createMockDeps(overrides: Partial<ConversationControllerDeps> = {}): Co
       orphanAllActive: jest.fn(),
       clear: jest.fn(),
     } as any,
-    getHistoryDropdown: () => historyDropdown as any,
+    getHistoryDropdown: () => historyDropdown,
     getWelcomeEl: () => welcomeEl,
     setWelcomeEl: (el: any) => { welcomeEl = el; },
-    getMessagesEl: () => messagesEl as any,
+    getMessagesEl: () => messagesEl,
     getInputEl: () => inputEl,
     getFileContextManager: () => fileContextManager as any,
     getImageContextManager: () => ({
@@ -804,15 +804,15 @@ describe('ConversationController', () => {
       expect(clickHandlers).toBeDefined();
 
       const mockInput = createMockEl();
-      (mockInput as any).type = '';
-      (mockInput as any).className = '';
-      (mockInput as any).value = '';
-      (mockInput as any).focus = jest.fn();
-      (mockInput as any).select = jest.fn();
+      (mockInput).type = '';
+      (mockInput).className = '';
+      (mockInput).value = '';
+      (mockInput).focus = jest.fn();
+      (mockInput).select = jest.fn();
 
       const titleEl = item.querySelector('.geminese-history-item-title');
       if (titleEl) {
-        (titleEl as any).replaceWith = jest.fn();
+        (titleEl).replaceWith = jest.fn();
       }
 
       const origDocument = global.document;
@@ -822,7 +822,7 @@ describe('ConversationController', () => {
         clickHandlers![0]({ stopPropagation: jest.fn() });
 
         expect(global.document.createElement).toHaveBeenCalledWith('input');
-        expect((mockInput as any).value).toBe('Test Title');
+        expect((mockInput).value).toBe('Test Title');
         expect(titleEl!.replaceWith).toHaveBeenCalledWith(mockInput);
       } finally {
         global.document = origDocument;
