@@ -176,7 +176,6 @@ export class McpServerModal extends Modal {
 
     const envSetting = new Setting(this.typeFieldsEl)
       .setName('Environment variables')
-      // eslint-disable-next-line obsidianmd/ui/sentence-case -- placeholder contains code-format template (KEY=VALUE convention)
       .setDesc('KEY=VALUE per line (optional)');
     envSetting.settingEl.addClass('geminese-mcp-env-setting');
 
@@ -184,7 +183,6 @@ export class McpServerModal extends Modal {
       cls: 'geminese-mcp-env-textarea',
     });
     envTextarea.value = this.env;
-    // eslint-disable-next-line obsidianmd/ui/sentence-case -- placeholder contains code-format template (API_KEY convention)
     envTextarea.placeholder = 'API_KEY=your-key';
     envTextarea.rows = 2;
     envTextarea.addEventListener('input', () => {
@@ -209,7 +207,6 @@ export class McpServerModal extends Modal {
 
     const headersSetting = new Setting(this.typeFieldsEl)
       .setName('Headers')
-      // eslint-disable-next-line obsidianmd/ui/sentence-case -- placeholder contains code-format template (KEY=VALUE convention)
       .setDesc('HTTP headers (KEY=VALUE per line)');
     headersSetting.settingEl.addClass('geminese-mcp-env-setting');
 
@@ -217,7 +214,6 @@ export class McpServerModal extends Modal {
       cls: 'geminese-mcp-env-textarea',
     });
     headersTextarea.value = this.headers;
-    // eslint-disable-next-line obsidianmd/ui/sentence-case -- HTTP header names require specific casing per RFC standards
     headersTextarea.placeholder = 'Authorization=Bearer token\nContent-type=application/json';
     headersTextarea.rows = 3;
     headersTextarea.addEventListener('input', () => {

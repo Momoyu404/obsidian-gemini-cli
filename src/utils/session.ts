@@ -65,7 +65,6 @@ function formatToolInput(input: Record<string, unknown>, maxLength = 200): strin
       } else if (typeof value === 'object' && value !== null) {
         valueStr = JSON.stringify(value);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         valueStr = String(value);
       }
       parts.push(`${key}=${valueStr}`);
