@@ -215,7 +215,7 @@ The plugin spawns the Gemini CLI as a subprocess for each query, passing `--outp
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed source structure and development notes.
 
-> **Based on [Claudian](https://github.com/YishenTu/claudian)** — converted from Claude Code CLI to Gemini CLI. Uses your Google account (no API key needed).
+**Based on [Claudian](https://github.com/YishenTu/claudian)** — converted from Claude Code CLI to Gemini CLI. Uses your Google account (no API key needed).
 
 ## License
 
