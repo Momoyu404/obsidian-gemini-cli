@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- explicit coverage for migration-only legacy type aliases and helpers */
+
 import type {
   ChatMessage,
   Conversation,

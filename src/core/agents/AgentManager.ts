@@ -98,13 +98,7 @@ export class AgentManager {
   }
 
   private async loadPluginAgents(): Promise<void> {
-    const pluginManagerWithLegacy = this.pluginManager as PluginManager & {
-      getPlugins?: () => ReturnType<PluginManager['getExtensions']>;
-    };
-    const plugins =
-      typeof pluginManagerWithLegacy.getExtensions === 'function'
-        ? pluginManagerWithLegacy.getExtensions()
-        : pluginManagerWithLegacy.getPlugins?.() ?? [];
+    const plugins = this.pluginManager.getExtensions();
 
     for (const plugin of plugins) {
       if (!plugin.enabled) continue;

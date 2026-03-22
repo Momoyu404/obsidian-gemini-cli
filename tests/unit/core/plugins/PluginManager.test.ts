@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- verifies backward-compatible PluginManager aliases during extension API migration */
+
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -46,7 +48,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       expect(manager.getPlugins()).toEqual([]);
     });
@@ -78,7 +80,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       const plugins = manager.getPlugins();
       expect(plugins.length).toBe(1);
@@ -111,7 +113,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       const plugins = manager.getPlugins();
       expect(plugins.length).toBe(1);
@@ -149,7 +151,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       const plugins = manager.getPlugins();
       expect(plugins[0].enabled).toBe(false);
@@ -178,7 +180,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       const plugins = manager.getPlugins();
       expect(plugins[0].name).toBe('feature-dev');
@@ -214,7 +216,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       const plugins = manager.getPlugins();
       expect(plugins.length).toBe(2);
@@ -245,7 +247,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       expect(manager.getPlugins()).toEqual([]);
     });
@@ -282,7 +284,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       const plugins = manager.getPlugins();
       expect(plugins.length).toBe(1);
@@ -314,7 +316,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
       expect(manager.getPlugins()[0].enabled).toBe(true);
 
       await manager.togglePlugin('test-plugin@marketplace');
@@ -328,7 +330,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
       await manager.togglePlugin('nonexistent-plugin');
 
       expect(ccSettings.setExtensionEnabled).not.toHaveBeenCalled();
@@ -363,7 +365,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       expect(manager.getPluginsKey()).toBe('');
     });
@@ -397,7 +399,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       const key = manager.getPluginsKey();
       // Should be sorted alphabetically by ID
@@ -428,7 +430,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       expect(manager.hasEnabledPlugins()).toBe(true);
     });
@@ -460,7 +462,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       expect(manager.hasEnabledPlugins()).toBe(false);
     });
@@ -494,7 +496,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
       expect(manager.getPlugins()[0].enabled).toBe(false);
 
       await manager.enablePlugin('test-plugin@marketplace');
@@ -525,7 +527,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
       await manager.enablePlugin('test-plugin@marketplace');
 
       expect(ccSettings.setExtensionEnabled).not.toHaveBeenCalled();
@@ -536,7 +538,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
       await manager.enablePlugin('nonexistent');
 
       expect(ccSettings.setExtensionEnabled).not.toHaveBeenCalled();
@@ -566,7 +568,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
       expect(manager.getPlugins()[0].enabled).toBe(true);
 
       await manager.disablePlugin('test-plugin@marketplace');
@@ -602,7 +604,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
       await manager.disablePlugin('test-plugin@marketplace');
 
       expect(ccSettings.setExtensionEnabled).not.toHaveBeenCalled();
@@ -613,7 +615,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
       await manager.disablePlugin('nonexistent');
 
       expect(ccSettings.setExtensionEnabled).not.toHaveBeenCalled();
@@ -658,7 +660,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       expect(manager.getEnabledCount()).toBe(1);
     });
@@ -668,7 +670,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       expect(manager.getEnabledCount()).toBe(0);
     });
@@ -697,7 +699,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       expect(manager.hasPlugins()).toBe(true);
     });
@@ -707,7 +709,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       expect(manager.hasPlugins()).toBe(false);
     });
@@ -736,7 +738,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       const plugins = manager.getPlugins();
       expect(plugins.length).toBe(1);
@@ -757,7 +759,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       // Should gracefully handle parse error and return empty plugins
       expect(manager.getPlugins()).toEqual([]);
@@ -787,7 +789,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       const plugins = manager.getPlugins();
       expect(plugins.length).toBe(1);
@@ -822,7 +824,7 @@ describe('PluginManager', () => {
       const ccSettings = createMockCCSettingsStorage();
       const manager = new PluginManager(vaultPath, ccSettings);
 
-      await manager.loadPlugins();
+      await manager.loadExtensions();
 
       const plugins = manager.getPlugins();
       expect(plugins.length).toBe(1);

@@ -42,6 +42,7 @@ export {
   type GeminiCLISettings,
   type GeminiPermissions,
   getBashToolBlockedCommands,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- migration-only helper re-exported for backwards compatibility with older settings tests and consumers
   getCliPlatformKey,
   getCurrentPlatformBlockedCommands,
   getCurrentPlatformKey,
@@ -49,6 +50,7 @@ export {
   type HostnameCliPaths,
   type InstructionRefineResult,
   type KeyboardNavigationSettings,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- migration-only legacy permission alias retained for backward compatibility
   type LegacyPermission,
   legacyPermissionsToCCPermissions,
   legacyPermissionToCCRule,

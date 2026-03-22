@@ -8,27 +8,11 @@ export class PluginSettingsManager {
   private plugin: GeminesePlugin;
 
   private getExtensions(): GemineseExtension[] {
-    const pluginManagerWithLegacy = this.plugin.pluginManager as typeof this.plugin.pluginManager & {
-      getPlugins?: () => GemineseExtension[];
-    };
-    return typeof pluginManagerWithLegacy.getExtensions === 'function'
-      ? pluginManagerWithLegacy.getExtensions()
-      : pluginManagerWithLegacy.getPlugins?.() ?? [];
+    return this.plugin.pluginManager.getExtensions();
   }
 
   private async toggleExtensionState(extensionId: string): Promise<void> {
-    const pluginManagerWithLegacy = this.plugin.pluginManager as typeof this.plugin.pluginManager & {
-      togglePlugin?: (pluginId: string) => Promise<void>;
-    };
-
-    if (typeof pluginManagerWithLegacy.toggleExtension === 'function') {
-      await pluginManagerWithLegacy.toggleExtension(extensionId);
-      return;
-    }
-
-    if (typeof pluginManagerWithLegacy.togglePlugin === 'function') {
-      await pluginManagerWithLegacy.togglePlugin(extensionId);
-    }
+    await this.plugin.pluginManager.toggleExtension(extensionId);
   }
 
   private async reloadExtensions(): Promise<void> {

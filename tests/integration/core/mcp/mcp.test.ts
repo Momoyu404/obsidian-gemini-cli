@@ -683,6 +683,7 @@ describe('McpTester', () => {
     expect(result.serverName).toBe('test-srv');
     expect(result.serverVersion).toBe('1.0.0');
     expect(result.tools).toEqual([{ name: 'tool-a', description: 'Tool A', inputSchema: { type: 'object' } }]);
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- validates required SSE fallback transport support during MCP migration
     expect(SSEClientTransport).toHaveBeenCalledWith(
       expect.any(URL),
       expect.objectContaining({

@@ -167,6 +167,7 @@ export class Modal {
 }
 
 export const MarkdownRenderer = {
+  render: jest.fn().mockResolvedValue(undefined),
   renderMarkdown: jest.fn().mockResolvedValue(undefined),
 };
 

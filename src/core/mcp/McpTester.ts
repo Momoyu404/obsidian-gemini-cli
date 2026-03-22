@@ -202,6 +202,7 @@ async function getRequestBody(body: BodyInit | null | undefined): Promise<Buffer
 
 const nodeFetch = createNodeFetch();
 
+// eslint-disable-next-line @typescript-eslint/no-deprecated -- SSE transport remains required as fallback during MCP protocol migration period
 async function runTransportTest(transport: StdioClientTransport | StreamableHTTPClientTransport | SSEClientTransport): Promise<McpTestResult> {
   const client = new Client({ name: 'geminese-tester', version: '1.0.0' });
   const controller = new AbortController();
@@ -280,6 +281,7 @@ export async function testMcpServer(server: GemineseMcpServer): Promise<McpTestR
         return primaryResult;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- SSE fallback is required for servers not yet migrated to Streamable HTTP
       const fallbackTransport = new SSEClientTransport(url, options);
       const fallbackResult = await runTransportTest(fallbackTransport);
       if (fallbackResult.success) {

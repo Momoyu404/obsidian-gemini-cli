@@ -93,7 +93,7 @@ export interface PlatformCliPaths {
 }
 
 /** Platform key for CLI paths. Used for migration only. */
-export type CliPlatformKey = keyof PlatformCliPaths;
+export type CliPlatformKey = 'macos' | 'linux' | 'windows';
 
 /**
  * Map process.platform to CLI platform key.
@@ -123,10 +123,6 @@ export type PermissionMode = 'plan' | 'agent';
 /** User decision from the approval modal. */
 export type ApprovalDecision = 'allow' | 'allow-always' | 'deny' | 'cancel';
 
-/**
- * Legacy permission format (pre-CC compatibility).
- * @deprecated Use CCPermissions instead
- */
 export interface CCPermissions {
   toolName: string;
   pattern: string;

@@ -306,7 +306,13 @@ describe('ConversationController', () => {
       expect(createDivSpy).toHaveBeenCalledTimes(1);
 
       // Mock querySelector to return an element (greeting already exists)
-      welcomeEl.querySelector = jest.fn().mockReturnValue(createMockEl());
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- test mock override of querySelector behavior for greeting guard branch
+      welcomeEl.querySelector = jest.fn().mockImplementation((selector: string) => {
+        if (selector === '.geminese-welcome-greeting') {
+          return createMockEl();
+        }
+        return null;
+      });
 
       // Second call should not add another greeting
       controller.initializeWelcome();
@@ -816,16 +822,20 @@ describe('ConversationController', () => {
       }
 
       const origDocument = global.document;
+      const originalCreateElement = (globalThis as any).createElement;
+      (globalThis as any).createElement = jest.fn().mockReturnValue(mockInput);
       global.document = { createElement: jest.fn().mockReturnValue(mockInput) } as any;
 
       try {
         clickHandlers![0]({ stopPropagation: jest.fn() });
 
+        // eslint-disable-next-line @typescript-eslint/no-deprecated -- assertion targets mocked document.createElement call in rename flow
         expect(global.document.createElement).toHaveBeenCalledWith('input');
         expect((mockInput).value).toBe('Test Title');
         expect(titleEl!.replaceWith).toHaveBeenCalledWith(mockInput);
       } finally {
         global.document = origDocument;
+        (globalThis as any).createElement = originalCreateElement;
       }
     });
 
@@ -2008,6 +2018,3 @@ describe('ConversationController - regenerateTitle callback branches', () => {
     expect(deps.plugin.renameConversation).not.toHaveBeenCalled();
   });
 });
-
-
-
