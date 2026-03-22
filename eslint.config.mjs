@@ -3,6 +3,7 @@ import { defineConfig } from "eslint/config";
 import jest from "eslint-plugin-jest";
 import obsidianmd from "eslint-plugin-obsidianmd";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
+import globals from "globals";
 
 const serviceFiles = [
   "src/ClaudianService.ts",
@@ -28,6 +29,11 @@ export default defineConfig([
       parser: tsParser,
       ecmaVersion: "latest",
       sourceType: "module",
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.es2021,
+      },
       parserOptions: {
         project: "./tsconfig.json",
       },
@@ -36,6 +42,8 @@ export default defineConfig([
       "simple-import-sort": simpleImportSort,
     },
     rules: {
+      // TypeScript handles name resolution; disable redundant ESLint no-undef for TS files
+      "no-undef": "off",
       "@typescript-eslint/no-unsafe-assignment": "warn",
       "@typescript-eslint/no-unsafe-call": "warn",
       "@typescript-eslint/no-unsafe-member-access": "warn",
