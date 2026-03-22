@@ -1,6 +1,6 @@
 # geminese
 
-<p align="center"><a href="README.zh-CN.md">中文（简体）</a> | <a href="README.zh-TW.md">中文（繁體）</a></p>
+<p align="center"><a href="README.md">English</a> | <a href="README.zh-CN.md">Chinese (Simplified)</a> | <a href="README.zh-TW.md">Chinese (Traditional)</a></p>
 
 ![geminese example](docs/image/geminese-example.png)
 
@@ -92,6 +92,15 @@ Gemini will clone the repo and set everything up for you.
 | [json-canvas](https://github.com/kepano/obsidian-skills/tree/main/skills/json-canvas) | JSON Canvas — nodes, edges, groups, connections |
 | [obsidian-cli](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-cli) | Obsidian CLI — vault interaction, plugin/theme development |
 | [defuddle](https://github.com/kepano/obsidian-skills/tree/main/skills/defuddle) | Extract clean markdown from web pages, removing clutter to save tokens |
+
+## ⭐ Support
+
+- If you find this plugin helpful, please consider giving it a ⭐ on GitHub — it really helps!
+
+- If it made a significant impact on your workflow, you can also support me by buying me a coffee ☕:
+👉 <a href="https://buymeacoffee.com/momoyu404" target="_blank">Buy Me a Coffee</a>
+
+
 
 ## Usage
 
