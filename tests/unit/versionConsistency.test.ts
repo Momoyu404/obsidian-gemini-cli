@@ -22,7 +22,6 @@ describe('release version consistency', () => {
 
   it('matches the expected release version when provided', () => {
     if (!releaseVersion) {
-      expect(true).toBe(true);
       return;
     }
 
