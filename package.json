@@ -29,6 +29,8 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@codemirror/state": "^6.6.0",
+    "@codemirror/view": "^6.40.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.30.0",
