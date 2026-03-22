@@ -8,10 +8,6 @@ const WEBVIEW_POLL_INTERVAL = 1000;
 /** Debounce delay for selectionchange events (ms). */
 const BROWSER_SELECTION_DEBOUNCE_MS = 100;
 
-type BrowserLikeWebview = HTMLElement & {
-  executeJavaScript?: (code: string, userGesture?: boolean) => Promise<unknown>;
-};
-
 export class BrowserSelectionController {
   private app: App;
   private indicatorEl: HTMLElement;

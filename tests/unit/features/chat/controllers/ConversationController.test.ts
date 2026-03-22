@@ -1,16 +1,11 @@
 import { createMockEl } from '@test/helpers/mockElement';
-import { Notice } from 'obsidian';
 
-import { TOOL_EDIT, TOOL_WRITE } from '@/core/tools/toolNames';
 import { ConversationController, type ConversationControllerDeps } from '@/features/chat/controllers/ConversationController';
 import { ChatState } from '@/features/chat/state/ChatState';
-import { confirm } from '@/shared/modals/ConfirmModal';
 
 jest.mock('@/shared/modals/ConfirmModal', () => ({
   confirm: jest.fn().mockResolvedValue(true),
 }));
-
-const mockNotice = Notice as jest.Mock;
 
 function createMockDeps(overrides: Partial<ConversationControllerDeps> = {}): ConversationControllerDeps {
   const state = new ChatState();

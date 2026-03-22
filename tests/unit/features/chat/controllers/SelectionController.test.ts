@@ -66,7 +66,6 @@ describe('SelectionController', () => {
   let contextRowEl: any;
   let editor: any;
   let editorView: any;
-  let originalActiveElement: Element | null;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -96,7 +95,6 @@ describe('SelectionController', () => {
     };
 
     controller = new SelectionController(app, indicatorEl, inputEl, contextRowEl);
-    originalActiveElement = document.activeElement;
   });
 
   afterEach(() => {
