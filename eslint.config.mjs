@@ -42,27 +42,34 @@ export default defineConfig([
       "simple-import-sort": simpleImportSort,
     },
     rules: {
-      // TypeScript handles name resolution; disable redundant ESLint no-undef for TS files
-      "no-undef": "off",
-      "@typescript-eslint/no-unsafe-assignment": "warn",
-      "@typescript-eslint/no-unsafe-call": "warn",
-      "@typescript-eslint/no-unsafe-member-access": "warn",
-      "@typescript-eslint/no-unsafe-argument": "warn",
-      "@typescript-eslint/no-unsafe-return": "warn",
-      "@typescript-eslint/unbound-method": "warn",
-      "@typescript-eslint/no-unsafe-enum-comparison": "warn",
-      "@typescript-eslint/consistent-type-imports": [
-        "error",
-        { prefer: "type-imports", fixStyle: "separate-type-imports" },
-      ],
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { args: "none", ignoreRestSiblings: true },
-      ],
-      "@typescript-eslint/no-explicit-any": "off",
-      "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error",
-    },
+       // TypeScript handles name resolution; disable redundant ESLint no-undef for TS files
+       "no-undef": "off",
+       "@typescript-eslint/no-unsafe-assignment": "warn",
+       "@typescript-eslint/no-unsafe-call": "warn",
+       "@typescript-eslint/no-unsafe-member-access": "warn",
+       "@typescript-eslint/no-unsafe-argument": "warn",
+       "@typescript-eslint/no-unsafe-return": "warn",
+       "@typescript-eslint/unbound-method": "warn",
+       "@typescript-eslint/no-unsafe-enum-comparison": "warn",
+       "@typescript-eslint/consistent-type-imports": [
+         "error",
+         { prefer: "type-imports", fixStyle: "separate-type-imports" },
+       ],
+       "@typescript-eslint/no-unused-vars": [
+         "error",
+         { args: "none", ignoreRestSiblings: true },
+       ],
+       "@typescript-eslint/no-explicit-any": "off",
+       "simple-import-sort/imports": "error",
+       "simple-import-sort/exports": "error",
+       "obsidianmd/ui/sentence-case": [
+         "error",
+         {
+           acronyms: ["MCP", "Gemini"],
+           brands: ["Gemini CLI"],
+         },
+       ],
+     },
   },
   {
     files: serviceFiles,

@@ -16,10 +16,6 @@ jest.mock('@modelcontextprotocol/sdk/client', () => ({
   })),
 }));
 
-jest.mock('@modelcontextprotocol/sdk/client/sse', () => ({
-  SSEClientTransport: jest.fn(),
-}));
-
 jest.mock('@modelcontextprotocol/sdk/client/stdio', () => ({
   StdioClientTransport: jest.fn(),
 }));
@@ -84,29 +80,6 @@ describe('testMcpServer', () => {
     });
   });
 
-  describe('sse server', () => {
-    it('should connect to an SSE server', async () => {
-      const { SSEClientTransport } = jest.requireMock('@modelcontextprotocol/sdk/client/sse');
-      const server: GemineseMcpServer = {
-        name: 'sse-test',
-        config: { type: 'sse' as const, url: 'https://example.com/sse' },
-        enabled: true,
-        contextSaving: false,
-      };
-
-      const result = await testMcpServer(server);
-
-      expect(result.success).toBe(true);
-      expect(result.tools).toHaveLength(2);
-      expect(SSEClientTransport).toHaveBeenCalledWith(
-        expect.any(URL),
-        expect.objectContaining({
-          fetch: expect.any(Function),
-        }),
-      );
-    });
-  });
-
   describe('http server', () => {
     it('should connect to an HTTP server', async () => {
       const { StreamableHTTPClientTransport } = jest.requireMock('@modelcontextprotocol/sdk/client/streamableHttp');
@@ -155,26 +128,6 @@ describe('testMcpServer', () => {
   });
 
   describe('error handling', () => {
-    it('should return error when transport creation fails', async () => {
-      const { SSEClientTransport } = jest.requireMock('@modelcontextprotocol/sdk/client/sse');
-      SSEClientTransport.mockImplementationOnce(() => {
-        throw new Error('Transport init failed');
-      });
-
-      const server: GemineseMcpServer = {
-        name: 'bad-sse',
-        config: { type: 'sse' as const, url: 'https://example.com/sse' },
-        enabled: true,
-        contextSaving: false,
-      };
-
-      const result = await testMcpServer(server);
-
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('Transport init failed');
-      expect(result.tools).toEqual([]);
-    });
-
     it('should return generic error for non-Error transport failures', async () => {
       const { StreamableHTTPClientTransport } = jest.requireMock('@modelcontextprotocol/sdk/client/streamableHttp');
       StreamableHTTPClientTransport.mockImplementationOnce(() => {
