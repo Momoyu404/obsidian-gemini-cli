@@ -62,6 +62,18 @@ export default defineConfig([
        "@typescript-eslint/no-explicit-any": "off",
        "simple-import-sort/imports": "error",
        "simple-import-sort/exports": "error",
+       // Configure sentence-case rule with project-specific terms
+       // ignoreWords/ignoreRegex ADD to defaults (don't replace brands/acronyms)
+       "obsidianmd/ui/sentence-case": [
+         "warn",
+         {
+           ignoreWords: ["I", "MCP", "Gemini"],
+           ignoreRegex: [
+             "API_KEY",        // env var placeholders
+             "Authorization=", // HTTP header placeholders
+           ],
+         },
+       ],
      },
   },
   {
@@ -102,6 +114,7 @@ export default defineConfig([
       "obsidianmd/no-static-styles-assignment": "off",
       "obsidianmd/hardcoded-config-path": "off",
       "obsidianmd/no-forbidden-elements": "off",
+      "obsidianmd/ui/sentence-case": "off",
     },
   },
 ]);

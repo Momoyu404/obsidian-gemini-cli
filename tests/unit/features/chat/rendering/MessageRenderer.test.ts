@@ -1477,7 +1477,6 @@ describe('MessageRenderer', () => {
           const pre = container.createEl('pre');
           const code = pre.createEl('code');
           code.className = 'language-typescript';
-          // eslint-disable-next-line obsidianmd/ui/sentence-case -- test assertion string, not UI text
           code.textContent = 'Const x = 1;';
         }
       );

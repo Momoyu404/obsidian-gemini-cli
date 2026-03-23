@@ -102,7 +102,6 @@ describe('processFileLinks', () => {
       const app = createMockApp(['note.md']);
       const container = document.createElement('div');
       const span = document.createElement('span');
-      // eslint-disable-next-line obsidianmd/ui/sentence-case -- test assertion string, not UI text
       span.textContent = 'See [[note.md|My note]]';
       container.appendChild(span);
 

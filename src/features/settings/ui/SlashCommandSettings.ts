@@ -187,8 +187,7 @@ export class SlashCommandModal extends Modal {
       cls: 'geminese-sp-content-area',
       attr: {
         rows: '10',
-        // eslint-disable-next-line obsidianmd/ui/sentence-case
-        placeholder: 'Review this code for:\n$ARGUMENTS\n\n@$1',
+        placeholder: 'Review this code for:\n$arguments\n\n@$1',
       },
     });
     const initialContent = this.existingCmd

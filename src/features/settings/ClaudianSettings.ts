@@ -285,7 +285,6 @@ export class GemineseSettingTab extends PluginSettingTab {
         };
 
         text
-          // eslint-disable-next-line obsidianmd/ui/sentence-case
           .setPlaceholder('Map w scrollup\nmap s scrolldown\nmap i focusInput')
           .setValue(pendingValue)
           .onChange((value) => {
