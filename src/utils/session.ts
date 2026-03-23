@@ -63,10 +63,9 @@ function formatToolInput(input: Record<string, unknown>, maxLength = 200): strin
       if (typeof value === 'string') {
         valueStr = value.length > 100 ? `${value.slice(0, 100)}...` : value;
       } else if (typeof value === 'object' || typeof value === 'symbol') {
-        // Handle objects, arrays, and symbols with JSON.stringify
         valueStr = JSON.stringify(value);
       } else {
-        // Handle numbers, booleans, and other primitives
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         valueStr = String(value);
       }
       parts.push(`${key}=${valueStr}`);
