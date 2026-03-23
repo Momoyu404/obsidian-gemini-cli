@@ -92,23 +92,7 @@ export interface PlatformCliPaths {
   windows: string;
 }
 
-/** Platform key for CLI paths. Used for migration only. */
-export type CliPlatformKey = 'macos' | 'linux' | 'windows';
 
-/**
- * Map process.platform to CLI platform key.
- * @deprecated Used for migration only.
- */
-export function getCliPlatformKey(): CliPlatformKey {
-  switch (process.platform) {
-    case 'darwin':
-      return 'macos';
-    case 'win32':
-      return 'windows';
-    default:
-      return 'linux';
-  }
-}
 
 /**
  * Hostname-keyed CLI paths for per-device configuration.
@@ -130,8 +114,7 @@ export interface CCPermissions {
   scope: 'session' | 'always';
 }
 
-/** @deprecated Used by tests. */
-export type LegacyPermission = CCPermissions;
+
 
 /**
  * CC-compatible permission rule string.

@@ -176,7 +176,7 @@ export class McpServerModal extends Modal {
 
     const envSetting = new Setting(this.typeFieldsEl)
       .setName('Environment variables')
-      .setDesc('KEY=VALUE per line (optional)');
+      .setDesc('Key=value per line (optional)');
     envSetting.settingEl.addClass('geminese-mcp-env-setting');
 
     const envTextarea = envSetting.controlEl.createEl('textarea', {
@@ -207,7 +207,7 @@ export class McpServerModal extends Modal {
 
     const headersSetting = new Setting(this.typeFieldsEl)
       .setName('Headers')
-      .setDesc('HTTP headers (KEY=VALUE per line)');
+      .setDesc('HTTP headers (key=value per line)');
     headersSetting.settingEl.addClass('geminese-mcp-env-setting');
 
     const headersTextarea = headersSetting.controlEl.createEl('textarea', {

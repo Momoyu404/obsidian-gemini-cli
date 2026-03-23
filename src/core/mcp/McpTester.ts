@@ -1,5 +1,4 @@
 import { Client } from '@modelcontextprotocol/sdk/client';
-import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import * as http from 'http';
@@ -202,7 +201,7 @@ async function getRequestBody(body: BodyInit | null | undefined): Promise<Buffer
 
 const nodeFetch = createNodeFetch();
 
-async function runTransportTest(transport: StdioClientTransport | StreamableHTTPClientTransport | SSEClientTransport): Promise<McpTestResult> {
+async function runTransportTest(transport: StdioClientTransport | StreamableHTTPClientTransport): Promise<McpTestResult> {
   const client = new Client({ name: 'geminese-tester', version: '1.0.0' });
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
@@ -276,21 +275,7 @@ export async function testMcpServer(server: GemineseMcpServer): Promise<McpTestR
 
       const primaryTransport = new StreamableHTTPClientTransport(url, options);
       const primaryResult = await runTransportTest(primaryTransport);
-      if (primaryResult.success) {
-        return primaryResult;
-      }
-
-      const fallbackTransport = new SSEClientTransport(url, options);
-      const fallbackResult = await runTransportTest(fallbackTransport);
-      if (fallbackResult.success) {
-        return fallbackResult;
-      }
-
-      return {
-        success: false,
-        tools: [],
-        error: `Streamable HTTP failed: ${primaryResult.error ?? 'Unknown error'}; SSE fallback failed: ${fallbackResult.error ?? 'Unknown error'}`,
-      };
+      return primaryResult;
     }
   } catch (error) {
     return {

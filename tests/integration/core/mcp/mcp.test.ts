@@ -1,5 +1,4 @@
 import { Client } from '@modelcontextprotocol/sdk/client';
-import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp';
 
@@ -30,10 +29,6 @@ jest.mock('@modelcontextprotocol/sdk/client', () => ({
 
 jest.mock('@modelcontextprotocol/sdk/client/stdio', () => ({
   StdioClientTransport: jest.fn(),
-}));
-
-jest.mock('@modelcontextprotocol/sdk/client/sse', () => ({
-  SSEClientTransport: jest.fn(),
 }));
 
 jest.mock('@modelcontextprotocol/sdk/client/streamableHttp', () => ({
@@ -661,30 +656,6 @@ describe('McpTester', () => {
     expect(result.serverVersion).toBe('1.0.0');
     expect(result.tools).toEqual([{ name: 'tool-a', description: 'Tool A', inputSchema: { type: 'object' } }]);
     expect(StreamableHTTPClientTransport).toHaveBeenCalledWith(
-      expect.any(URL),
-      expect.objectContaining({
-        fetch: expect.any(Function),
-        requestInit: { headers: { Authorization: 'token' } },
-      }),
-    );
-  });
-
-  it('should test sse server and return tools', async () => {
-    const server: GemineseMcpServer = {
-      name: 'sse',
-      config: { type: 'sse', url: 'http://localhost:3000/sse', headers: { Authorization: 'token' } },
-      enabled: true,
-      contextSaving: false,
-    };
-
-    const result = await testMcpServer(server);
-
-    expect(result.success).toBe(true);
-    expect(result.serverName).toBe('test-srv');
-    expect(result.serverVersion).toBe('1.0.0');
-    expect(result.tools).toEqual([{ name: 'tool-a', description: 'Tool A', inputSchema: { type: 'object' } }]);
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- validates required SSE fallback transport support during MCP migration
-    expect(SSEClientTransport).toHaveBeenCalledWith(
       expect.any(URL),
       expect.objectContaining({
         fetch: expect.any(Function),
