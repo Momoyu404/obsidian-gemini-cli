@@ -97,11 +97,6 @@ Gemini will clone the repo and set everything up for you.
 
 - If you find this plugin helpful, please consider giving it a ⭐ on GitHub — it really helps!
 
-- If it made a significant impact on your workflow, you can also support me by buying me a coffee ☕:
-👉 <a href="https://buymeacoffee.com/momoyu404" target="_blank">Buy Me a Coffee</a>
-
-
-
 ## Usage
 
 **Two modes:**
