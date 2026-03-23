@@ -62,13 +62,6 @@ export default defineConfig([
        "@typescript-eslint/no-explicit-any": "off",
        "simple-import-sort/imports": "error",
        "simple-import-sort/exports": "error",
-       "obsidianmd/ui/sentence-case": [
-         "error",
-         {
-           acronyms: ["MCP", "Gemini"],
-           brands: ["Gemini CLI"],
-         },
-       ],
      },
   },
   {

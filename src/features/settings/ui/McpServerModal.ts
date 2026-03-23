@@ -183,6 +183,7 @@ export class McpServerModal extends Modal {
       cls: 'geminese-mcp-env-textarea',
     });
     envTextarea.value = this.env;
+    // eslint-disable-next-line obsidianmd/ui/sentence-case
     envTextarea.placeholder = 'API_KEY=your-key';
     envTextarea.rows = 2;
     envTextarea.addEventListener('input', () => {
@@ -214,6 +215,7 @@ export class McpServerModal extends Modal {
       cls: 'geminese-mcp-env-textarea',
     });
     headersTextarea.value = this.headers;
+    // eslint-disable-next-line obsidianmd/ui/sentence-case
     headersTextarea.placeholder = 'Authorization=Bearer token\nContent-type=application/json';
     headersTextarea.rows = 3;
     headersTextarea.addEventListener('input', () => {

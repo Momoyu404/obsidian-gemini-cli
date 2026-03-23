@@ -42,6 +42,7 @@ export class PluginSettingsManager {
 
     if (plugins.length === 0) {
       const emptyEl = this.containerEl.createDiv({ cls: 'geminese-plugin-empty' });
+      // eslint-disable-next-line obsidianmd/ui/sentence-case
       emptyEl.setText('No Gemini CLI plugins found. Enable plugins via the Gemini CLI.');
       return;
     }
