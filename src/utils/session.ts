@@ -65,7 +65,7 @@ function formatToolInput(input: Record<string, unknown>, maxLength = 200): strin
       } else if (typeof value === 'object' || typeof value === 'symbol') {
         valueStr = JSON.stringify(value);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string -- value is a primitive after the string/object/symbol branches above, so String(value) is intentional here
         valueStr = String(value);
       }
       parts.push(`${key}=${valueStr}`);
