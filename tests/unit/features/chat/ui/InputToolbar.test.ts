@@ -1,6 +1,7 @@
 import { createMockEl } from '@test/helpers/mockElement';
 
 import type { UsageInfo } from '@/core/types';
+import { encodeFamilyModel } from '@/core/types';
 import {
   ContextUsageMeter,
   createInputToolbar,
@@ -33,11 +34,12 @@ function createMockCallbacks(overrides: Record<string, any> = {}) {
     onThinkingBudgetChange: jest.fn().mockResolvedValue(undefined),
     onPermissionModeChange: jest.fn().mockResolvedValue(undefined),
     getSettings: jest.fn().mockReturnValue({
-      model: 'sonnet',
+      model: 'auto',
       thinkingBudget: 'low',
       permissionMode: 'agent',
     }),
-    getEnvironmentVariables: jest.fn().mockReturnValue(''),
+    loadOllamaModels: jest.fn().mockResolvedValue(['qwen3:8b', 'llama3.2:latest']),
+    getResolvedModel: jest.fn().mockReturnValue(null),
     ...overrides,
   };
 }
@@ -60,15 +62,14 @@ describe('ModelSelector', () => {
   });
 
   it('should display current model label', () => {
-    // Default model is 'sonnet' which maps to 'Sonnet'
     const btn = parentEl.querySelector('.geminese-model-btn');
     expect(btn).not.toBeNull();
     const label = btn?.querySelector('.geminese-model-label');
     expect(label).not.toBeNull();
-    expect(label?.textContent).toBe('Sonnet');
+    expect(label?.textContent).toBe('Gemini Auto');
   });
 
-  it('should display first model when current model not found', () => {
+  it('should display a Gemini fallback label when current model is unknown', () => {
     callbacks.getSettings.mockReturnValue({
       model: 'nonexistent',
       thinkingBudget: 'low',
@@ -76,36 +77,76 @@ describe('ModelSelector', () => {
     });
     selector.updateDisplay();
     const label = parentEl.querySelector('.geminese-model-label');
-    expect(label?.textContent).toBe('Haiku');
+    expect(label?.textContent).toBe('Gemini Nonexistent');
   });
 
-  it('should render model options in reverse order', () => {
+  it('should not render a resolved Gemini suffix in the button label', () => {
+    callbacks.getResolvedModel.mockReturnValue('auto-gemini-3');
+    selector.updateDisplay();
+
+    const btn = parentEl.querySelector('.geminese-model-btn');
+    const label = btn?.querySelector('.geminese-model-label');
+
+    expect(label?.textContent).toBe('Gemini Auto');
+    expect(btn?.querySelector('.geminese-model-resolved')).toBeNull();
+  });
+
+  it('should render family options after opening the dropdown', () => {
+    const btn = parentEl.querySelector('.geminese-model-btn');
+    btn?.click();
+
     const dropdown = parentEl.querySelector('.geminese-model-dropdown');
     expect(dropdown).not.toBeNull();
-    // DEFAULT_CLAUDE_MODELS is [haiku, sonnet, opus] -> reversed is [opus, sonnet, haiku]
     const options = dropdown?.children || [];
-    expect(options.length).toBe(3);
-    // Text is in child span, check first child's textContent
-    expect(options[0]?.children[0]?.textContent).toBe('Opus');
-    expect(options[1]?.children[0]?.textContent).toBe('Sonnet');
-    expect(options[2]?.children[0]?.textContent).toBe('Haiku');
+    expect(options.length).toBe(2);
+    expect(options[0]?.children[0]?.textContent).toBe('Gemini');
+    expect(options[1]?.children[0]?.textContent).toBe('Ollama');
   });
 
-  it('should mark current model as selected', () => {
+  it('should mark the current family as selected in the first menu level', () => {
+    const btn = parentEl.querySelector('.geminese-model-btn');
+    btn?.click();
+
     const dropdown = parentEl.querySelector('.geminese-model-dropdown');
     const options = dropdown?.children || [];
-    // Sonnet is current (index 1 in reversed order)
-    const sonnetOption = options.find((o: any) => o.children[0]?.textContent === 'Sonnet');
-    expect(sonnetOption?.hasClass('selected')).toBe(true);
+    const geminiOption = options.find((o: any) => o.children[0]?.textContent === 'Gemini');
+    expect(geminiOption?.hasClass('selected')).toBe(true);
   });
 
-  it('should call onModelChange when option clicked', async () => {
+  it('should render Gemini submenu options after selecting Gemini family', async () => {
+    const btn = parentEl.querySelector('.geminese-model-btn');
+    btn?.click();
+
     const dropdown = parentEl.querySelector('.geminese-model-dropdown');
     const options = dropdown?.children || [];
-    const opusOption = options.find((o: any) => o.children[0]?.textContent === 'Opus');
+    const geminiOption = options.find((o: any) => o.children[0]?.textContent === 'Gemini');
 
-    await opusOption?.dispatchEvent('click', { stopPropagation: () => {} });
-    expect(callbacks.onModelChange).toHaveBeenCalledWith('opus');
+    await geminiOption?.dispatchEvent('click', { stopPropagation: () => {} });
+
+    const submenuOptions = dropdown?.children || [];
+    expect(submenuOptions[0]?.children[0]?.textContent).toBe('‹ Back');
+    expect(submenuOptions[1]?.children[0]?.textContent).toBe('Auto');
+    expect(submenuOptions[2]?.children[0]?.textContent).toBe('Pro');
+    expect(submenuOptions[3]?.children[0]?.textContent).toBe('Flash');
+    expect(submenuOptions[4]?.children[0]?.textContent).toBe('Flash Lite');
+  });
+
+  it('should call onModelChange when a Gemini option is clicked', async () => {
+    const btn = parentEl.querySelector('.geminese-model-btn');
+    btn?.click();
+
+    const dropdown = parentEl.querySelector('.geminese-model-dropdown');
+    const familyOptions = dropdown?.children || [];
+    const geminiOption = familyOptions.find((o: any) => o.children[0]?.textContent === 'Gemini');
+    await geminiOption?.dispatchEvent('click', { stopPropagation: () => {} });
+
+    const submenuOptions = dropdown?.children || [];
+    const proOption = submenuOptions.find((o: any) => o.children[0]?.textContent === 'Pro');
+
+    await proOption?.dispatchEvent('click', { stopPropagation: () => {} });
+    await Promise.resolve();
+
+    expect(callbacks.onModelChange).toHaveBeenCalledWith('pro');
   });
 
   it('should update display when setReady is called', () => {
@@ -117,32 +158,29 @@ describe('ModelSelector', () => {
     expect(btn?.hasClass('ready')).toBe(false);
   });
 
-  it('should show Sonnet (1M) when show1MModel is enabled', () => {
+  it('should show the selected Ollama model label directly', () => {
     callbacks.getSettings.mockReturnValue({
-      model: 'sonnet',
+      model: encodeFamilyModel('ollama', 'qwen3:8b'),
       thinkingBudget: 'low',
       permissionMode: 'agent',
-      show1MModel: true,
     });
     selector.updateDisplay();
     const label = parentEl.querySelector('.geminese-model-label');
-    expect(label?.textContent).toBe('Sonnet (1M)');
+    expect(label?.textContent).toBe('qwen3:8b');
   });
 
-  it('should use custom models from environment variables', () => {
-    callbacks.getEnvironmentVariables.mockReturnValue(
-      'CLAUDE_CODE_USE_BEDROCK=1\nANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0'
-    );
-    callbacks.getSettings.mockReturnValue({
-      model: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
-      thinkingBudget: 'low',
-      permissionMode: 'agent',
-    });
-    selector.renderOptions();
-    selector.updateDisplay();
-    // Custom models should be available in dropdown
-    const label = parentEl.querySelector('.geminese-model-label');
-    expect(label?.textContent).toBeDefined();
+  it('should load Ollama models when opening the Ollama submenu', async () => {
+    const btn = parentEl.querySelector('.geminese-model-btn');
+    btn?.click();
+
+    const dropdown = parentEl.querySelector('.geminese-model-dropdown');
+    const familyOptions = dropdown?.children || [];
+    const ollamaOption = familyOptions.find((o: any) => o.children[0]?.textContent === 'Ollama');
+
+    await ollamaOption?.dispatchEvent('click', { stopPropagation: () => {} });
+    await Promise.resolve();
+
+    expect(callbacks.loadOllamaModels).toHaveBeenCalled();
   });
 });
 

@@ -138,17 +138,11 @@ export class ModelSelector {
     if (!this.buttonEl) return;
     const currentModel = this.getCurrentModel();
     const selection = getModelSelection(currentModel);
-    const resolved = this.callbacks.getResolvedModel?.() ?? null;
 
     this.buttonEl.empty();
 
     const labelEl = this.buttonEl.createSpan({ cls: 'geminese-model-label' });
     labelEl.setText(selection.label);
-    if (resolved && getModelFamily(currentModel) === 'gemini') {
-      labelEl.setAttribute('title', resolved);
-      const sub = this.buttonEl.createSpan({ cls: 'geminese-model-resolved' });
-      sub.setText(` (${resolved})`);
-    }
   }
 
   setReady(ready: boolean) {

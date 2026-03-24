@@ -34,31 +34,6 @@
   text-overflow: ellipsis;
 }
 
-.geminese-model-resolved {
-  font-size: 10px;
-  color: var(--text-muted);
-  font-weight: normal;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.geminese-model-option-resolved {
-  font-size: 10px;
-  color: var(--text-muted);
-  margin-left: 4px;
-}
-
-.geminese-model-chevron {
-  display: flex;
-  align-items: center;
-}
-
-.geminese-model-chevron svg {
-  width: 12px;
-  height: 12px;
-}
-
 .geminese-model-dropdown {
   position: absolute;
   bottom: 100%;

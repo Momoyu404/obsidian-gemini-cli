@@ -10,11 +10,6 @@
     display: none;
   }
 
-  /* Hide resolved model name "(pro)" */
-  .geminese-model-resolved {
-    display: none;
-  }
-
   /* Reduce model button padding */
   .geminese-model-btn {
     padding: 4px 4px;
