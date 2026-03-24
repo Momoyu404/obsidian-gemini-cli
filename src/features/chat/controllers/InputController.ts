@@ -3,7 +3,11 @@ import { Notice } from 'obsidian';
 import type { ApprovalCallbackOptions, GemineseService } from '../../../core/agent';
 import { detectBuiltInCommand } from '../../../core/commands';
 import { TOOL_EXIT_PLAN_MODE } from '../../../core/tools/toolNames';
-import type { ApprovalDecision, ChatMessage, ExitPlanModeDecision } from '../../../core/types';
+import type { ApprovalDecision, ChatMessage, ExitPlanModeDecision, GeminiModel } from '../../../core/types';
+import {
+  encodeFamilyModel,
+  supportsGeminiNativeFeatures,
+} from '../../../core/types';
 import type GeminesePlugin from '../../../main';
 import { ResumeSessionDropdown } from '../../../shared/components/ResumeSessionDropdown';
 import { InstructionModal } from '../../../shared/modals/InstructionConfirmModal';
@@ -70,6 +74,7 @@ export interface InputControllerDeps {
   ensureServiceInitialized?: () => Promise<boolean>;
   openConversation?: (conversationId: string) => Promise<void>;
   onForkAll?: () => Promise<void>;
+  getSelectedModel?: () => GeminiModel;
 }
 
 export class InputController {
@@ -86,6 +91,10 @@ export class InputController {
 
   private getAgentService(): GemineseService | null {
     return this.deps.getAgentService?.() ?? null;
+  }
+
+  private getSelectedModel(): GeminiModel {
+    return this.deps.getSelectedModel?.() ?? encodeFamilyModel('gemini', 'auto');
   }
 
   private isResumeSessionAtStillNeeded(resumeUuid: string, previousMessages: ChatMessage[]): boolean {
@@ -328,6 +337,11 @@ export class InputController {
         externalContextPaths,
       };
     }
+
+    queryOptions = {
+      ...queryOptions,
+      model: queryOptions?.model ?? this.getSelectedModel(),
+    };
 
     let wasInterrupted = false;
     let wasInvalidated = false;
@@ -580,8 +594,14 @@ export class InputController {
     }
 
     if (!state.currentConversationId) {
-      const sessionId = this.getAgentService()?.getSessionId() ?? undefined;
-      const conversation = await plugin.createConversation(sessionId);
+      const selectedModel = this.getSelectedModel();
+      const sessionId = supportsGeminiNativeFeatures(selectedModel)
+        ? (this.getAgentService()?.getSessionId() ?? undefined)
+        : undefined;
+      const conversation = await plugin.createConversation(sessionId, {
+        selectedModel,
+        isNative: supportsGeminiNativeFeatures(selectedModel),
+      });
       state.currentConversationId = conversation.id;
     }
 
@@ -599,6 +619,14 @@ export class InputController {
     await plugin.renameConversation(state.currentConversationId, fallbackTitle);
 
     if (!plugin.settings.enableAutoTitleGeneration) {
+      return;
+    }
+
+    const currentConversation = state.currentConversationId
+      ? await plugin.getConversationById(state.currentConversationId)
+      : null;
+    if (currentConversation && !supportsGeminiNativeFeatures(currentConversation.selectedModel ?? this.getSelectedModel())) {
+      await plugin.updateConversation(state.currentConversationId, { titleGenerationStatus: undefined });
       return;
     }
 
@@ -682,6 +710,11 @@ export class InputController {
     const instructionModeManager = this.deps.getInstructionModeManager();
 
     if (!instructionRefineService) return;
+    if (!supportsGeminiNativeFeatures(this.getSelectedModel())) {
+      new Notice('Instruction mode is currently available only for Gemini.');
+      instructionModeManager?.clear();
+      return;
+    }
 
     const existingPrompt = plugin.settings.systemPrompt;
     let modal: InstructionModal | null = null;

@@ -1,6 +1,7 @@
 import type { Component, WorkspaceLeaf } from 'obsidian';
 
 import type { GemineseService } from '../../../core/agent';
+import type { GeminiModel } from '../../../core/types';
 import type { SlashCommandDropdown } from '../../../shared/components/SlashCommandDropdown';
 import type {
   BrowserSelectionController,
@@ -185,6 +186,9 @@ export interface TabData {
 
   /** Per-tab GemineseService instance for independent streaming. */
   service: GemineseService | null;
+
+  /** Selected model for this tab/conversation. */
+  selectedModel: GeminiModel;
 
   /** Whether the service has been initialized (lazy start). */
   serviceInitialized: boolean;

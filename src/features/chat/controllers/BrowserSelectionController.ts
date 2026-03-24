@@ -175,7 +175,10 @@ export class BrowserSelectionController {
 
   private async extractSelectionFromWebviews(containerEl: HTMLElement): Promise<string | null> {
     const webviews = Array.from(containerEl.querySelectorAll('webview'));
-    for (const webview of webviews) {
+    for (const rawWebview of webviews) {
+      const webview = rawWebview as Element & {
+        executeJavaScript?: (code: string, userGesture?: boolean) => Promise<unknown>;
+      };
       if (typeof webview.executeJavaScript !== 'function') continue;
       try {
         const result = await webview.executeJavaScript(

@@ -4,7 +4,14 @@ import { Notice, setIcon } from 'obsidian';
 import { GemineseService } from '../../../core/agent';
 import type { McpServerManager } from '../../../core/mcp';
 import type { ChatMessage, Conversation, GeminiModel, PermissionMode, SlashCommand, ThinkingBudget } from '../../../core/types';
-import { DEFAULT_GEMINI_MODELS, DEFAULT_THINKING_BUDGET, getContextWindowSize } from '../../../core/types';
+import {
+  DEFAULT_GEMINI_MODELS,
+  DEFAULT_THINKING_BUDGET,
+  encodeFamilyModel,
+  getContextWindowSize,
+  getModelFamily,
+  supportsGeminiNativeFeatures,
+} from '../../../core/types';
 import { t } from '../../../i18n';
 import type GeminesePlugin from '../../../main';
 import { SlashCommandDropdown } from '../../../shared/components/SlashCommandDropdown';
@@ -96,6 +103,7 @@ export function createTab(options: TabCreateOptions): TabData {
     id,
     conversationId: conversation?.id ?? null,
     service: null,
+    selectedModel: conversation?.selectedModel ?? encodeFamilyModel('gemini', 'auto'),
     serviceInitialized: false,
     state,
     controllers: {
@@ -267,6 +275,7 @@ export async function initializeTabService(
   try {
     // Create per-tab GemineseService
     service = new GemineseService(plugin, mcpManager);
+    service.setActiveModel(tab.selectedModel);
     unsubscribeReadyState = service.onReadyStateChange((ready) => {
       tab.ui.modelSelector?.setReady(ready);
     });
@@ -280,6 +289,8 @@ export async function initializeTabService(
       const conversation = await plugin.getConversationById(tab.conversationId);
 
       if (conversation) {
+        tab.selectedModel = conversation.selectedModel ?? tab.selectedModel;
+        service.setActiveModel(tab.selectedModel);
         sessionId = service.applyForkState(conversation) ?? undefined;
 
         const hasMessages = conversation.messages.length > 0;
@@ -447,6 +458,27 @@ function initializeInstructionAndTodo(tab: TabData, plugin: GeminesePlugin): voi
   tab.ui.statusPanel.mount(dom.statusPanelContainerEl);
 }
 
+function refreshModelDependentUI(tab: TabData, plugin: GeminesePlugin): void {
+  const supportsGeminiFeatures = supportsGeminiNativeFeatures(tab.selectedModel);
+  const disabledReason = 'Currently available only for Gemini';
+
+  tab.ui.modelSelector?.updateDisplay();
+  tab.ui.modelSelector?.renderOptions();
+  tab.ui.thinkingBudgetSelector?.setDisabled(!supportsGeminiFeatures, disabledReason);
+  tab.ui.permissionToggle?.setDisabled(!supportsGeminiFeatures, disabledReason);
+  tab.ui.mcpServerSelector?.setDisabled(!supportsGeminiFeatures, disabledReason);
+
+  if (!supportsGeminiFeatures && plugin.settings.permissionMode === 'plan') {
+    updatePlanModeUI(tab, plugin, tab.state.prePlanPermissionMode ?? 'agent');
+    tab.state.prePlanPermissionMode = null;
+  }
+
+  tab.dom.inputWrapper.toggleClass(
+    'geminese-input-plan-mode',
+    supportsGeminiFeatures && plugin.settings.permissionMode === 'plan',
+  );
+}
+
 /**
  * Creates and wires the input toolbar for a tab.
  */
@@ -456,26 +488,51 @@ function initializeInputToolbar(tab: TabData, plugin: GeminesePlugin): void {
   const inputToolbar = dom.inputWrapper.createDiv({ cls: 'geminese-input-toolbar' });
   const toolbarComponents = createInputToolbar(inputToolbar, {
     getSettings: () => ({
-      model: plugin.settings.model,
+      model: tab.selectedModel,
       thinkingBudget: plugin.settings.thinkingBudget,
       permissionMode: plugin.settings.permissionMode,
     }),
-    getEnvironmentVariables: () => plugin.getActiveEnvironmentVariables(),
+    loadOllamaModels: () => plugin.getAvailableOllamaModels(),
     getResolvedModel: () => tab.resolvedModelName ?? null,
     onModelChange: async (model: GeminiModel) => {
-      plugin.settings.model = model;
+      const previousFamily = getModelFamily(tab.selectedModel);
+      const nextFamily = getModelFamily(model);
+
+      tab.selectedModel = model;
       tab.resolvedModelName = null;
+      tab.service?.setActiveModel(model);
+
       const isDefaultModel = DEFAULT_GEMINI_MODELS.find((m) => m.value === model);
       if (isDefaultModel) {
         plugin.settings.thinkingBudget = DEFAULT_THINKING_BUDGET[model];
         plugin.settings.lastGeminiModel = model;
-      } else {
+      } else if (previousFamily === 'gemini' && nextFamily === 'gemini') {
         plugin.settings.lastCustomModel = model;
       }
+
+      if (previousFamily !== nextFamily) {
+        tab.state.prePlanPermissionMode = null;
+        tab.service?.resetSession();
+      }
+
       await plugin.saveSettings();
-      tab.ui.thinkingBudgetSelector?.updateDisplay();
-      tab.ui.modelSelector?.updateDisplay();
-      tab.ui.modelSelector?.renderOptions();
+      refreshModelDependentUI(tab, plugin);
+
+      if (tab.conversationId) {
+        await plugin.updateConversation(
+          tab.conversationId,
+          previousFamily !== nextFamily
+            ? {
+                selectedModel: model,
+                sessionId: null,
+                sdkSessionId: undefined,
+                previousSdkSessionIds: undefined,
+              }
+            : {
+                selectedModel: model,
+              },
+        );
+      }
 
       // Recalculate context usage percentage for the new model's context window
       const currentUsage = tab.state.usage;
@@ -495,6 +552,11 @@ function initializeInputToolbar(tab: TabData, plugin: GeminesePlugin): void {
       await plugin.saveSettings();
     },
     onPermissionModeChange: async (mode) => {
+      if (!supportsGeminiNativeFeatures(tab.selectedModel)) {
+        new Notice('Plan and Agent modes are currently available only for Gemini.');
+        refreshModelDependentUI(tab, plugin);
+        return;
+      }
       plugin.settings.permissionMode = mode;
       await plugin.saveSettings();
       dom.inputWrapper.toggleClass('geminese-input-plan-mode', mode === 'plan');
@@ -533,7 +595,7 @@ function initializeInputToolbar(tab: TabData, plugin: GeminesePlugin): void {
     })();
   });
 
-  dom.inputWrapper.toggleClass('geminese-input-plan-mode', plugin.settings.permissionMode === 'plan');
+  refreshModelDependentUI(tab, plugin);
 }
 
 export interface InitializeTabUIOptions {
@@ -873,6 +935,11 @@ export function initializeTabControllers(
       getTitleGenerationService: () => services.titleGenerationService,
       getStatusPanel: () => ui.statusPanel,
       getAgentService: () => tab.service, // Use tab's service instead of plugin's
+      getSelectedModel: () => tab.selectedModel,
+      setSelectedModel: (model) => {
+        tab.selectedModel = model;
+        refreshModelDependentUI(tab, plugin);
+      },
     },
     {}
   );
@@ -908,6 +975,7 @@ export function initializeTabControllers(
     // Override to use tab's service instead of plugin.agentService
     getAgentService: () => tab.service,
     getSubagentManager: () => services.subagentManager,
+    getSelectedModel: () => tab.selectedModel,
     onResolvedModel: (model: string) => {
       tab.resolvedModelName = model;
       tab.ui.modelSelector?.updateDisplay();

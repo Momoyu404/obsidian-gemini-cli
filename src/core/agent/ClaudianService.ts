@@ -16,6 +16,7 @@ import * as readline from 'readline';
 import type GeminesePlugin from '../../main';
 import { stripCurrentNoteContext } from '../../utils/context';
 import { getEnhancedPath, getMissingNodeError, parseEnvironmentVariables } from '../../utils/env';
+import { streamOllamaChat } from '../../utils/ollama';
 import { getVaultPath } from '../../utils/path';
 import {
   buildContextFromHistory,
@@ -28,9 +29,16 @@ import type {
   ChatMessage,
   Conversation,
   ExitPlanModeCallback,
+  GeminiModel,
   ImageAttachment,
   SlashCommand,
   StreamChunk,
+} from '../types';
+import {
+  getContextWindowSize,
+  getModelId,
+  getModelSelection,
+  supportsGeminiNativeFeatures,
 } from '../types';
 import { spawnGeminiCli } from './customSpawn';
 import {
@@ -92,10 +100,12 @@ export class GemineseService {
   private currentProcess: ChildProcess | null = null;
   private ready = false;
   private lastResolvedModel: string | null = null;
+  private activeModel: GeminiModel;
 
   constructor(plugin: GeminesePlugin, mcpManager: McpServerManager) {
     this.plugin = plugin;
     this.mcpManager = mcpManager;
+    this.activeModel = plugin.settings.model;
   }
 
   onReadyStateChange(listener: (ready: boolean) => void): () => void {
@@ -125,11 +135,32 @@ export class GemineseService {
     await this.mcpManager.loadServers();
   }
 
+  setActiveModel(model: GeminiModel): void {
+    this.activeModel = model;
+    this.lastResolvedModel = null;
+    if (!supportsGeminiNativeFeatures(model)) {
+      this.sessionManager.setSessionId(null, model);
+    }
+    this.ready = false;
+    this.notifyReadyStateChange();
+  }
+
+  getActiveModel(): GeminiModel {
+    return this.activeModel;
+  }
+
+  private usesGeminiRuntime(model: GeminiModel = this.activeModel): boolean {
+    return supportsGeminiNativeFeatures(model);
+  }
+
   setPendingResumeAt(_uuid: string | undefined): void {
     // No-op for Gemini CLI (no rewind support)
   }
 
   applyForkState(conv: Pick<Conversation, 'sessionId' | 'sdkSessionId' | 'forkSource'>): string | null {
+    if (!this.usesGeminiRuntime(this.activeModel)) {
+      return null;
+    }
     return conv.sessionId ?? conv.forkSource?.sessionId ?? null;
   }
 
@@ -137,11 +168,21 @@ export class GemineseService {
     const vaultPath = getVaultPath(this.plugin.app);
     if (!vaultPath) return Promise.resolve(false);
 
+    if (!this.usesGeminiRuntime(this.activeModel)) {
+      if (options?.externalContextPaths !== undefined) {
+        this.currentExternalContextPaths = options.externalContextPaths;
+      }
+      this.vaultPath = vaultPath;
+      this.ready = true;
+      this.notifyReadyStateChange();
+      return Promise.resolve(true);
+    }
+
     const cliPath = this.plugin.getResolvedGeminiCliPath();
     if (!cliPath) return Promise.resolve(false);
 
     if (options?.sessionId) {
-      this.sessionManager.setSessionId(options.sessionId, this.plugin.settings.model);
+      this.sessionManager.setSessionId(options.sessionId, this.activeModel);
     }
 
     if (options?.externalContextPaths !== undefined) {
@@ -175,7 +216,7 @@ export class GemineseService {
 
   private getTransformOptions(modelOverride?: string) {
     return {
-      intendedModel: modelOverride ?? this.plugin.settings.model,
+      intendedModel: modelOverride ?? this.activeModel,
       customContextLimits: this.plugin.settings.customContextLimits,
     };
   }
@@ -189,6 +230,14 @@ export class GemineseService {
     const vaultPath = getVaultPath(this.plugin.app);
     if (!vaultPath) {
       yield { type: 'error', content: 'Could not determine vault path' };
+      return;
+    }
+
+    const selectedModel = queryOptions?.model || this.activeModel;
+
+    if (!this.usesGeminiRuntime(selectedModel)) {
+      yield* this.queryOllama(selectedModel, prompt, images, conversationHistory);
+      yield { type: 'done' };
       return;
     }
 
@@ -244,7 +293,6 @@ export class GemineseService {
       promptToSend = imagePromptParts.join('\n') + '\n' + promptToSend;
     }
 
-    const selectedModel = queryOptions?.model || this.plugin.settings.model;
     const baseContext: QueryOptionsContext = {
       vaultPath,
       cliPath: resolvedCliPath,
@@ -284,6 +332,103 @@ export class GemineseService {
     }
 
     yield { type: 'done' };
+  }
+
+  private async *queryOllama(
+    selectedModel: GeminiModel,
+    prompt: string,
+    images?: ImageAttachment[],
+    conversationHistory?: ChatMessage[],
+  ): AsyncGenerator<StreamChunk> {
+    const vaultPath = getVaultPath(this.plugin.app);
+    if (!vaultPath) {
+      yield { type: 'error', content: 'Could not determine vault path' };
+      return;
+    }
+
+    if (images && images.length > 0) {
+      yield { type: 'error', content: 'Images are only available with Gemini in this version.' };
+      return;
+    }
+
+    const baseUrl = this.plugin.getOllamaBaseUrl();
+    const messages = [
+      ...(conversationHistory ?? [])
+        .filter(message => message.content.trim().length > 0)
+        .map(message => ({
+          role: message.role === 'assistant' ? 'assistant' as const : 'user' as const,
+          content: message.content,
+        })),
+      { role: 'user' as const, content: prompt },
+    ];
+
+    this.abortController = new AbortController();
+    this.currentProcess = null;
+    this.vaultPath = vaultPath;
+    this.lastResolvedModel = getModelSelection(selectedModel).label;
+    this.ready = true;
+    this.notifyReadyStateChange();
+
+    let sawAnyText = false;
+    let usageYielded = false;
+
+    try {
+      for await (const chunk of streamOllamaChat(
+        baseUrl,
+        {
+          model: getModelId(selectedModel),
+          messages,
+        },
+        this.abortController.signal,
+      )) {
+        if (this.abortController.signal.aborted) {
+          return;
+        }
+
+        if (chunk.model && !sawAnyText) {
+          this.lastResolvedModel = chunk.model;
+        }
+
+        const text = chunk.message?.content ?? '';
+        if (text) {
+          sawAnyText = true;
+          yield { type: 'text', content: text, parentToolUseId: null };
+        }
+
+        if (chunk.done && !usageYielded) {
+          usageYielded = true;
+          const contextWindow = getContextWindowSize(selectedModel, this.plugin.settings.customContextLimits);
+          const inputTokens = chunk.prompt_eval_count ?? 0;
+          const outputTokens = chunk.eval_count ?? 0;
+          const contextTokens = inputTokens + outputTokens;
+          const percentage = Math.min(100, Math.max(0, Math.round((contextTokens / contextWindow) * 100)));
+
+          yield {
+            type: 'usage',
+            usage: {
+              model: getModelId(selectedModel),
+              inputTokens,
+              cacheCreationInputTokens: 0,
+              cacheReadInputTokens: 0,
+              contextWindow,
+              contextTokens,
+              percentage,
+            },
+            sessionId: null,
+          };
+        }
+      }
+    } catch (error) {
+      if (this.abortController?.signal.aborted) {
+        return;
+      }
+      const message = error instanceof Error ? error.message : 'Unknown Ollama error';
+      yield { type: 'error', content: message };
+    } finally {
+      this.abortController = null;
+      this.currentProcess = null;
+      this.notifyReadyStateChange();
+    }
   }
 
   private async *spawnAndStream(
@@ -388,6 +533,9 @@ export class GemineseService {
   }
 
   getSessionId(): string | null {
+    if (!this.usesGeminiRuntime(this.activeModel)) {
+      return null;
+    }
     return this.sessionManager.getSessionId();
   }
 
@@ -399,6 +547,9 @@ export class GemineseService {
   }
 
   consumeSessionInvalidation(): boolean {
+    if (!this.usesGeminiRuntime(this.activeModel)) {
+      return false;
+    }
     return this.sessionManager.consumeInvalidation();
   }
 
@@ -407,12 +558,12 @@ export class GemineseService {
   }
 
   setSessionId(id: string | null, externalContextPaths?: string[]): void {
-    this.sessionManager.setSessionId(id, this.plugin.settings.model);
+    this.sessionManager.setSessionId(this.usesGeminiRuntime(this.activeModel) ? id : null, this.activeModel);
     if (externalContextPaths !== undefined) {
       this.currentExternalContextPaths = externalContextPaths;
     }
     this.ensureReady({
-      sessionId: id ?? undefined,
+      sessionId: this.usesGeminiRuntime(this.activeModel) ? (id ?? undefined) : undefined,
       externalContextPaths,
     }).catch(() => {
       // Best-effort

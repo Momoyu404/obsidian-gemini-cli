@@ -5,16 +5,20 @@ import type { McpServerManager } from '../../../core/mcp';
 import type {
   GemineseMcpServer,
   GeminiModel,
+  ModelFamily,
   PermissionMode,
   ThinkingBudget,
   UsageInfo
 } from '../../../core/types';
 import {
   DEFAULT_GEMINI_MODELS,
+  encodeFamilyModel,
+  getModelFamily,
+  getModelSelection,
+  MODEL_FAMILY_OPTIONS,
   THINKING_BUDGETS
 } from '../../../core/types';
 import { CHECK_ICON_SVG, MCP_ICON_SVG } from '../../../shared/icons';
-import { getModelsFromEnvironment, parseEnvironmentVariables } from '../../../utils/env';
 import { filterValidFiles, findConflictingPath, isDuplicatePath, isValidFilePath, validateFilePath } from '../../../utils/externalContext';
 import { expandHomePath, normalizePathForFilesystem } from '../../../utils/path';
 
@@ -29,7 +33,7 @@ export interface ToolbarCallbacks {
   onThinkingBudgetChange: (budget: ThinkingBudget) => Promise<void>;
   onPermissionModeChange: (mode: PermissionMode) => Promise<void>;
   getSettings: () => ToolbarSettings;
-  getEnvironmentVariables?: () => string;
+  loadOllamaModels?: () => Promise<string[]>;
   /** Resolved model name from CLI (e.g. gemini-2.5-pro), shown in selector when set. */
   getResolvedModel?: () => string | null;
 }
@@ -40,37 +44,89 @@ export class ModelSelector {
   private dropdownEl: HTMLElement | null = null;
   private callbacks: ToolbarCallbacks;
   private isReady = false;
+  private isOpen = false;
+  private activeFamily: ModelFamily | null = null;
+  private ollamaModels: string[] = [];
+  private ollamaState: 'idle' | 'loading' | 'loaded' | 'empty' | 'error' = 'idle';
+  private ollamaError: string | null = null;
 
   constructor(parentEl: HTMLElement, callbacks: ToolbarCallbacks) {
     this.callbacks = callbacks;
     this.container = parentEl.createDiv({ cls: 'geminese-model-selector' });
     this.render();
+    this.container.addEventListener('mouseleave', () => this.closeDropdown());
   }
 
-  private getAvailableModels() {
-    let models: { value: string; label: string; description: string }[] = [];
+  private getFamilyOptions() {
+    return MODEL_FAMILY_OPTIONS.filter(option => option.value === 'gemini' || option.value === 'ollama');
+  }
 
-    if (this.callbacks.getEnvironmentVariables) {
-      const envVarsStr = this.callbacks.getEnvironmentVariables();
-      const envVars = parseEnvironmentVariables(envVarsStr);
-      const customModels = getModelsFromEnvironment(envVars);
+  private getCurrentModel() {
+    return this.callbacks.getSettings().model;
+  }
 
-      if (customModels.length > 0) {
-        models = customModels;
-      } else {
-        models = [...DEFAULT_GEMINI_MODELS];
-      }
-    } else {
-      models = [...DEFAULT_GEMINI_MODELS];
+  private async loadOllamaModels(force = false): Promise<void> {
+    if (!this.callbacks.loadOllamaModels) {
+      this.ollamaState = 'error';
+      this.ollamaError = 'Ollama is not configured.';
+      this.renderOptions();
+      return;
     }
 
-    return models;
+    if (!force && (this.ollamaState === 'loading' || this.ollamaState === 'loaded' || this.ollamaState === 'empty')) {
+      return;
+    }
+
+    this.ollamaState = 'loading';
+    this.ollamaError = null;
+    this.renderOptions();
+
+    try {
+      const models = await this.callbacks.loadOllamaModels();
+      this.ollamaModels = models;
+      this.ollamaState = models.length > 0 ? 'loaded' : 'empty';
+    } catch (error) {
+      this.ollamaState = 'error';
+      this.ollamaError = error instanceof Error ? error.message : 'Failed to load Ollama models.';
+    }
+
+    this.renderOptions();
+  }
+
+  private openDropdown() {
+    this.isOpen = true;
+    this.activeFamily = null;
+    this.container.addClass('open');
+    this.renderOptions();
+  }
+
+  private closeDropdown() {
+    this.isOpen = false;
+    this.activeFamily = null;
+    this.container.removeClass('open');
+  }
+
+  private async openFamily(family: ModelFamily): Promise<void> {
+    this.activeFamily = family;
+    this.renderOptions();
+
+    if (family === 'ollama') {
+      await this.loadOllamaModels();
+    }
   }
 
   private render() {
     this.container.empty();
 
     this.buttonEl = this.container.createDiv({ cls: 'geminese-model-btn' });
+    this.buttonEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (this.isOpen) {
+        this.closeDropdown();
+      } else {
+        this.openDropdown();
+      }
+    });
     this.setReady(this.isReady);
     this.updateDisplay();
 
@@ -80,21 +136,13 @@ export class ModelSelector {
 
   updateDisplay() {
     if (!this.buttonEl) return;
-    const currentModel = this.callbacks.getSettings().model;
-    const models = this.getAvailableModels();
-    const modelInfo = models.find(m => m.value === currentModel);
-    const displayModel = modelInfo || models[0];
-    const resolved = this.callbacks.getResolvedModel?.() ?? null;
+    const currentModel = this.getCurrentModel();
+    const selection = getModelSelection(currentModel);
 
     this.buttonEl.empty();
 
     const labelEl = this.buttonEl.createSpan({ cls: 'geminese-model-label' });
-    labelEl.setText(displayModel?.label || 'Unknown');
-    if (resolved) {
-      labelEl.setAttribute('title', resolved);
-      const sub = this.buttonEl.createSpan({ cls: 'geminese-model-resolved' });
-      sub.setText(` (${resolved})`);
-    }
+    labelEl.setText(selection.label);
   }
 
   setReady(ready: boolean) {
@@ -106,30 +154,96 @@ export class ModelSelector {
     if (!this.dropdownEl) return;
     this.dropdownEl.empty();
 
-    const currentModel = this.callbacks.getSettings().model;
-    const models = this.getAvailableModels();
+    if (!this.isOpen) {
+      return;
+    }
 
-    for (const model of [...models].reverse()) {
-      const option = this.dropdownEl.createDiv({ cls: 'geminese-model-option' });
-      if (model.value === currentModel) {
-        option.addClass('selected');
+    if (!this.activeFamily) {
+      for (const family of this.getFamilyOptions()) {
+        const option = this.dropdownEl.createDiv({ cls: 'geminese-model-option geminese-model-family-option' });
+        if (getModelFamily(this.getCurrentModel()) === family.value) {
+          option.addClass('selected');
+        }
+
+        option.createSpan({ text: family.label });
+        const chevron = option.createSpan({ cls: 'geminese-model-option-arrow' });
+        chevron.setText('›');
+        option.setAttribute('title', family.description);
+        option.addEventListener('click', (e) => { void (async () => {
+          e.stopPropagation();
+          await this.openFamily(family.value);
+        })(); });
+      }
+      return;
+    }
+
+    const back = this.dropdownEl.createDiv({ cls: 'geminese-model-option geminese-model-back-option' });
+    back.createSpan({ text: '‹ Back' });
+    back.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.activeFamily = null;
+      this.renderOptions();
+    });
+
+    if (this.activeFamily === 'gemini') {
+      for (const model of DEFAULT_GEMINI_MODELS) {
+        const encodedValue = encodeFamilyModel('gemini', model.value);
+        const option = this.dropdownEl.createDiv({ cls: 'geminese-model-option' });
+        if (this.getCurrentModel() === encodedValue) {
+          option.addClass('selected');
+        }
+        option.createSpan({ text: model.label });
+        option.setAttribute('title', model.description);
+        option.addEventListener('click', (e) => { void (async () => {
+          e.stopPropagation();
+          await this.callbacks.onModelChange(encodedValue);
+          this.closeDropdown();
+          this.updateDisplay();
+        })(); });
+      }
+      return;
+    }
+
+    if (this.activeFamily === 'ollama') {
+      if (this.ollamaState === 'loading') {
+        const loading = this.dropdownEl.createDiv({ cls: 'geminese-model-option geminese-model-status' });
+        loading.setText('Loading models...');
+        return;
       }
 
-      option.createSpan({ text: model.label });
-      const resolved = this.callbacks.getResolvedModel?.() ?? null;
-      const title = model.value === currentModel && resolved ? resolved : (model.description ?? '');
-      if (title) option.setAttribute('title', title);
-      if (model.value === currentModel && resolved) {
-        const sub = option.createSpan({ cls: 'geminese-model-option-resolved' });
-        sub.setText(` — ${resolved}`);
+      if (this.ollamaState === 'error') {
+        const error = this.dropdownEl.createDiv({ cls: 'geminese-model-option geminese-model-status error' });
+        error.setText(this.ollamaError || 'Failed to load Ollama models.');
+
+        const retry = this.dropdownEl.createDiv({ cls: 'geminese-model-option geminese-model-retry' });
+        retry.setText('Retry');
+        retry.addEventListener('click', (e) => { void (async () => {
+          e.stopPropagation();
+          await this.loadOllamaModels(true);
+        })(); });
+        return;
       }
 
-      option.addEventListener('click', (e) => { void (async () => {
-        e.stopPropagation();
-        await this.callbacks.onModelChange(model.value);
-        this.updateDisplay();
-        this.renderOptions();
-      })(); });
+      if (this.ollamaState === 'empty') {
+        const empty = this.dropdownEl.createDiv({ cls: 'geminese-model-option geminese-model-status' });
+        empty.setText('No Ollama models found.');
+        return;
+      }
+
+      for (const modelName of this.ollamaModels) {
+        const encodedValue = encodeFamilyModel('ollama', modelName);
+        const option = this.dropdownEl.createDiv({ cls: 'geminese-model-option' });
+        if (this.getCurrentModel() === encodedValue) {
+          option.addClass('selected');
+        }
+        option.createSpan({ text: modelName });
+        option.addEventListener('click', (e) => { void (async () => {
+          e.stopPropagation();
+          await this.callbacks.onModelChange(encodedValue);
+          this.closeDropdown();
+          this.updateDisplay();
+        })(); });
+      }
     }
   }
 }
@@ -138,6 +252,8 @@ export class ThinkingBudgetSelector {
   private container: HTMLElement;
   private gearsEl: HTMLElement | null = null;
   private callbacks: ToolbarCallbacks;
+  private disabled = false;
+  private disabledReason = '';
 
   constructor(parentEl: HTMLElement, callbacks: ToolbarCallbacks) {
     this.callbacks = callbacks;
@@ -150,6 +266,13 @@ export class ThinkingBudgetSelector {
 
     this.gearsEl = this.container.createDiv({ cls: 'geminese-thinking-gears' });
     this.renderGears();
+  }
+
+  setDisabled(disabled: boolean, reason = ''): void {
+    this.disabled = disabled;
+    this.disabledReason = reason;
+    this.container.toggleClass('is-disabled', disabled);
+    this.container.setAttribute('title', disabled ? reason : 'Thinking budget');
   }
 
   private renderGears() {
@@ -174,6 +297,7 @@ export class ThinkingBudgetSelector {
       }
 
       gearEl.addEventListener('click', (e) => { void (async () => {
+        if (this.disabled) return;
         e.stopPropagation();
         await this.callbacks.onThinkingBudgetChange(budget.value);
         this.updateDisplay();
@@ -191,6 +315,8 @@ export class PermissionToggle {
   private buttonEl: HTMLElement | null = null;
   private dropdownEl: HTMLElement | null = null;
   private callbacks: ToolbarCallbacks;
+  private disabled = false;
+  private disabledReason = '';
 
   private static readonly MODES: { value: PermissionMode; label: string }[] = [
     { value: 'plan', label: 'Plan' },
@@ -211,6 +337,13 @@ export class PermissionToggle {
 
     this.dropdownEl = this.container.createDiv({ cls: 'geminese-permission-dropdown' });
     this.renderOptions();
+  }
+
+  setDisabled(disabled: boolean, reason = ''): void {
+    this.disabled = disabled;
+    this.disabledReason = reason;
+    this.container.toggleClass('is-disabled', disabled);
+    this.container.setAttribute('title', disabled ? reason : 'Permission mode');
   }
 
   updateDisplay() {
@@ -244,6 +377,7 @@ export class PermissionToggle {
       option.createSpan({ text: mode.label });
 
       option.addEventListener('click', (e) => { void (async () => {
+        if (this.disabled) return;
         e.stopPropagation();
         await this.callbacks.onPermissionModeChange(mode.value);
         this.updateDisplay();
@@ -609,6 +743,8 @@ export class McpServerSelector {
   private mcpManager: McpServerManager | null = null;
   private enabledServers: Set<string> = new Set();
   private onChangeCallback: ((enabled: Set<string>) => void) | null = null;
+  private disabled = false;
+  private disabledReason = '';
 
   constructor(parentEl: HTMLElement) {
     this.container = parentEl.createDiv({ cls: 'geminese-mcp-selector' });
@@ -653,6 +789,14 @@ export class McpServerSelector {
   setEnabledServers(names: string[]): void {
     this.enabledServers = new Set(names);
     this.pruneEnabledServers();
+    this.updateDisplay();
+    this.renderDropdown();
+  }
+
+  setDisabled(disabled: boolean, reason = ''): void {
+    this.disabled = disabled;
+    this.disabledReason = reason;
+    this.container.toggleClass('is-disabled', disabled);
     this.updateDisplay();
     this.renderDropdown();
   }
@@ -702,6 +846,12 @@ export class McpServerSelector {
     // Header
     const headerEl = this.dropdownEl.createDiv({ cls: 'geminese-mcp-selector-header' });
     headerEl.setText('Mcp servers');
+
+    if (this.disabled) {
+      const disabledEl = this.dropdownEl.createDiv({ cls: 'geminese-mcp-selector-empty' });
+      disabledEl.setText(this.disabledReason || 'Currently unavailable.');
+      return;
+    }
 
     // Server list
     const listEl = this.dropdownEl.createDiv({ cls: 'geminese-mcp-selector-list' });
@@ -758,6 +908,11 @@ export class McpServerSelector {
   }
 
   private toggleServer(name: string, itemEl: HTMLElement) {
+    if (this.disabled) {
+      new Notice(this.disabledReason || 'Currently unavailable.');
+      return;
+    }
+
     if (this.enabledServers.has(name)) {
       this.enabledServers.delete(name);
     } else {
@@ -811,7 +966,7 @@ export class McpServerSelector {
       }
     } else {
       this.iconEl.removeClass('active');
-      this.iconEl.setAttribute('title', 'Mcp servers (click to enable)');
+      this.iconEl.setAttribute('title', this.disabled ? this.disabledReason || 'Mcp servers unavailable' : 'Mcp servers (click to enable)');
       this.badgeEl.removeClass('visible');
     }
   }

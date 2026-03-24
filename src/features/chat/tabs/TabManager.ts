@@ -183,6 +183,8 @@ export class TabManager implements TabManagerInterface {
         // This handles the case where user switches between tabs with different sessions
         const conversation = await this.plugin.getConversationById(tab.conversationId);
         if (conversation) {
+          tab.selectedModel = conversation.selectedModel ?? tab.selectedModel;
+          tab.service.setActiveModel(tab.selectedModel);
           const hasMessages = conversation.messages.length > 0;
           const externalContextPaths = hasMessages
             ? conversation.externalContextPaths || []

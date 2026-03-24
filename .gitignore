@@ -94,6 +94,7 @@ dev
 .gemini/
 .codex/
 .worktrees/
+.omx/
 
 # Planning
 .sisyphus/

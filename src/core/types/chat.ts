@@ -3,6 +3,7 @@
  */
 
 import type { SDKToolUseResult } from './diff';
+import type { GeminiModel } from './models';
 import type { SubagentInfo, SubagentMode, ToolCallInfo } from './tools';
 
 /** Fork origin reference: identifies the source session and resume point. */
@@ -72,6 +73,7 @@ export interface Conversation {
   updatedAt: number;
   /** Timestamp when the last agent response completed. */
   lastResponseAt?: number;
+  selectedModel?: GeminiModel;
   sessionId: string | null;
   /**
    * Current SDK session ID for native sessions.
@@ -120,6 +122,7 @@ export interface ConversationMeta {
   updatedAt: number;
   /** Timestamp when the last agent response completed. */
   lastResponseAt?: number;
+  selectedModel?: GeminiModel;
   messageCount: number;
   preview: string;
   /** Status of AI title generation. */
@@ -140,6 +143,7 @@ export interface SessionMetadata {
   createdAt: number;
   updatedAt: number;
   lastResponseAt?: number;
+  selectedModel?: GeminiModel;
   /** Session ID used for SDK resume (may be cleared when invalidated). */
   sessionId?: string | null;
   /**

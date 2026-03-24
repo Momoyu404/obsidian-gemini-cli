@@ -647,6 +647,19 @@ export class GemineseSettingTab extends PluginSettingTab {
         text.inputEl.classList.add('geminese-input-error');
       }
     });
+
+    new Setting(containerEl)
+      .setName('Ollama base URL')
+      .setDesc('Base URL for the local Ollama HTTP API. Used for model discovery and chat when an Ollama model is selected.')
+      .addText((text) => {
+        text
+          .setPlaceholder('http://127.0.0.1:11434')
+          .setValue(this.plugin.settings.ollamaBaseUrl || 'http://127.0.0.1:11434')
+          .onChange(async (value) => {
+            this.plugin.settings.ollamaBaseUrl = value.trim() || 'http://127.0.0.1:11434';
+            await this.plugin.saveSettings();
+          });
+      });
   }
 
   private renderContextLimitsSection(): void {

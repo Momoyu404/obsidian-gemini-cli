@@ -1,7 +1,8 @@
 import { Notice, setIcon } from 'obsidian';
 
 import type { GemineseService } from '../../../core/agent';
-import type { Conversation } from '../../../core/types';
+import type { Conversation, GeminiModel } from '../../../core/types';
+import { encodeFamilyModel, supportsGeminiNativeFeatures } from '../../../core/types';
 import type GeminesePlugin from '../../../main';
 import { cleanupThinkingBlock } from '../rendering';
 import type { MessageRenderer } from '../rendering/MessageRenderer';
@@ -34,6 +35,8 @@ export interface ConversationControllerDeps {
   getTitleGenerationService: () => TitleGenerationService | null;
   getStatusPanel: () => StatusPanel | null;
   getAgentService?: () => GemineseService | null;
+  getSelectedModel?: () => GeminiModel;
+  setSelectedModel?: (model: GeminiModel) => void;
 }
 
 type SaveOptions = {
@@ -51,6 +54,15 @@ export class ConversationController {
 
   private getAgentService(): GemineseService | null {
     return this.deps.getAgentService?.() ?? null;
+  }
+
+  private getSelectedModel(): GeminiModel {
+    return this.deps.getSelectedModel?.() ?? encodeFamilyModel('gemini', 'auto');
+  }
+
+  private setSelectedModel(model: GeminiModel): void {
+    this.deps.setSelectedModel?.(model);
+    this.getAgentService()?.setActiveModel(model);
   }
 
   // ============================================
@@ -107,6 +119,7 @@ export class ConversationController {
       state.planFilePath = null;
       state.prePlanPermissionMode = null;
       state.autoScrollEnabled = plugin.settings.enableAutoScroll ?? true;
+      this.setSelectedModel(encodeFamilyModel('gemini', 'auto'));
 
       // Reset agent service session (no session ID for entry point)
       // Pass persistent paths to prevent stale external contexts
@@ -169,6 +182,7 @@ export class ConversationController {
       state.planFilePath = null;
       state.prePlanPermissionMode = null;
       state.autoScrollEnabled = plugin.settings.enableAutoScroll ?? true;
+      this.setSelectedModel(encodeFamilyModel('gemini', 'auto'));
 
       // Pass persistent paths to prevent stale external contexts
       this.getAgentService()?.setSessionId(
@@ -203,6 +217,7 @@ export class ConversationController {
     state.messages = [...conversation.messages];
     state.usage = conversation.usage ?? null;
     state.autoScrollEnabled = plugin.settings.enableAutoScroll ?? true;
+    this.setSelectedModel(conversation.selectedModel ?? encodeFamilyModel('gemini', 'auto'));
 
     // Clear status panels (auto-hide: panels reappear when agent creates new todos/subagents)
     state.currentTodos = null;
@@ -276,6 +291,7 @@ export class ConversationController {
       state.messages = [...conversation.messages];
       state.usage = conversation.usage ?? null;
       state.autoScrollEnabled = plugin.settings.enableAutoScroll ?? true;
+      this.setSelectedModel(conversation.selectedModel ?? encodeFamilyModel('gemini', 'auto'));
 
       // Clear status panels (auto-hide: panels reappear when agent creates new todos/subagents)
       state.currentTodos = null;
@@ -353,13 +369,21 @@ export class ConversationController {
     }
 
     const agentService = this.getAgentService();
+    const selectedModel = this.getSelectedModel();
     const sessionId = agentService?.getSessionId() ?? null;
     const sessionInvalidated = agentService?.consumeSessionInvalidation?.() ?? false;
+    const shouldUseNativeStorage = supportsGeminiNativeFeatures(selectedModel);
 
     // Entry point with messages - create conversation lazily
     // New conversations always use SDK-native storage.
     if (!state.currentConversationId && state.messages.length > 0) {
-      const conversation = await plugin.createConversation(sessionId ?? undefined);
+      const conversation = await plugin.createConversation(
+        shouldUseNativeStorage ? (sessionId ?? undefined) : undefined,
+        {
+          selectedModel,
+          isNative: shouldUseNativeStorage,
+        },
+      );
       state.currentConversationId = conversation.id;
     }
 
@@ -373,8 +397,8 @@ export class ConversationController {
     // Check if this is a native session and promote legacy sessions after first SDK session capture
     const conversation = await plugin.getConversationById(state.currentConversationId!);
     const wasNative = conversation?.isNative ?? false;
-    const shouldPromote = !wasNative && !!sessionId;
-    const isNative = wasNative || shouldPromote;
+    const shouldPromote = shouldUseNativeStorage && !wasNative && !!sessionId;
+    const isNative = shouldUseNativeStorage && (wasNative || shouldPromote);
     const legacyMessages = conversation?.messages ?? [];
     const legacyCutoffAt = shouldPromote
       ? legacyMessages[legacyMessages.length - 1]?.timestamp
@@ -383,7 +407,7 @@ export class ConversationController {
     // Detect session change (resume failed, SDK created new session)
     // Move old sdkSessionId to previousSdkSessionIds for history merging on reload
     // Use Set to deduplicate in case of race conditions or repeated session changes
-    const oldSdkSessionId = conversation?.sdkSessionId;
+    const oldSdkSessionId = shouldUseNativeStorage ? conversation?.sdkSessionId : undefined;
     const sessionChanged = isNative && sessionId && oldSdkSessionId && sessionId !== oldSdkSessionId;
     const previousSdkSessionIds = sessionChanged
       ? [...new Set([...(conversation?.previousSdkSessionIds || []), oldSdkSessionId])]
@@ -397,7 +421,9 @@ export class ConversationController {
       sessionId === conversation.forkSource.sessionId;
 
     let resolvedSessionId: string | null;
-    if (sessionInvalidated) {
+    if (!shouldUseNativeStorage) {
+      resolvedSessionId = null;
+    } else if (sessionInvalidated) {
       resolvedSessionId = null;
     } else if (isForkSourceOnly) {
       resolvedSessionId = conversation?.sessionId ?? null;
@@ -407,10 +433,11 @@ export class ConversationController {
 
     const updates: Partial<Conversation> = {
       messages: isNative ? state.messages : state.getPersistedMessages(),
+      selectedModel,
       sessionId: resolvedSessionId,
-      sdkSessionId: isNative && sessionId && !isForkSourceOnly ? sessionId : conversation?.sdkSessionId,
-      previousSdkSessionIds,
-      isNative: isNative || undefined,
+      sdkSessionId: isNative && sessionId && !isForkSourceOnly ? sessionId : undefined,
+      previousSdkSessionIds: isNative ? previousSdkSessionIds : undefined,
+      isNative,
       legacyCutoffAt,
       sdkMessagesLoaded: isNative ? true : undefined,
       currentNote: currentNote,
