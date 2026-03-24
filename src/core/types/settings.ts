@@ -259,6 +259,7 @@ export interface GemineseSettings {
   geminiCliPath: string;  // Legacy: single CLI path (for backwards compatibility)
   geminiCliPathsByHost: HostnameCliPaths;  // Per-device paths keyed by hostname (preferred)
   loadUserGeminiSettings: boolean;  // Load ~/.gemini/settings.json (may override permissions)
+  ollamaBaseUrl: string;  // Base URL for local Ollama HTTP API
 
   // State (merged from data.json)
   lastGeminiModel?: GeminiModel;
@@ -321,6 +322,7 @@ export const DEFAULT_SETTINGS: GemineseSettings = {
   geminiCliPath: '',  // Legacy field (empty = not migrated)
   geminiCliPathsByHost: {},  // Per-device paths keyed by hostname
   loadUserGeminiSettings: true,  // Default on for compatibility
+  ollamaBaseUrl: 'http://127.0.0.1:11434',
 
   lastGeminiModel: 'auto',
   lastCustomModel: '',

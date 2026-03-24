@@ -25,6 +25,7 @@ import {
   DEFAULT_GEMINI_MODELS,
   DEFAULT_SETTINGS,
   getHostnameKey,
+  supportsGeminiNativeFeatures,
   VIEW_TYPE_GEMINIAN,
 } from './core/types';
 import { GemineseView } from './features/chat/ClaudianView';
@@ -35,6 +36,7 @@ import { setLocale } from './i18n';
 import { buildCursorContext } from './utils/editor';
 import { getCurrentModelFromEnvironment, getModelsFromEnvironment, parseEnvironmentVariables } from './utils/env';
 import { GeminiCliResolver } from './utils/geminiCli';
+import { fetchOllamaModels, normalizeOllamaBaseUrl } from './utils/ollama';
 import { getVaultPath } from './utils/path';
 import {
   deleteSDKSession,
@@ -103,6 +105,12 @@ export default class GeminesePlugin extends Plugin {
       id: 'inline-edit',
       name: 'Inline edit',
       editorCallback: async (editor: Editor, view: MarkdownView) => {
+        const activeModel = this.getView()?.getActiveTab()?.selectedModel ?? DEFAULT_SETTINGS.model;
+        if (!supportsGeminiNativeFeatures(activeModel)) {
+          new Notice('Inline edit is currently available only for Gemini.');
+          return;
+        }
+
         const selectedText = editor.getSelection();
         const notePath = view.file?.path || 'unknown';
 
@@ -299,6 +307,7 @@ export default class GeminesePlugin extends Plugin {
       conversation.externalContextPaths = meta.externalContextPaths ?? conversation.externalContextPaths;
       conversation.enabledMcpServers = meta.enabledMcpServers ?? conversation.enabledMcpServers;
       conversation.usage = meta.usage ?? conversation.usage;
+      conversation.selectedModel = meta.selectedModel ?? conversation.selectedModel ?? DEFAULT_SETTINGS.model;
       if (meta.sdkSessionId !== undefined) {
         conversation.sdkSessionId = meta.sdkSessionId;
       } else if (conversation.sdkSessionId === undefined && conversation.sessionId) {
@@ -338,6 +347,7 @@ export default class GeminesePlugin extends Plugin {
           titleGenerationStatus: meta.titleGenerationStatus,
           legacyCutoffAt: meta.legacyCutoffAt,
           isNative: true,
+          selectedModel: meta.selectedModel ?? DEFAULT_SETTINGS.model,
           subagentData: meta.subagentData, // Preserve for applying to loaded messages
           resumeSessionAt: meta.resumeSessionAt,
           forkSource: meta.forkSource,
@@ -904,24 +914,32 @@ export default class GeminesePlugin extends Plugin {
    * New conversations always use SDK-native storage.
    * The session ID may be captured after the first SDK response.
    */
-  async createConversation(sessionId?: string): Promise<Conversation> {
+  async createConversation(
+    sessionId?: string,
+    options: { selectedModel?: string; isNative?: boolean } = {},
+  ): Promise<Conversation> {
     const conversationId = sessionId ?? this.generateConversationId();
+    const isNative = options.isNative ?? true;
     const conversation: Conversation = {
       id: conversationId,
       title: this.generateDefaultTitle(),
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      sessionId: sessionId ?? null,
-      sdkSessionId: sessionId ?? undefined,
+      selectedModel: options.selectedModel ?? DEFAULT_SETTINGS.model,
+      sessionId: isNative ? (sessionId ?? null) : null,
+      sdkSessionId: isNative ? (sessionId ?? undefined) : undefined,
       messages: [],
-      isNative: true,
+      isNative,
     };
 
     this.conversations.unshift(conversation);
-    // Save new conversation (metadata only - SDK handles messages)
-    await this.storage.sessions.saveMetadata(
-      this.storage.sessions.toSessionMetadata(conversation)
-    );
+    if (isNative) {
+      await this.storage.sessions.saveMetadata(
+        this.storage.sessions.toSessionMetadata(conversation)
+      );
+    } else {
+      await this.storage.sessions.saveConversation(conversation);
+    }
 
     return conversation;
   }
@@ -1095,6 +1113,7 @@ export default class GeminesePlugin extends Plugin {
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
       lastResponseAt: c.lastResponseAt,
+      selectedModel: c.selectedModel,
       messageCount: c.messages.length,
       preview: this.getConversationPreview(c),
       titleGenerationStatus: c.titleGenerationStatus,
@@ -1115,6 +1134,15 @@ export default class GeminesePlugin extends Plugin {
   getAllViews(): GemineseView[] {
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_GEMINIAN);
     return leaves.map(leaf => leaf.view as GemineseView);
+  }
+
+  getOllamaBaseUrl(): string {
+    return normalizeOllamaBaseUrl(this.settings.ollamaBaseUrl);
+  }
+
+  async getAvailableOllamaModels(): Promise<string[]> {
+    const models = await fetchOllamaModels(this.getOllamaBaseUrl());
+    return models.map(model => model.name);
   }
 
   /**

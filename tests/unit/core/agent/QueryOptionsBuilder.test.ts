@@ -33,6 +33,7 @@ function createMockPluginManager() {
     hasEnabledPlugins: jest.fn().mockReturnValue(false),
     getEnabledCount: jest.fn().mockReturnValue(0),
     getPluginsKey: jest.fn().mockReturnValue(''),
+    getExtensionsKey: jest.fn().mockReturnValue(''),
     togglePlugin: jest.fn().mockReturnValue([]),
     enablePlugin: jest.fn().mockReturnValue([]),
     disablePlugin: jest.fn().mockReturnValue([]),
@@ -65,6 +66,7 @@ function createMockSettings(overrides: Partial<GemineseSettings> = {}): Geminese
       focusInputKey: 'i',
     },
     geminiCliPath: '',
+    ollamaBaseUrl: 'http://127.0.0.1:11434',
     ...overrides,
   } as GemineseSettings;
 }

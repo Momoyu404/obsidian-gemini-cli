@@ -18,6 +18,11 @@
   overflow: hidden;
 }
 
+.geminese-model-selector.open .geminese-model-btn {
+  color: var(--text-normal);
+  background: var(--background-modifier-hover);
+}
+
 .geminese-model-btn.ready {
   color: var(--geminese-brand);
 }
@@ -72,9 +77,10 @@
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.15s ease, visibility 0.15s ease;
+  min-width: 180px;
 }
 
-.geminese-model-selector:hover .geminese-model-dropdown {
+.geminese-model-selector.open .geminese-model-dropdown {
   opacity: 1;
   visibility: visible;
 }
@@ -98,4 +104,46 @@
   background: rgba(var(--geminese-brand-rgb), 0.15);
   color: var(--geminese-brand);
   font-weight: 500;
+}
+
+.geminese-model-family-option,
+.geminese-model-back-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.geminese-model-option-arrow {
+  margin-left: 8px;
+  color: var(--text-faint);
+}
+
+.geminese-model-status {
+  cursor: default;
+  color: var(--text-muted);
+}
+
+.geminese-model-status:hover {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.geminese-model-status.error {
+  color: var(--text-error);
+}
+
+.geminese-model-retry {
+  color: var(--interactive-accent);
+}
+
+.geminese-thinking-selector.is-disabled,
+.geminese-permission-selector.is-disabled,
+.geminese-mcp-selector.is-disabled {
+  opacity: 0.55;
+}
+
+.geminese-thinking-selector.is-disabled .geminese-thinking-gear,
+.geminese-permission-selector.is-disabled .geminese-permission-option,
+.geminese-mcp-selector.is-disabled .geminese-mcp-selector-item {
+  pointer-events: none;
 }

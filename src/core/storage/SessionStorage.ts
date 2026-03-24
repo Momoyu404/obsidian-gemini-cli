@@ -17,6 +17,7 @@ import type {
   ChatMessage,
   Conversation,
   ConversationMeta,
+  GeminiModel,
   SessionMetadata,
   SubagentInfo,
   UsageInfo,
@@ -34,6 +35,7 @@ interface SessionMetaRecord {
   createdAt: number;
   updatedAt: number;
   lastResponseAt?: number;
+  selectedModel?: GeminiModel;
   sessionId: string | null;
   currentNote?: string;
   usage?: UsageInfo;
@@ -186,6 +188,7 @@ export class SessionStorage {
         messageCount,
         preview,
         titleGenerationStatus: record.titleGenerationStatus,
+        selectedModel: record.selectedModel,
       };
     } catch {
       return null;
@@ -222,6 +225,7 @@ export class SessionStorage {
       createdAt: meta.createdAt,
       updatedAt: meta.updatedAt,
       lastResponseAt: meta.lastResponseAt,
+      selectedModel: meta.selectedModel,
       sessionId: meta.sessionId,
       messages,
       currentNote: meta.currentNote,
@@ -241,6 +245,7 @@ export class SessionStorage {
       createdAt: conversation.createdAt,
       updatedAt: conversation.updatedAt,
       lastResponseAt: conversation.lastResponseAt,
+      selectedModel: conversation.selectedModel,
       sessionId: conversation.sessionId,
       currentNote: conversation.currentNote,
       usage: conversation.usage,
@@ -370,6 +375,7 @@ export class SessionStorage {
           preview: 'SDK session', // SDK stores messages, we don't parse them for preview
           titleGenerationStatus: meta.titleGenerationStatus,
           isNative: true,
+          selectedModel: meta.selectedModel,
         });
       }
     }
@@ -390,6 +396,7 @@ export class SessionStorage {
       createdAt: conversation.createdAt,
       updatedAt: conversation.updatedAt,
       lastResponseAt: conversation.lastResponseAt,
+      selectedModel: conversation.selectedModel,
       sessionId: conversation.sessionId,
       sdkSessionId: conversation.sdkSessionId,
       previousSdkSessionIds: conversation.previousSdkSessionIds,

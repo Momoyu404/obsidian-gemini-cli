@@ -1,7 +1,7 @@
 import type { EventRef, WorkspaceLeaf } from 'obsidian';
 import { ItemView, Notice, setIcon } from 'obsidian';
 
-import { VIEW_TYPE_GEMINIAN } from '../../core/types';
+import { supportsGeminiNativeFeatures, VIEW_TYPE_GEMINIAN } from '../../core/types';
 import type GeminesePlugin from '../../main';
 import { LOGO_SVG } from './constants';
 import { TabBar, TabManager, updatePlanModeUI } from './tabs';
@@ -493,6 +493,10 @@ export class GemineseView extends ItemView {
         e.preventDefault();
         const activeTab = this.tabManager?.getActiveTab();
         if (!activeTab) return;
+        if (!supportsGeminiNativeFeatures(activeTab.selectedModel)) {
+          new Notice('Plan mode is currently available only for Gemini.');
+          return;
+        }
         const current = this.plugin.settings.permissionMode;
         if (current === 'plan') {
           const restoreMode = activeTab.state.prePlanPermissionMode ?? 'agent';
