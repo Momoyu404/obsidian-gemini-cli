@@ -16,13 +16,18 @@ import * as readline from 'readline';
 import type GeminesePlugin from '../../main';
 import { stripCurrentNoteContext } from '../../utils/context';
 import { getEnhancedPath, getMissingNodeError, parseEnvironmentVariables } from '../../utils/env';
-import { streamOllamaChat } from '../../utils/ollama';
+import {
+  type OllamaEnvelopeParseError,
+  parseOllamaAgentEnvelope,
+  requestOllamaChat,
+} from '../../utils/ollama';
 import { getVaultPath } from '../../utils/path';
 import {
   buildContextFromHistory,
   buildPromptWithHistoryContext,
 } from '../../utils/session';
 import type { McpServerManager } from '../mcp';
+import { buildOllamaAgentSystemPrompt } from '../prompts/ollamaAgent';
 import { isSessionInitEvent, isStreamChunk, parseGeminiJsonLine,transformGeminiEvent } from '../sdk';
 import type {
   ApprovalDecision,
@@ -41,6 +46,7 @@ import {
   supportsGeminiNativeFeatures,
 } from '../types';
 import { spawnGeminiCli } from './customSpawn';
+import { OllamaToolExecutor } from './OllamaToolExecutor';
 import {
   type ColdStartQueryContext,
   QueryOptionsBuilder,
@@ -236,7 +242,13 @@ export class GemineseService {
     const selectedModel = queryOptions?.model || this.activeModel;
 
     if (!this.usesGeminiRuntime(selectedModel)) {
-      yield* this.queryOllama(selectedModel, prompt, images, conversationHistory);
+      yield* this.queryOllama(
+        selectedModel,
+        prompt,
+        images,
+        conversationHistory,
+        queryOptions?.externalContextPaths ?? this.currentExternalContextPaths,
+      );
       yield { type: 'done' };
       return;
     }
@@ -339,6 +351,7 @@ export class GemineseService {
     prompt: string,
     images?: ImageAttachment[],
     conversationHistory?: ChatMessage[],
+    externalContextPaths: string[] = [],
   ): AsyncGenerator<StreamChunk> {
     const vaultPath = getVaultPath(this.plugin.app);
     if (!vaultPath) {
@@ -352,15 +365,19 @@ export class GemineseService {
     }
 
     const baseUrl = this.plugin.getOllamaBaseUrl();
-    const messages = [
-      ...(conversationHistory ?? [])
-        .filter(message => message.content.trim().length > 0)
-        .map(message => ({
-          role: message.role === 'assistant' ? 'assistant' as const : 'user' as const,
-          content: message.content,
-        })),
-      { role: 'user' as const, content: prompt },
-    ];
+    const normalizedExternalContextPaths = externalContextPaths.filter(Boolean);
+    this.currentExternalContextPaths = normalizedExternalContextPaths;
+    const messages = this.buildOllamaMessages(
+      prompt,
+      conversationHistory,
+      vaultPath,
+      normalizedExternalContextPaths,
+    );
+    const toolExecutor = new OllamaToolExecutor({
+      vaultPath,
+      externalContextPaths: normalizedExternalContextPaths,
+      allowedExportPaths: this.plugin.settings.allowedExportPaths,
+    });
 
     this.abortController = new AbortController();
     this.currentProcess = null;
@@ -370,53 +387,181 @@ export class GemineseService {
     this.notifyReadyStateChange();
 
     let sawAnyText = false;
+    let completedToolCalls = 0;
     let usageYielded = false;
+    const maxToolRounds = 8;
 
     try {
-      for await (const chunk of streamOllamaChat(
-        baseUrl,
-        {
-          model: getModelId(selectedModel),
-          messages,
-        },
-        this.abortController.signal,
-      )) {
+      for (let round = 0; round < maxToolRounds; round += 1) {
+        const response = await this.requestOllamaAgentTurn(baseUrl, selectedModel, messages);
+
         if (this.abortController.signal.aborted) {
           return;
         }
 
-        if (chunk.model && !sawAnyText) {
-          this.lastResolvedModel = chunk.model;
+        if (response.model) {
+          this.lastResolvedModel = response.model;
         }
 
-        const text = chunk.message?.content ?? '';
-        if (text) {
-          sawAnyText = true;
-          yield { type: 'text', content: text, parentToolUseId: null };
+        const responseText = response.message?.content?.trim() ?? '';
+        if (!responseText) {
+          throw new Error('Ollama returned an empty response.');
         }
 
-        if (chunk.done && !usageYielded) {
-          usageYielded = true;
-          const contextWindow = getContextWindowSize(selectedModel, this.plugin.settings.customContextLimits);
-          const inputTokens = chunk.prompt_eval_count ?? 0;
-          const outputTokens = chunk.eval_count ?? 0;
-          const contextTokens = inputTokens + outputTokens;
-          const percentage = Math.min(100, Math.max(0, Math.round((contextTokens / contextWindow) * 100)));
+        let envelope;
+        try {
+          envelope = parseOllamaAgentEnvelope(responseText);
+        } catch (error) {
+          const recovery = await this.recoverOllamaEnvelope(
+            error,
+            baseUrl,
+            selectedModel,
+            messages,
+            completedToolCalls,
+          );
+          envelope = recovery.envelope;
 
+          if (recovery.correctionMessage) {
+            messages.push({
+              role: 'user',
+              content: recovery.correctionMessage,
+            });
+          }
+
+          if (recovery.response.model) {
+            this.lastResolvedModel = recovery.response.model;
+          }
+
+          messages.push({
+            role: 'assistant',
+            content: recovery.responseText,
+          });
+
+          if (envelope.type === 'final_answer') {
+            sawAnyText = envelope.content.trim().length > 0;
+            if (sawAnyText) {
+              yield { type: 'text', content: envelope.content, parentToolUseId: null };
+            }
+
+            if (!usageYielded) {
+              usageYielded = true;
+              const contextWindow = getContextWindowSize(selectedModel, this.plugin.settings.customContextLimits);
+              const inputTokens = recovery.response.prompt_eval_count ?? 0;
+              const outputTokens = recovery.response.eval_count ?? 0;
+              const contextTokens = inputTokens + outputTokens;
+              const percentage = Math.min(100, Math.max(0, Math.round((contextTokens / contextWindow) * 100)));
+
+              yield {
+                type: 'usage',
+                usage: {
+                  model: getModelId(selectedModel),
+                  inputTokens,
+                  cacheCreationInputTokens: 0,
+                  cacheReadInputTokens: 0,
+                  contextWindow,
+                  contextTokens,
+                  percentage,
+                },
+                sessionId: null,
+              };
+            }
+
+            return;
+          }
+
+          const toolId = `ollama-tool-${randomUUID()}`;
           yield {
-            type: 'usage',
-            usage: {
-              model: getModelId(selectedModel),
-              inputTokens,
-              cacheCreationInputTokens: 0,
-              cacheReadInputTokens: 0,
-              contextWindow,
-              contextTokens,
-              percentage,
-            },
-            sessionId: null,
+            type: 'tool_use',
+            id: toolId,
+            name: envelope.tool,
+            input: envelope.input,
+            parentToolUseId: null,
           };
+
+          const toolResult = await toolExecutor.execute(envelope.tool, envelope.input);
+          yield {
+            type: 'tool_result',
+            id: toolId,
+            content: toolResult.content,
+            isError: toolResult.isError,
+            parentToolUseId: null,
+          };
+
+          completedToolCalls += 1;
+          messages.push({
+            role: 'user',
+            content: this.buildOllamaToolResultMessage(envelope.tool, toolResult.content, toolResult.isError),
+          });
+          continue;
         }
+
+        messages.push({
+          role: 'assistant',
+          content: responseText,
+        });
+
+        if (envelope.type === 'final_answer') {
+          sawAnyText = envelope.content.trim().length > 0;
+          if (sawAnyText) {
+            yield { type: 'text', content: envelope.content, parentToolUseId: null };
+          }
+
+          if (!usageYielded) {
+            usageYielded = true;
+            const contextWindow = getContextWindowSize(selectedModel, this.plugin.settings.customContextLimits);
+            const inputTokens = response.prompt_eval_count ?? 0;
+            const outputTokens = response.eval_count ?? 0;
+            const contextTokens = inputTokens + outputTokens;
+            const percentage = Math.min(100, Math.max(0, Math.round((contextTokens / contextWindow) * 100)));
+
+            yield {
+              type: 'usage',
+              usage: {
+                model: getModelId(selectedModel),
+                inputTokens,
+                cacheCreationInputTokens: 0,
+                cacheReadInputTokens: 0,
+                contextWindow,
+                contextTokens,
+                percentage,
+              },
+              sessionId: null,
+            };
+          }
+
+          return;
+        }
+
+        const toolId = `ollama-tool-${randomUUID()}`;
+        yield {
+          type: 'tool_use',
+          id: toolId,
+          name: envelope.tool,
+          input: envelope.input,
+          parentToolUseId: null,
+        };
+
+        const toolResult = await toolExecutor.execute(envelope.tool, envelope.input);
+        yield {
+          type: 'tool_result',
+          id: toolId,
+          content: toolResult.content,
+          isError: toolResult.isError,
+          parentToolUseId: null,
+        };
+
+        completedToolCalls += 1;
+        messages.push({
+          role: 'user',
+          content: this.buildOllamaToolResultMessage(envelope.tool, toolResult.content, toolResult.isError),
+        });
+      }
+
+      if (!sawAnyText) {
+        yield {
+          type: 'error',
+          content: `Ollama exceeded the ${maxToolRounds}-step read/search limit without producing a final answer.`,
+        };
       }
     } catch (error) {
       if (this.abortController?.signal.aborted) {
@@ -429,6 +574,146 @@ export class GemineseService {
       this.currentProcess = null;
       this.notifyReadyStateChange();
     }
+  }
+
+  private buildOllamaMessages(
+    prompt: string,
+    conversationHistory: ChatMessage[] | undefined,
+    vaultPath: string,
+    externalContextPaths: string[],
+  ) {
+    return [
+      {
+        role: 'system' as const,
+        content: buildOllamaAgentSystemPrompt({
+          customPrompt: this.plugin.settings.systemPrompt,
+          externalContextPaths,
+          userName: this.plugin.settings.userName,
+          vaultPath,
+        }),
+      },
+      ...(conversationHistory ?? [])
+        .filter(message => message.content.trim().length > 0)
+        .map(message => ({
+          role: message.role === 'assistant' ? 'assistant' as const : 'user' as const,
+          content: message.content,
+        })),
+      { role: 'user' as const, content: prompt },
+    ];
+  }
+
+  private buildOllamaToolResultMessage(
+    toolName: string,
+    content: string,
+    isError: boolean,
+  ): string {
+    return [
+      `Tool result for ${toolName}:`,
+      isError ? 'STATUS: error' : 'STATUS: success',
+      content,
+      'If you need more information, request another tool. Otherwise return {"type":"final_answer","content":"..."} as JSON.',
+    ].join('\n\n');
+  }
+
+  private async requestOllamaAgentTurn(
+    baseUrl: string,
+    selectedModel: GeminiModel,
+    messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
+  ) {
+    return await requestOllamaChat(
+      baseUrl,
+      {
+        model: getModelId(selectedModel),
+        messages,
+      },
+      this.abortController?.signal,
+    );
+  }
+
+  private async recoverOllamaEnvelope(
+    error: unknown,
+    baseUrl: string,
+    selectedModel: GeminiModel,
+    messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
+    completedToolCalls: number,
+  ): Promise<{
+    correctionMessage: string | null;
+    envelope: { type: 'final_answer'; content: string } | { type: 'tool_call'; tool: 'Read' | 'LS' | 'Glob' | 'Grep'; input: Record<string, unknown> };
+    response: Awaited<ReturnType<typeof requestOllamaChat>>;
+    responseText: string;
+  }> {
+    const parseError = this.normalizeOllamaParseError(error);
+    const correctionMessage = this.buildInvalidOllamaEnvelopeMessage(parseError);
+    const retryResponse = await this.requestOllamaAgentTurn(
+      baseUrl,
+      selectedModel,
+      [...messages, { role: 'user', content: correctionMessage }],
+    );
+
+    const retryResponseText = retryResponse.message?.content?.trim() ?? '';
+    if (!retryResponseText) {
+      throw new Error('Ollama returned an empty response after envelope correction.');
+    }
+
+    try {
+      return {
+        correctionMessage,
+        envelope: parseOllamaAgentEnvelope(retryResponseText),
+        response: retryResponse,
+        responseText: retryResponseText,
+      };
+    } catch (retryError) {
+      const retryParseError = this.normalizeOllamaParseError(retryError);
+      if (this.canFallbackToPlainTextAnswer(retryParseError, completedToolCalls)) {
+        return {
+          correctionMessage,
+          envelope: {
+            type: 'final_answer',
+            content: retryResponseText,
+          },
+          response: retryResponse,
+          responseText: retryResponseText,
+        };
+      }
+
+      throw new Error(`Ollama returned an invalid agent envelope: ${retryParseError.message}`);
+    }
+  }
+
+  private normalizeOllamaParseError(error: unknown): OllamaEnvelopeParseError {
+    if (error && typeof error === 'object' && error instanceof Error && 'reason' in error && 'rawText' in error) {
+      return error as OllamaEnvelopeParseError;
+    }
+
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      name: 'OllamaEnvelopeParseError',
+      message,
+      rawText: '',
+      reason: 'invalid_shape',
+    } as OllamaEnvelopeParseError;
+  }
+
+  private buildInvalidOllamaEnvelopeMessage(error: OllamaEnvelopeParseError): string {
+    const snippet = error.rawText.trim().slice(0, 1200);
+    const previousReply = snippet ? `\n\nPrevious reply:\n${snippet}` : '';
+
+    return [
+      'Your previous reply did not follow the required JSON envelope.',
+      `Reason: ${error.message}`,
+      previousReply,
+      'Reply again with EXACTLY one JSON object and no extra prose or markdown.',
+      'Allowed forms:',
+      '{"type":"tool_call","tool":"Read","input":{"file_path":"notes/today.md"}}',
+      '{"type":"final_answer","content":"your answer here"}',
+    ].join('\n');
+  }
+
+  private canFallbackToPlainTextAnswer(
+    error: OllamaEnvelopeParseError,
+    completedToolCalls: number,
+  ): boolean {
+    return completedToolCalls > 0 && error.reason === 'missing_json';
   }
 
   private async *spawnAndStream(

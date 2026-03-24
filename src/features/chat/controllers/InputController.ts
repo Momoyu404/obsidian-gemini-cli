@@ -13,7 +13,7 @@ import { ResumeSessionDropdown } from '../../../shared/components/ResumeSessionD
 import { InstructionModal } from '../../../shared/modals/InstructionConfirmModal';
 import { appendBrowserContext, type BrowserSelectionContext } from '../../../utils/browser';
 import { appendCanvasContext, type CanvasSelectionContext } from '../../../utils/canvas';
-import { appendCurrentNote } from '../../../utils/context';
+import { appendContextFiles, appendCurrentNote } from '../../../utils/context';
 import { formatDurationMmSs } from '../../../utils/date';
 import { appendEditorContext, type EditorSelectionContext } from '../../../utils/editor';
 import { appendMarkdownSnippet } from '../../../utils/markdown';
@@ -217,6 +217,8 @@ export class InputController {
 
     const images = imageContextManager?.getAttachedImages() || [];
     const imagesForMessage = images.length > 0 ? [...images] : undefined;
+    const selectedModel = this.getSelectedModel();
+    const usesGeminiFeatures = supportsGeminiNativeFeatures(selectedModel);
 
     // Only clear images if we consumed user input (not for programmatic content override)
     if (shouldUseInput) {
@@ -224,7 +226,9 @@ export class InputController {
     }
 
     const currentNotePath = fileContextManager?.getCurrentNotePath() || null;
-    const shouldSendCurrentNote = fileContextManager?.shouldSendCurrentNote(currentNotePath) ?? false;
+    const shouldSendCurrentNote = usesGeminiFeatures
+      ? (fileContextManager?.shouldSendCurrentNote(currentNotePath) ?? false)
+      : !!currentNotePath;
 
     const editorContextOverride = options?.editorContextOverride;
     const editorContext = editorContextOverride !== undefined
@@ -267,6 +271,14 @@ export class InputController {
         : canvasSelectionController.getContext();
       if (canvasContext) {
         promptToSend = appendCanvasContext(promptToSend, canvasContext);
+      }
+
+      if (!usesGeminiFeatures) {
+        const attachedFiles = Array.from(fileContextManager?.getAttachedFiles?.() ?? []);
+        const contextFiles = attachedFiles.filter(filePath => filePath && filePath !== currentNotePath);
+        if (contextFiles.length > 0) {
+          promptToSend = appendContextFiles(promptToSend, contextFiles);
+        }
       }
 
       // Transform context file mentions (e.g., @folder/file.ts) to absolute paths
@@ -340,7 +352,7 @@ export class InputController {
 
     queryOptions = {
       ...queryOptions,
-      model: queryOptions?.model ?? this.getSelectedModel(),
+      model: queryOptions?.model ?? selectedModel,
     };
 
     let wasInterrupted = false;
