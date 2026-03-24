@@ -39,8 +39,9 @@ export interface OllamaChatResponse {
   eval_count?: number;
 }
 
-export const OLLAMA_AGENT_TOOL_NAMES = ['Read', 'LS', 'Glob', 'Grep'] as const;
+export const OLLAMA_AGENT_TOOL_NAMES = ['Read', 'LS', 'Glob', 'Grep', 'Write', 'Edit', 'LoadSkill'] as const;
 export type OllamaAgentToolName = (typeof OLLAMA_AGENT_TOOL_NAMES)[number];
+export const OLLAMA_AGENT_READ_ONLY_TOOL_NAMES = ['Read', 'LS', 'Glob', 'Grep', 'LoadSkill'] as const;
 
 export interface OllamaToolCallEnvelope {
   type: 'tool_call';
@@ -74,13 +75,16 @@ export class OllamaEnvelopeParseError extends Error {
   }
 }
 
-export const OLLAMA_AGENT_ENVELOPE_SCHEMA = {
-  oneOf: [
+export function buildOllamaAgentEnvelopeSchema(
+  allowedTools: readonly OllamaAgentToolName[] = OLLAMA_AGENT_TOOL_NAMES,
+) {
+  return {
+    oneOf: [
     {
       type: 'object',
       properties: {
         type: { type: 'string', enum: ['tool_call'] },
-        tool: { type: 'string', enum: [...OLLAMA_AGENT_TOOL_NAMES] },
+        tool: { type: 'string', enum: [...allowedTools] },
         input: { type: 'object' },
       },
       required: ['type', 'tool', 'input'],
@@ -96,7 +100,10 @@ export const OLLAMA_AGENT_ENVELOPE_SCHEMA = {
       additionalProperties: false,
     },
   ],
-} as const;
+  } as const;
+}
+
+export const OLLAMA_AGENT_ENVELOPE_SCHEMA = buildOllamaAgentEnvelopeSchema();
 
 export const DEFAULT_OLLAMA_BASE_URL = 'http://127.0.0.1:11434';
 
@@ -248,6 +255,7 @@ export async function fetchOllamaModels(
 export async function requestOllamaChat(
   baseUrl: string,
   body: {
+    format?: object;
     model: string;
     messages: OllamaChatMessage[];
   },
@@ -262,7 +270,7 @@ export async function requestOllamaChat(
     body: JSON.stringify({
       model: body.model,
       messages: body.messages,
-      format: OLLAMA_AGENT_ENVELOPE_SCHEMA,
+      format: body.format ?? OLLAMA_AGENT_ENVELOPE_SCHEMA,
       stream: false,
     }),
     signal,

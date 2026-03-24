@@ -16,7 +16,12 @@ import * as readline from 'readline';
 import type GeminesePlugin from '../../main';
 import { stripCurrentNoteContext } from '../../utils/context';
 import { getEnhancedPath, getMissingNodeError, parseEnvironmentVariables } from '../../utils/env';
+import { getOllamaVisibleSlashCommands, listAvailableLocalSkills, type LocalSkillDefinition } from '../../utils/localSkills';
 import {
+  buildOllamaAgentEnvelopeSchema,
+  OLLAMA_AGENT_READ_ONLY_TOOL_NAMES,
+  type OllamaAgentEnvelope,
+  type OllamaAgentToolName,
   type OllamaEnvelopeParseError,
   parseOllamaAgentEnvelope,
   requestOllamaChat,
@@ -26,9 +31,12 @@ import {
   buildContextFromHistory,
   buildPromptWithHistoryContext,
 } from '../../utils/session';
+import { isSkill } from '../../utils/slashCommand';
 import type { McpServerManager } from '../mcp';
 import { buildOllamaAgentSystemPrompt } from '../prompts/ollamaAgent';
 import { isSessionInitEvent, isStreamChunk, parseGeminiJsonLine,transformGeminiEvent } from '../sdk';
+import { VaultFileAdapter } from '../storage/VaultFileAdapter';
+import { TOOL_SKILL } from '../tools/toolNames';
 import type {
   ApprovalDecision,
   ChatMessage,
@@ -248,6 +256,7 @@ export class GemineseService {
         images,
         conversationHistory,
         queryOptions?.externalContextPaths ?? this.currentExternalContextPaths,
+        queryOptions?.allowedTools,
       );
       yield { type: 'done' };
       return;
@@ -352,6 +361,7 @@ export class GemineseService {
     images?: ImageAttachment[],
     conversationHistory?: ChatMessage[],
     externalContextPaths: string[] = [],
+    requestedAllowedTools?: string[],
   ): AsyncGenerator<StreamChunk> {
     const vaultPath = getVaultPath(this.plugin.app);
     if (!vaultPath) {
@@ -367,16 +377,24 @@ export class GemineseService {
     const baseUrl = this.plugin.getOllamaBaseUrl();
     const normalizedExternalContextPaths = externalContextPaths.filter(Boolean);
     this.currentExternalContextPaths = normalizedExternalContextPaths;
+    const skillCatalog = await listAvailableLocalSkills(vaultPath);
+    const allowedTools = this.getAllowedOllamaTools(requestedAllowedTools);
     const messages = this.buildOllamaMessages(
       prompt,
       conversationHistory,
       vaultPath,
       normalizedExternalContextPaths,
+      allowedTools,
+      skillCatalog,
     );
     const toolExecutor = new OllamaToolExecutor({
-      vaultPath,
-      externalContextPaths: normalizedExternalContextPaths,
       allowedExportPaths: this.plugin.settings.allowedExportPaths,
+      allowedTools,
+      externalContextPaths: normalizedExternalContextPaths,
+      permissionMode: this.plugin.settings.permissionMode,
+      skillCatalog,
+      vaultAdapter: new VaultFileAdapter(this.plugin.app),
+      vaultPath,
     });
 
     this.abortController = new AbortController();
@@ -393,7 +411,7 @@ export class GemineseService {
 
     try {
       for (let round = 0; round < maxToolRounds; round += 1) {
-        const response = await this.requestOllamaAgentTurn(baseUrl, selectedModel, messages);
+        const response = await this.requestOllamaAgentTurn(baseUrl, selectedModel, messages, allowedTools);
 
         if (this.abortController.signal.aborted) {
           return;
@@ -418,6 +436,7 @@ export class GemineseService {
             selectedModel,
             messages,
             completedToolCalls,
+            allowedTools,
           );
           envelope = recovery.envelope;
 
@@ -473,8 +492,8 @@ export class GemineseService {
           yield {
             type: 'tool_use',
             id: toolId,
-            name: envelope.tool,
-            input: envelope.input,
+            name: this.mapOllamaToolNameToUiName(envelope.tool),
+            input: this.mapOllamaToolInputToUiInput(envelope.tool, envelope.input),
             parentToolUseId: null,
           };
 
@@ -536,8 +555,8 @@ export class GemineseService {
         yield {
           type: 'tool_use',
           id: toolId,
-          name: envelope.tool,
-          input: envelope.input,
+          name: this.mapOllamaToolNameToUiName(envelope.tool),
+          input: this.mapOllamaToolInputToUiInput(envelope.tool, envelope.input),
           parentToolUseId: null,
         };
 
@@ -581,13 +600,21 @@ export class GemineseService {
     conversationHistory: ChatMessage[] | undefined,
     vaultPath: string,
     externalContextPaths: string[],
+    allowedTools: readonly OllamaAgentToolName[],
+    skillCatalog: LocalSkillDefinition[],
   ) {
     return [
       {
         role: 'system' as const,
         content: buildOllamaAgentSystemPrompt({
+          allowedTools,
+          availableSkills: skillCatalog.map(skill => ({
+            name: skill.name,
+            description: skill.description,
+          })),
           customPrompt: this.plugin.settings.systemPrompt,
           externalContextPaths,
+          permissionMode: this.plugin.settings.permissionMode,
           userName: this.plugin.settings.userName,
           vaultPath,
         }),
@@ -619,10 +646,12 @@ export class GemineseService {
     baseUrl: string,
     selectedModel: GeminiModel,
     messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
+    allowedTools: readonly OllamaAgentToolName[],
   ) {
     return await requestOllamaChat(
       baseUrl,
       {
+        format: buildOllamaAgentEnvelopeSchema(allowedTools),
         model: getModelId(selectedModel),
         messages,
       },
@@ -636,9 +665,10 @@ export class GemineseService {
     selectedModel: GeminiModel,
     messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     completedToolCalls: number,
+    allowedTools: readonly OllamaAgentToolName[],
   ): Promise<{
     correctionMessage: string | null;
-    envelope: { type: 'final_answer'; content: string } | { type: 'tool_call'; tool: 'Read' | 'LS' | 'Glob' | 'Grep'; input: Record<string, unknown> };
+    envelope: OllamaAgentEnvelope;
     response: Awaited<ReturnType<typeof requestOllamaChat>>;
     responseText: string;
   }> {
@@ -648,6 +678,7 @@ export class GemineseService {
       baseUrl,
       selectedModel,
       [...messages, { role: 'user', content: correctionMessage }],
+      allowedTools,
     );
 
     const retryResponseText = retryResponse.message?.content?.trim() ?? '';
@@ -714,6 +745,36 @@ export class GemineseService {
     completedToolCalls: number,
   ): boolean {
     return completedToolCalls > 0 && error.reason === 'missing_json';
+  }
+
+  private getAllowedOllamaTools(requestedAllowedTools?: string[]): OllamaAgentToolName[] {
+    const baseTools = this.plugin.settings.permissionMode === 'plan'
+      ? [...OLLAMA_AGENT_READ_ONLY_TOOL_NAMES]
+      : ['Read', 'LS', 'Glob', 'Grep', 'Write', 'Edit', 'LoadSkill'] as OllamaAgentToolName[];
+
+    if (!requestedAllowedTools || requestedAllowedTools.length === 0) {
+      return [...baseTools];
+    }
+
+    const requested = new Set(requestedAllowedTools);
+    return baseTools.filter(tool => requested.has(tool) || (tool === 'LoadSkill' && requested.has(TOOL_SKILL)));
+  }
+
+  private mapOllamaToolNameToUiName(toolName: OllamaAgentToolName): string {
+    return toolName === 'LoadSkill' ? TOOL_SKILL : toolName;
+  }
+
+  private mapOllamaToolInputToUiInput(
+    toolName: OllamaAgentToolName,
+    input: Record<string, unknown>,
+  ): Record<string, unknown> {
+    if (toolName === 'LoadSkill') {
+      const skillName = typeof input.skill_name === 'string'
+        ? input.skill_name
+        : (typeof input.skill === 'string' ? input.skill : '');
+      return { skill: skillName };
+    }
+    return input;
   }
 
   private async *spawnAndStream(
@@ -839,7 +900,19 @@ export class GemineseService {
   }
 
   getSupportedCommands(): Promise<SlashCommand[]> {
-    return Promise.resolve([]);
+    if (this.usesGeminiRuntime(this.activeModel)) {
+      return Promise.resolve([]);
+    }
+
+    const vaultPath = getVaultPath(this.plugin.app);
+    if (!vaultPath) {
+      return Promise.resolve([]);
+    }
+
+    return getOllamaVisibleSlashCommands(
+      vaultPath,
+      this.plugin.settings.slashCommands,
+    ).then(commands => commands.filter(command => !isSkill(command) || command.userInvocable !== false));
   }
 
   setSessionId(id: string | null, externalContextPaths?: string[]): void {

@@ -34,6 +34,7 @@ export {
   type ModelOption,
   type ModelSelection,
   supportsGeminiNativeFeatures,
+  supportsPermissionModes,
   THINKING_BUDGETS,
   type ThinkingBudget,
 } from './models';

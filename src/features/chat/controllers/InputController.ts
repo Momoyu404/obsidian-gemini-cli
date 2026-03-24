@@ -17,6 +17,7 @@ import { appendContextFiles, appendCurrentNote } from '../../../utils/context';
 import { formatDurationMmSs } from '../../../utils/date';
 import { appendEditorContext, type EditorSelectionContext } from '../../../utils/editor';
 import { appendMarkdownSnippet } from '../../../utils/markdown';
+import { isSkill } from '../../../utils/slashCommand';
 import { COMPLETION_FLAVOR_WORDS } from '../constants';
 import { type InlineAskQuestionConfig, InlineAskUserQuestion } from '../rendering/InlineAskUserQuestion';
 import { InlineExitPlanMode } from '../rendering/InlineExitPlanMode';
@@ -105,6 +106,46 @@ export class InputController {
       }
     }
     return false;
+  }
+
+  private async resolveLocalSlashCommandInvocation(content: string): Promise<{
+    allowedTools?: string[];
+    expandedContent: string;
+  } | null> {
+    const trimmed = content.trim();
+    const match = trimmed.match(/^\/([a-zA-Z0-9_-]+)(?:\s(.*))?$/);
+    if (!match) return null;
+
+    const commandName = match[1].toLowerCase();
+    const args = (match[2] || '').trim();
+    const serviceCommands = await this.getAgentService()?.getSupportedCommands?.();
+    const commands = serviceCommands ?? this.deps.plugin.settings.slashCommands ?? [];
+    const command = commands.find(cmd => cmd.name.toLowerCase() === commandName);
+    if (!command) return null;
+    if (isSkill(command) && command.userInvocable === false) return null;
+
+    if (isSkill(command)) {
+      const lines = [
+        `Use the "${command.name}" skill for this request.`,
+        `First call LoadSkill with {"skill_name":"${command.name}"} and then follow the loaded instructions.`,
+      ];
+      if (args) {
+        lines.push('', 'User request:', args);
+      }
+      return {
+        allowedTools: command.allowedTools,
+        expandedContent: lines.join('\n'),
+      };
+    }
+
+    const expandedContent = command.content.includes('$ARGUMENTS')
+      ? command.content.split('$ARGUMENTS').join(args)
+      : (args ? `${command.content}\n\nUser arguments:\n${args}` : command.content);
+
+    return {
+      allowedTools: command.allowedTools,
+      expandedContent,
+    };
   }
 
   // ============================================
@@ -212,13 +253,17 @@ export class InputController {
 
     // Slash commands are passed directly to SDK for handling
     // SDK handles expansion, $ARGUMENTS, @file references, and frontmatter options
-    const displayContent = content;
-    let queryOptions: QueryOptions | undefined;
-
     const images = imageContextManager?.getAttachedImages() || [];
     const imagesForMessage = images.length > 0 ? [...images] : undefined;
     const selectedModel = this.getSelectedModel();
     const usesGeminiFeatures = supportsGeminiNativeFeatures(selectedModel);
+    const localSlashInvocation = usesGeminiFeatures
+      ? null
+      : await this.resolveLocalSlashCommandInvocation(content);
+    const displayContent = content;
+    let queryOptions: QueryOptions | undefined = localSlashInvocation?.allowedTools?.length
+      ? { allowedTools: localSlashInvocation.allowedTools }
+      : undefined;
 
     // Only clear images if we consumed user input (not for programmatic content override)
     if (shouldUseInput) {
@@ -243,7 +288,7 @@ export class InputController {
     const isCompact = /^\/compact(\s|$)/i.test(content);
 
     // User content first, context XML appended after (enables slash command detection)
-    let promptToSend = content;
+    let promptToSend = localSlashInvocation?.expandedContent ?? content;
     let currentNoteForMessage: string | undefined;
 
     // SDK built-in commands (e.g., /compact) must be sent bare — context XML breaks detection

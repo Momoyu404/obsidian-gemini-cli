@@ -127,6 +127,11 @@ export function supportsGeminiNativeFeatures(model: GeminiModel): boolean {
   return getModelFamily(model) === 'gemini';
 }
 
+export function supportsPermissionModes(model: GeminiModel): boolean {
+  const family = getModelFamily(model);
+  return family === 'gemini' || family === 'ollama';
+}
+
 export type ThinkingBudget = 'off' | 'low' | 'medium' | 'high' | 'xhigh';
 
 export const THINKING_BUDGETS: { value: ThinkingBudget; label: string; tokens: number }[] = [

@@ -2,13 +2,17 @@ import type { Dirent } from 'fs';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
+import type { LocalSkillDefinition } from '../../utils/localSkills';
 import type { OllamaAgentToolName } from '../../utils/ollama';
 import {
   getPathAccessType,
+  isPathWithinVault,
   normalizePathForComparison,
   normalizePathForFilesystem,
   normalizePathForVault,
 } from '../../utils/path';
+import type { VaultFileAdapter } from '../storage/VaultFileAdapter';
+import type { PermissionMode } from '../types/settings';
 
 const DEFAULT_READ_LIMIT = 200;
 const MAX_READ_LIMIT = 400;
@@ -18,9 +22,13 @@ const MAX_GREP_RESULTS = 50;
 const MAX_FILE_BYTES = 512 * 1024;
 
 export interface OllamaToolExecutorOptions {
-  vaultPath: string;
-  externalContextPaths: string[];
   allowedExportPaths: string[];
+  allowedTools: readonly OllamaAgentToolName[];
+  externalContextPaths: string[];
+  permissionMode: PermissionMode;
+  skillCatalog: LocalSkillDefinition[];
+  vaultAdapter: VaultFileAdapter;
+  vaultPath: string;
 }
 
 export interface OllamaToolExecutionResult {
@@ -34,14 +42,22 @@ interface ResolvedPath {
 }
 
 export class OllamaToolExecutor {
+  private readonly allowedTools: readonly OllamaAgentToolName[];
   private readonly vaultPath: string;
   private readonly externalContextPaths: string[];
   private readonly allowedExportPaths: string[];
+  private readonly permissionMode: PermissionMode;
+  private readonly skillCatalog: LocalSkillDefinition[];
+  private readonly vaultAdapter: VaultFileAdapter;
 
   constructor(options: OllamaToolExecutorOptions) {
+    this.allowedTools = options.allowedTools;
     this.vaultPath = options.vaultPath;
     this.externalContextPaths = options.externalContextPaths;
     this.allowedExportPaths = options.allowedExportPaths;
+    this.permissionMode = options.permissionMode;
+    this.skillCatalog = options.skillCatalog;
+    this.vaultAdapter = options.vaultAdapter;
   }
 
   async execute(
@@ -49,6 +65,10 @@ export class OllamaToolExecutor {
     input: Record<string, unknown>,
   ): Promise<OllamaToolExecutionResult> {
     try {
+      if (!this.allowedTools.includes(tool)) {
+        throw new Error(`${tool} is not available in ${this.permissionMode} mode.`);
+      }
+
       switch (tool) {
         case 'Read':
           return {
@@ -68,6 +88,21 @@ export class OllamaToolExecutor {
         case 'Grep':
           return {
             content: await this.executeGrep(input),
+            isError: false,
+          };
+        case 'Write':
+          return {
+            content: await this.executeWrite(input),
+            isError: false,
+          };
+        case 'Edit':
+          return {
+            content: await this.executeEdit(input),
+            isError: false,
+          };
+        case 'LoadSkill':
+          return {
+            content: await this.executeLoadSkill(input),
             isError: false,
           };
       }
@@ -111,6 +146,61 @@ export class OllamaToolExecutor {
     }
 
     return [`FILE: ${resolved.displayPath}`, ...numbered].join('\n');
+  }
+
+  private async executeWrite(input: Record<string, unknown>): Promise<string> {
+    const filePath = typeof input.file_path === 'string' ? input.file_path : '';
+    const content = typeof input.content === 'string' ? input.content : '';
+    const relativePath = this.resolveVaultWritePath(filePath);
+
+    await this.vaultAdapter.write(relativePath, content);
+    return `Wrote ${relativePath}`;
+  }
+
+  private async executeEdit(input: Record<string, unknown>): Promise<string> {
+    const filePath = typeof input.file_path === 'string' ? input.file_path : '';
+    const oldString = typeof input.old_string === 'string' ? input.old_string : '';
+    const newString = typeof input.new_string === 'string' ? input.new_string : '';
+    const replaceAll = input.replace_all === true;
+    const relativePath = this.resolveVaultWritePath(filePath);
+
+    if (!oldString) {
+      throw new Error('Edit requires old_string.');
+    }
+
+    const existing = await this.vaultAdapter.read(relativePath);
+    if (!existing.includes(oldString)) {
+      throw new Error(`Edit could not find the target text in ${relativePath}.`);
+    }
+
+    const nextContent = replaceAll
+      ? existing.split(oldString).join(newString)
+      : existing.replace(oldString, newString);
+
+    await this.vaultAdapter.write(relativePath, nextContent);
+    return `Edited ${relativePath}`;
+  }
+
+  private async executeLoadSkill(input: Record<string, unknown>): Promise<string> {
+    const skillName = typeof input.skill_name === 'string'
+      ? input.skill_name
+      : (typeof input.skill === 'string' ? input.skill : '');
+    if (!skillName.trim()) {
+      throw new Error('LoadSkill requires skill_name.');
+    }
+
+    const skill = this.skillCatalog.find(candidate => candidate.name.toLowerCase() === skillName.trim().toLowerCase());
+    if (!skill) {
+      throw new Error(`Skill not found: ${skillName}`);
+    }
+
+    const content = await fs.readFile(skill.filePath, 'utf8');
+    return [
+      `SKILL: ${skill.name}`,
+      `SOURCE: ${skill.source}`,
+      `PATH: ${skill.filePath.replace(/\\/g, '/')}`,
+      content,
+    ].join('\n\n');
   }
 
   private async executeLs(input: Record<string, unknown>): Promise<string> {
@@ -293,6 +383,23 @@ export class OllamaToolExecutor {
       absolutePath,
       displayPath: this.formatDisplayPath(absolutePath),
     };
+  }
+
+  private resolveVaultWritePath(rawPath: string): string {
+    const normalized = normalizePathForFilesystem(rawPath);
+    if (!normalized) {
+      throw new Error('A valid file_path is required.');
+    }
+    if (!isPathWithinVault(normalized, this.vaultPath)) {
+      throw new Error(`Write access is only allowed inside the current vault: ${rawPath}`);
+    }
+
+    const relativePath = normalizePathForVault(normalized, this.vaultPath);
+    if (!relativePath) {
+      throw new Error(`Could not resolve a vault-relative path for: ${rawPath}`);
+    }
+
+    return relativePath;
   }
 
   private formatDisplayPath(absolutePath: string): string {

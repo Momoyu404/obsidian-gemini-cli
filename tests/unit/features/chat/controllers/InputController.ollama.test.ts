@@ -27,6 +27,16 @@ function createDeps(): InputControllerDeps & { promptLog: string[] } {
     markCurrentNoteSent: jest.fn(),
     transformContextMentions: jest.fn().mockImplementation((text: string) => text),
   };
+  const agentService = {
+    query: jest.fn().mockImplementation((prompt: string) => {
+      promptLog.push(prompt);
+      return (async function* () {
+        yield { type: 'done' };
+      })();
+    }),
+    getSessionId: jest.fn().mockReturnValue(null),
+    getSupportedCommands: jest.fn().mockResolvedValue([]),
+  };
 
   return {
     plugin: {
@@ -90,15 +100,7 @@ function createDeps(): InputControllerDeps & { promptLog: string[] } {
     getStatusPanel: () => null,
     generateId: () => `msg-${Date.now()}`,
     resetInputHeight: jest.fn(),
-    getAgentService: () => ({
-      query: jest.fn().mockImplementation((prompt: string) => {
-        promptLog.push(prompt);
-        return (async function* () {
-          yield { type: 'done' };
-        })();
-      }),
-      getSessionId: jest.fn().mockReturnValue(null),
-    }) as any,
+    getAgentService: () => agentService as any,
     getSubagentManager: () => ({ resetSpawnedCount: jest.fn(), resetStreamingState: jest.fn() }) as any,
     getSelectedModel: () => 'ollama:llama3.1',
     promptLog,
@@ -121,5 +123,29 @@ describe('InputController Ollama context injection', () => {
     expect(deps.promptLog[1]).toContain('<current_note>');
     expect(deps.promptLog[0]).toContain('<context_files>\nnotes/extra.md\n</context_files>');
     expect(deps.promptLog[1]).toContain('<context_files>\nnotes/extra.md\n</context_files>');
+  });
+
+  it('expands explicit skill invocations into LoadSkill instructions', async () => {
+    const deps = createDeps();
+    const agentService = deps.getAgentService?.() as any;
+    agentService.getSupportedCommands.mockResolvedValue([
+      {
+        id: 'skill-obsidian-markdown',
+        name: 'obsidian-markdown',
+        description: 'OFM guidance',
+        content: 'Use markdown skill',
+        source: 'user',
+      },
+    ]);
+
+    const controller = new InputController(deps);
+    const inputEl = deps.getInputEl();
+
+    inputEl.value = '/obsidian-markdown fix wikilinks';
+    await controller.sendMessage();
+
+    expect(deps.promptLog[0]).toContain('Use the "obsidian-markdown" skill for this request.');
+    expect(deps.promptLog[0]).toContain('LoadSkill with {"skill_name":"obsidian-markdown"}');
+    expect(deps.promptLog[0]).toContain('fix wikilinks');
   });
 });

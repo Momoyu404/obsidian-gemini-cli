@@ -11,6 +11,7 @@ import {
   getContextWindowSize,
   getModelFamily,
   supportsGeminiNativeFeatures,
+  supportsPermissionModes,
 } from '../../../core/types';
 import { t } from '../../../i18n';
 import type GeminesePlugin from '../../../main';
@@ -400,7 +401,12 @@ function initializeSlashCommands(
     {
       onSelect: () => {},
       onHide: () => {},
-      getSdkCommands,
+      getSdkCommands: async () => {
+        if (tab.service) {
+          return await tab.service.getSupportedCommands();
+        }
+        return await getSdkCommands?.() ?? [];
+      },
     },
     {
       hiddenCommands: getHiddenCommands?.() ?? new Set(),
@@ -460,22 +466,23 @@ function initializeInstructionAndTodo(tab: TabData, plugin: GeminesePlugin): voi
 
 function refreshModelDependentUI(tab: TabData, plugin: GeminesePlugin): void {
   const supportsGeminiFeatures = supportsGeminiNativeFeatures(tab.selectedModel);
-  const disabledReason = 'Currently available only for Gemini';
+  const supportsModeSwitching = supportsPermissionModes(tab.selectedModel);
+  const disabledReason = 'Currently unavailable for this model';
 
   tab.ui.modelSelector?.updateDisplay();
   tab.ui.modelSelector?.renderOptions();
   tab.ui.thinkingBudgetSelector?.setDisabled(!supportsGeminiFeatures, disabledReason);
-  tab.ui.permissionToggle?.setDisabled(!supportsGeminiFeatures, disabledReason);
+  tab.ui.permissionToggle?.setDisabled(!supportsModeSwitching, disabledReason);
   tab.ui.mcpServerSelector?.setDisabled(!supportsGeminiFeatures, disabledReason);
 
-  if (!supportsGeminiFeatures && plugin.settings.permissionMode === 'plan') {
+  if (!supportsModeSwitching && plugin.settings.permissionMode === 'plan') {
     updatePlanModeUI(tab, plugin, tab.state.prePlanPermissionMode ?? 'agent');
     tab.state.prePlanPermissionMode = null;
   }
 
   tab.dom.inputWrapper.toggleClass(
     'geminese-input-plan-mode',
-    supportsGeminiFeatures && plugin.settings.permissionMode === 'plan',
+    supportsModeSwitching && plugin.settings.permissionMode === 'plan',
   );
 }
 
@@ -501,6 +508,7 @@ function initializeInputToolbar(tab: TabData, plugin: GeminesePlugin): void {
       tab.selectedModel = model;
       tab.resolvedModelName = null;
       tab.service?.setActiveModel(model);
+      tab.ui.slashCommandDropdown?.resetSdkSkillsCache();
 
       const isDefaultModel = DEFAULT_GEMINI_MODELS.find((m) => m.value === model);
       if (isDefaultModel) {
@@ -552,8 +560,8 @@ function initializeInputToolbar(tab: TabData, plugin: GeminesePlugin): void {
       await plugin.saveSettings();
     },
     onPermissionModeChange: async (mode) => {
-      if (!supportsGeminiNativeFeatures(tab.selectedModel)) {
-        new Notice('Plan and Agent modes are currently available only for Gemini.');
+      if (!supportsPermissionModes(tab.selectedModel)) {
+        new Notice('Plan and Agent modes are not available for this model.');
         refreshModelDependentUI(tab, plugin);
         return;
       }

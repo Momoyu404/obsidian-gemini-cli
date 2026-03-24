@@ -63,7 +63,7 @@ describe('ollama utils', () => {
   });
 
   it('rejects malformed agent envelopes', () => {
-    expect(() => parseOllamaAgentEnvelope('{"type":"tool_call","tool":"Write","input":{}}'))
+    expect(() => parseOllamaAgentEnvelope('{"type":"tool_call","tool":"Bash","input":{}}'))
       .toThrow('supported tool');
   });
 
