@@ -2,39 +2,49 @@
 
 <p align="center"><a href="README.md">English</a> | <a href="README.zh-CN.md">Chinese (Simplified)</a> | <a href="README.zh-TW.md">Chinese (Traditional)</a></p>
 
-![geminese example](docs/image/geminese-example.png)
+![Geminese homepage](docs/image/Geminese-homepage.png)
 
-geminese is an Obsidian plugin that embeds [Gemini CLI](https://github.com/google-gemini/gemini-cli) as an AI collaborator in your vault. Your vault becomes Gemini's working directory, giving it full agentic capabilities: file read/write, search, bash commands, and multi-step workflows.
+geminese brings both Gemini and Ollama into Obsidian. Use Gemini for native cloud workflows, or switch to a local Ollama model for private, vault-native planning and agentic work.
 
-Since most people exhaust their Claude quotas on work and coding, they rarely have enough limits left for their Obsidian notes. To solve this, I built a plugin that brings Gemini seamlessly into Obsidian.
+Local models matter here because they are not just chat backends. In geminese, an Ollama model can work with your vault as an agent: inspect files, search notes, draft edits, and help you plan changes before anything is written.
+
+![Geminese local model agent workflow](docs/image/geminese-local-model.png)
+
+Gemini remains the full native path for users who want Gemini CLI integration, cloud models, and Gemini-specific features.
 
 ## Features
 
-- **Full Agentic Capabilities**: Leverage Gemini CLI's power to read, write, and edit files, search, and execute bash commands, all within your Obsidian vault.
-- **No API Key Required**: Uses Gemini CLI which authenticates with your Google account — works with the free tier (60 req/min, 1000 req/day).
+- **Dual Model Families**: Switch between Gemini cloud models and locally running Ollama models directly in the chat toolbar.
+- **Full Agentic Capabilities**: Work with your vault as a real agent — read, write, edit, and search files without leaving Obsidian.
+- **Local-First Workflows**: Use Ollama for private, vault-native planning and agentic work through the local HTTP runtime.
+- **No API Key Required for Gemini**: Gemini CLI authenticates with your Google account and works with the free tier (60 req/min, 1000 req/day).
 - **Context-Aware**: Automatically attach the focused note, mention files with `@`, exclude notes by tag, include editor selection, and access external directories for additional context.
 - **Vision Support**: Analyze images by sending them via drag-and-drop, paste, or file path.
 - **Inline Edit**: Edit selected text or insert content at cursor position directly in notes with word-level diff preview.
-- **Instruction Mode (`#`)**: Add refined custom instructions to your system prompt directly from the chat input.
+- **Instruction Mode (`#`)**: Add refined custom instructions to your system prompt directly from the chat input when using Gemini.
 - **Slash Commands**: Create reusable prompt templates triggered by `/command`, with argument placeholders and `@file` references.
-- **MCP Support**: Connect external tools and data sources via Model Context Protocol servers (stdio, SSE, HTTP).
-- **Model Selection**: Choose between Auto, Pro, Flash, and Flash Lite. The actual model (Gemini 2.5 or 3.x) depends on your [Gemini CLI](https://github.com/google-gemini/gemini-cli) version.
-- **Plan Mode**: Toggle plan mode via Shift+Tab — Gemini explores and designs before implementing.
+- **MCP Support**: Connect external tools and data sources via Model Context Protocol servers (stdio, SSE, HTTP) when using Gemini-native workflows.
+- **Model Selection**: Choose Gemini Auto, Pro, Flash, Flash Lite, or any installed Ollama model discovered from your local runtime.
+- **Plan Mode**: Toggle plan mode via Shift+Tab — Gemini or Ollama can explore and design before implementing.
 - **Security**: Permission modes — **Agent** (execute tools and edit files) and **Plan** (read-only planning), plus command blocklist and vault-scoped access.
 - **10 Languages**: English, Chinese (Simplified/Traditional), Japanese, Korean, Spanish, German, French, Portuguese, Russian.
 
+Plan mode makes local workflows safer: review first, decide second, edit only when you switch to Agent mode.
+
+![Geminese local plan mode](docs/image/geminese-local-plan.png)
+
 ## Requirements
 
-- [Gemini CLI](https://github.com/google-gemini/gemini-cli) installed
 - Obsidian v1.4.5+
-- Google account (free tier works)
 - Desktop only (macOS, Linux, Windows)
+- For Gemini models: [Gemini CLI](https://github.com/google-gemini/gemini-cli) installed and a Google account (free tier works)
+- For Ollama models: a local Ollama runtime with at least one installed model
 
 ## Installation
 
-### Prerequisites: Install Gemini CLI
+### Prerequisites
 
-Depending on your platform, ensure Node.js is installed first.
+#### Option 1: Use Gemini
 
 **macOS & Linux**
 ```bash
@@ -57,6 +67,10 @@ gemini
 
 Follow the prompts to sign in with your Google account.
 
+#### Option 2: Use Ollama locally
+
+Install and start Ollama on your machine, make sure the local HTTP API is available, and keep at least one model installed. If needed, you can change the Ollama endpoint later in Settings via **Ollama base URL**.
+
 ### Install the Plugin
 
 1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/Momoyu404/geminese/releases/latest)
@@ -69,7 +83,7 @@ Follow the prompts to sign in with your Google account.
 
 ## Skills
 
-Supercharge your Gemini with [Obsidian Skills](https://github.com/kepano/obsidian-skills) — agent skills that teach Gemini how to work with Obsidian Markdown, Bases, JSON Canvas, CLI, and more.
+Supercharge geminese with [Obsidian Skills](https://github.com/kepano/obsidian-skills) — agent skills that teach Gemini and local vault workflows how to work with Obsidian Markdown, Bases, JSON Canvas, CLI, and more.
 
 ### Install Skills
 
@@ -103,9 +117,9 @@ Gemini will clone the repo and set everything up for you.
 1. Click the bot icon in ribbon or use command palette to open chat
 2. Select text + hotkey for inline edit
 
-Use it like Gemini CLI — read, write, edit, search files in your vault.
+Use Gemini or Ollama to read, write, edit, and search files in your vault.
 
-**Check you're connected:** If you get a reply in the chat, you're connected. You can ask e.g. “What model are you?” to confirm. The **model** (Auto / Pro / Flash / Flash Lite) is shown in the input toolbar next to “Thinking”; click it to change. Permission mode (**Plan / Agent**): Plan is read-only planning, Agent allows tool execution and file editing.
+**Check you're connected:** If you get a reply in the chat, you're connected. You can ask e.g. “What model are you?” to confirm. The **model** selector shows Gemini options and any available Ollama models; click it to switch. Permission mode (**Plan / Agent**): Plan is read-only planning, Agent allows tool execution and file editing.
 
 ### Context
 

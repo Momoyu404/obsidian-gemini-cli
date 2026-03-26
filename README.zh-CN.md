@@ -1,34 +1,50 @@
 # geminese
 
-geminese 是一个 Obsidian 插件，它将 [Gemini CLI](https://github.com/google-gemini/gemini-cli) 嵌入为你知识库中的 AI 协作者。你的 vault 会成为 Gemini 的工作目录，让它具备完整的代理能力：读写文件、搜索、执行 bash 命令，以及多步骤工作流。
+<p align="center"><a href="README.md">English</a> | <a href="README.zh-CN.md">Chinese (Simplified)</a> | <a href="README.zh-TW.md">Chinese (Traditional)</a></p>
+
+![Geminese homepage](docs/image/Geminese-homepage.png)
+
+geminese 把 Gemini 和 Ollama 一起带进 Obsidian。你可以继续使用 Gemini 的原生云端能力，也可以切换到本地 Ollama，在自己的 vault 中完成规划、搜索、编辑与 agent 工作流。
+
+本地模型在这里的意义，不只是“换一个聊天模型”。在 geminese 里，Ollama 可以直接作为 vault 内的 agent 工作：查看文件、搜索笔记、整理内容、起草修改，并且在真正写入之前先完成规划。
+
+![Geminese local model agent workflow](docs/image/geminese-local-model.png)
+
+Gemini 仍然保留完整的原生路线，适合希望继续使用 Gemini CLI、云端模型和 Gemini 专属能力的用户。
 
 ## 功能特性
 
-- **完整代理能力**：在 Obsidian 中直接使用 Gemini CLI 的能力，读取、写入、编辑文件，搜索内容并执行 bash 命令。
-- **无需 API Key**：使用 Gemini CLI 并通过 Google 账号认证，可直接使用免费额度（60 次请求/分钟，1000 次请求/天）。
+- **双模型路线**：可在聊天工具栏中直接切换 Gemini 云端模型和本地运行的 Ollama 模型。
+- **完整代理能力**：把你的 vault 当作真正的工作空间，直接在 Obsidian 中读取、写入、编辑和搜索文件。
+- **本地优先工作流**：通过本地 Ollama HTTP 运行时完成更私有、更贴近 vault 的规划与 agent 工作。
+- **Gemini 无需 API Key**：使用 Gemini CLI 并通过 Google 账号认证，可直接使用免费额度（60 次请求/分钟，1000 次请求/天）。
 - **上下文感知**：自动附加当前聚焦笔记；使用 `@` 提及文件；按标签排除笔记；包含编辑器选中内容；并可接入 vault 外目录作为额外上下文。
 - **视觉支持**：支持通过拖拽、粘贴或文件路径发送图片进行分析。
 - **行内编辑**：可直接在笔记中编辑选中文本，或在光标处插入内容，并提供词级 diff 预览。
-- **指令模式（`#`）**：在聊天输入框中直接添加精炼后的自定义指令到系统提示词。
+- **指令模式（`#`）**：使用 Gemini 时，可在聊天输入框中直接添加精炼后的自定义指令到系统提示词。
 - **斜杠命令**：通过 `/command` 触发可复用的提示词模板，支持参数占位符和 `@file` 引用。
-- **MCP 支持**：通过 Model Context Protocol 连接外部工具和数据源（stdio、SSE、HTTP）。
-- **模型选择**：可在 Auto、Pro、Flash、Flash Lite 间切换。实际模型（Gemini 2.5 或 3.x）取决于你的 [Gemini CLI](https://github.com/google-gemini/gemini-cli) 版本。
-- **计划模式**：通过 Shift+Tab 切换计划模式，Gemini 会先探索与设计，再执行实现。
+- **MCP 支持**：使用 Gemini 原生工作流时，可通过 Model Context Protocol 连接外部工具和数据源（stdio、SSE、HTTP）。
+- **模型选择**：可在 Gemini Auto、Pro、Flash、Flash Lite 与本地已安装的 Ollama 模型之间切换。
+- **计划模式**：通过 Shift+Tab 切换计划模式，Gemini 或 Ollama 都可以先探索和设计，再决定是否执行实现。
 - **安全机制**：权限模式包括 **Agent**（可执行工具与编辑文件）和 **Plan**（只读规划），并提供命令黑名单与 vault 范围访问控制。
 - **10 种语言**：英文、中文（简体/繁体）、日语、韩语、西班牙语、德语、法语、葡萄牙语、俄语。
 
+Plan 模式让本地工作流更可控：先阅读和分析，再做决定，只有切换到 Agent 模式后才真正修改内容。
+
+![Geminese local plan mode](docs/image/geminese-local-plan.png)
+
 ## 环境要求
 
-- 已安装 [Gemini CLI](https://github.com/google-gemini/gemini-cli)
 - Obsidian v1.4.5+
-- Google 账号（免费版可用）
 - 仅支持桌面端（macOS、Linux、Windows）
+- 使用 Gemini 模型时：需安装 [Gemini CLI](https://github.com/google-gemini/gemini-cli) 并使用 Google 账号登录（免费版可用）
+- 使用 Ollama 模型时：需在本地运行 Ollama，并至少安装一个可用模型
 
 ## 安装
 
-### 前置步骤：安装 Gemini CLI
+### 前置步骤
 
-请先根据你的平台确保已安装 Node.js。
+#### 方案 1：使用 Gemini
 
 **macOS 与 Linux**
 ```bash
@@ -51,6 +67,10 @@ gemini
 
 按提示使用 Google 账号登录。
 
+#### 方案 2：使用本地 Ollama
+
+请先在你的设备上安装并启动 Ollama，确保本地 HTTP API 可访问，并至少安装一个模型。如有需要，可稍后在设置中的 **Ollama base URL** 修改连接地址。
+
 ### 安装插件
 
 1. 从 [latest release](https://github.com/Momoyu404/geminese/releases/latest) 下载 `main.js`、`manifest.json`、`styles.css`
@@ -63,7 +83,7 @@ gemini
 
 ## Skills
 
-通过 [Obsidian Skills](https://github.com/kepano/obsidian-skills) 增强 Gemini 能力。这些技能会教 Gemini 如何处理 Obsidian Markdown、Bases、JSON Canvas、CLI 等工作。
+通过 [Obsidian Skills](https://github.com/kepano/obsidian-skills) 增强 geminese 的能力。这些技能会教 Gemini 与本地 vault 工作流如何处理 Obsidian Markdown、Bases、JSON Canvas、CLI 等任务。
 
 ### 安装 Skills
 
@@ -93,9 +113,9 @@ Gemini 会自动克隆仓库并为你完成配置。
 1. 点击左侧边栏机器人图标，或通过命令面板打开聊天
 2. 选中文本 + 快捷键进行行内编辑
 
-你可以像使用 Gemini CLI 一样在 vault 中读写、编辑、搜索文件。
+你可以使用 Gemini 或 Ollama 在 vault 中读写、编辑、搜索文件。
 
-**检查是否连接成功：** 如果聊天中能收到回复，说明已连接。你可以询问例如 “What model are you?” 进行确认。输入工具栏中 “Thinking” 旁会显示当前 **模型**（Auto / Pro / Flash / Flash Lite），点击可切换。权限模式（**Plan / Agent**）：Plan 只读规划，Agent 可执行工具并编辑文件。
+**检查是否连接成功：** 如果聊天中能收到回复，说明已连接。你可以询问例如 “What model are you?” 进行确认。输入工具栏中的 **模型** 选择器会显示 Gemini 选项和本地可用的 Ollama 模型，点击即可切换。权限模式（**Plan / Agent**）：Plan 只读规划，Agent 可执行工具并编辑文件。
 
 ### 上下文
 
