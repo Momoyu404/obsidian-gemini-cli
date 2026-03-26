@@ -12,6 +12,8 @@ geminese 把 Gemini 和 Ollama 一起帶進 Obsidian。你可以繼續使用 Gem
 
 Gemini 仍然保留完整的原生路線，適合希望繼續使用 Gemini CLI、雲端模型和 Gemini 專屬能力的使用者。
 
+![Geminese Gemini model workflow](docs/image/geminese-gemini-model.png)
+
 ## 功能特色
 
 - **雙模型路線**：可在聊天工具列中直接切換 Gemini 雲端模型和本地運行的 Ollama 模型。

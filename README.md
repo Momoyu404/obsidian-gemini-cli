@@ -12,6 +12,8 @@ Local models matter here because they are not just chat backends. In geminese, a
 
 Gemini remains the full native path for users who want Gemini CLI integration, cloud models, and Gemini-specific features.
 
+![Geminese Gemini model workflow](docs/image/geminese-gemini-model.png)
+
 ## Features
 
 - **Dual Model Families**: Switch between Gemini cloud models and locally running Ollama models directly in the chat toolbar.
