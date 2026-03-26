@@ -109,6 +109,10 @@ Gemini 會自動 clone 倉庫並為你完成設定。
 | [obsidian-cli](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-cli) | Obsidian CLI：管理 vault、開發外掛/主題 |
 | [defuddle](https://github.com/kepano/obsidian-skills/tree/main/skills/defuddle) | 從網頁提取乾淨的 Markdown，移除干擾內容以節省 token |
 
+## ⭐ 支持
+
+- 如果您覺得這個外掛有用，請在 GitHub 上給它點個讚 ⭐——這對我們真的很有幫助！
+
 ## 使用方式
 
 **兩種模式：**

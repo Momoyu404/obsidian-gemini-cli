@@ -109,6 +109,10 @@ Gemini 会自动克隆仓库并为你完成配置。
 | [obsidian-cli](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-cli) | Obsidian CLI：管理 vault、开发插件/主题 |
 | [defuddle](https://github.com/kepano/obsidian-skills/tree/main/skills/defuddle) | 从网页提取干净的 Markdown，去除干扰内容以节省 token |
 
+## ⭐ 支持
+
+- 如果您觉得这个插件有用，请在 GitHub 上给它点个赞 ⭐ - 这对我真的很有帮助！
+
 ## 使用方式
 
 **两种模式：**
