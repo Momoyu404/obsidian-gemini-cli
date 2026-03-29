@@ -44,6 +44,16 @@ function createMockCallbacks(overrides: Record<string, any> = {}) {
   };
 }
 
+function expectHidden(el: any): void {
+  expect(el).not.toBeNull();
+  expect(el?.hasClass('geminese-hidden')).toBe(true);
+}
+
+function expectVisible(el: any): void {
+  expect(el).not.toBeNull();
+  expect(el?.hasClass('geminese-hidden')).toBe(false);
+}
+
 describe('ModelSelector', () => {
   let parentEl: any;
   let callbacks: ReturnType<typeof createMockCallbacks>;
@@ -203,7 +213,7 @@ describe('ThinkingBudgetSelector', () => {
 
   it('should display Thinking: label', () => {
     const label = parentEl.querySelector('.geminese-thinking-label-text');
-    expect(label?.textContent).toBe('Thinking:');
+    expect(label).toBeNull();
   });
 
   it('should display current budget label', () => {
@@ -347,13 +357,13 @@ describe('McpServerSelector', () => {
   it('should hide container when no servers configured', () => {
     selector.setMcpManager(createMockMcpManager([]));
     const container = parentEl.querySelector('.geminese-mcp-selector');
-    expect(container?.style.display).toBe('none');
+    expectHidden(container);
   });
 
   it('should show container when servers are configured', () => {
     selector.setMcpManager(createMockMcpManager([{ name: 'test', enabled: true }]));
     const container = parentEl.querySelector('.geminese-mcp-selector');
-    expect(container?.style.display).toBe('');
+    expectVisible(container);
   });
 
   it('should show empty message when all servers are disabled', () => {
@@ -496,25 +506,25 @@ describe('ContextUsageMeter', () => {
 
   it('should be hidden initially', () => {
     const container = parentEl.querySelector('.geminese-context-meter');
-    expect(container?.style.display).toBe('none');
+    expectHidden(container);
   });
 
   it('should remain hidden when update called with null', () => {
     meter.update(null);
     const container = parentEl.querySelector('.geminese-context-meter');
-    expect(container?.style.display).toBe('none');
+    expectHidden(container);
   });
 
   it('should remain hidden when contextTokens is 0', () => {
     meter.update(makeUsage({ contextTokens: 0, contextWindow: 200000, percentage: 0 }));
     const container = parentEl.querySelector('.geminese-context-meter');
-    expect(container?.style.display).toBe('none');
+    expectHidden(container);
   });
 
   it('should become visible when contextTokens > 0', () => {
     meter.update(makeUsage({ contextTokens: 50000, contextWindow: 200000, percentage: 25 }));
     const container = parentEl.querySelector('.geminese-context-meter');
-    expect(container?.style.display).toBe('flex');
+    expectVisible(container);
   });
 
   it('should display percentage', () => {

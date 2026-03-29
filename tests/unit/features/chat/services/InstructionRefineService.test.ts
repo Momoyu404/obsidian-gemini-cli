@@ -1,17 +1,28 @@
-// eslint-disable-next-line jest/no-mocks-import
-import {
-  getLastOptions,
-  resetMockMessages,
-  setMockMessages,
-} from '@test/__mocks__/gemini-cli-sdk';
+import type { ChildProcess } from 'child_process';
+import { EventEmitter } from 'events';
+import { PassThrough } from 'stream';
 
-// Import after mocks are set up
+import { spawnGeminiCli } from '@/core/agent/customSpawn';
+import { QueryOptionsBuilder } from '@/core/agent/QueryOptionsBuilder';
 import { InstructionRefineService } from '@/features/chat/services/InstructionRefineService';
+
+jest.mock('@/core/agent/customSpawn', () => ({
+  spawnGeminiCli: jest.fn(),
+}));
+
+jest.mock('@/core/agent/QueryOptionsBuilder', () => ({
+  QueryOptionsBuilder: {
+    writeSystemPromptFile: jest.fn(),
+  },
+}));
+
+const spawnGeminiCliMock = jest.mocked(spawnGeminiCli);
+const writeSystemPromptFileMock = jest.mocked(QueryOptionsBuilder.writeSystemPromptFile);
 
 function createMockPlugin(settings = {}) {
   return {
     settings: {
-      model: 'sonnet',
+      model: 'gemini-2.5-pro',
       thinkingBudget: 'off',
       systemPrompt: '',
       ...settings,
@@ -24,8 +35,71 @@ function createMockPlugin(settings = {}) {
       },
     },
     getActiveEnvironmentVariables: jest.fn().mockReturnValue(''),
-    getResolvedGeminiCliPath: jest.fn().mockReturnValue('/fake/claude'),
+    getResolvedGeminiCliPath: jest.fn().mockReturnValue('/fake/gemini'),
   } as any;
+}
+
+function getArgValue(args: string[], flag: string): string | undefined {
+  const index = args.indexOf(flag);
+  return index >= 0 ? args[index + 1] : undefined;
+}
+
+type ProcessHarness = ReturnType<typeof createProcessHarness>;
+
+function createProcessHarness(signal?: AbortSignal, pid = 4321) {
+  const stdout = new PassThrough();
+  const stderr = new PassThrough();
+  const stdin = new PassThrough();
+  const emitter = new EventEmitter();
+
+  let finished = false;
+
+  const child = emitter as any;
+  Object.assign(child, {
+    stdin,
+    stdout,
+    stderr,
+    pid,
+    killed: false,
+    exitCode: null,
+    kill: jest.fn(() => {
+      child.killed = true;
+      finish();
+      return true;
+    }),
+  });
+
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    child.exitCode = 0;
+    stdout.end();
+    stderr.end();
+    emitter.emit('exit', 0, null);
+  };
+
+  signal?.addEventListener('abort', finish, { once: true });
+
+  return {
+    child: child as ChildProcess,
+    finish,
+    pushJson(event: unknown) {
+      if (!finished) {
+        stdout.write(`${JSON.stringify(event)}\n`);
+      }
+    },
+  };
+}
+
+function queueProcessOutput(harness: ProcessHarness, stdoutEvents: unknown[]): ChildProcess {
+  queueMicrotask(() => {
+    for (const event of stdoutEvents) {
+      harness.pushJson(event);
+    }
+    harness.finish();
+  });
+
+  return harness.child;
 }
 
 describe('InstructionRefineService', () => {
@@ -34,313 +108,231 @@ describe('InstructionRefineService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    resetMockMessages();
     mockPlugin = createMockPlugin();
     service = new InstructionRefineService(mockPlugin);
+    writeSystemPromptFileMock.mockReturnValue('/tmp/refine-system.md');
   });
 
   describe('refineInstruction', () => {
-    it('should use no tools (text-only refinement)', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: '<instruction>- Be concise.</instruction>' }],
-          },
-        },
-        { type: 'result' },
-      ]);
+    it('uses the current CLI subprocess flow and returns refined instructions', async () => {
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return queueProcessOutput(harness, [
+          { type: 'message', role: 'assistant', content: '<instruction>- Be concise.</instruction>' },
+        ]);
+      });
 
       const result = await service.refineInstruction('be concise', '');
-      expect(result.success).toBe(true);
 
-      const options = getLastOptions();
-      expect(options?.tools).toEqual([]);
-      expect(options?.permissionMode).toBe('bypassPermissions');
-      expect(options?.allowDangerouslySkipPermissions).toBe(true);
+      expect(result).toEqual({
+        success: true,
+        refinedInstruction: '- Be concise.',
+      });
+
+      const spawnOptions = spawnGeminiCliMock.mock.calls[0][0];
+      expect(spawnOptions.cliPath).toBe('/fake/gemini');
+      expect(spawnOptions.cwd).toBe('/test/vault/path');
+      expect(spawnOptions.env?.GEMINI_SYSTEM_MD).toBe('/tmp/refine-system.md');
+      expect(getArgValue(spawnOptions.args, '--approval-mode')).toBe('yolo');
+      expect(getArgValue(spawnOptions.args, '--model')).toBe('gemini-2.5-pro');
+      expect(getArgValue(spawnOptions.args, '--prompt')).toBe('Please refine this instruction: "be concise"');
     });
 
-    it('should set settingSources to project only when loadUserGeminiSettings is false', async () => {
-      mockPlugin.settings.loadUserGeminiSettings = false;
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: '<instruction>- Be concise.</instruction>' }],
+    it('includes existing instructions in the generated system prompt', async () => {
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return queueProcessOutput(harness, [
+          {
+            type: 'message',
+            role: 'assistant',
+            content: '<instruction>\n## Coding Style\n\n- Use TypeScript.\n- Prefer small diffs.\n</instruction>',
           },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.refineInstruction('be concise', '');
-
-      const options = getLastOptions();
-      expect(options?.settingSources).toEqual(['project']);
-    });
-
-    it('should set settingSources to include user when loadUserGeminiSettings is true', async () => {
-      mockPlugin.settings.loadUserGeminiSettings = true;
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: '<instruction>- Be concise.</instruction>' }],
-          },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.refineInstruction('be concise', '');
-
-      const options = getLastOptions();
-      expect(options?.settingSources).toEqual(['user', 'project']);
-    });
-
-    it('should include existing instructions and allow markdown blocks', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: {
-            content: [
-              {
-                type: 'text',
-                text: '<instruction>\n## Coding Style\n\n- Use TypeScript.\n- Prefer small diffs.\n</instruction>',
-              },
-            ],
-          },
-        },
-        { type: 'result' },
-      ]);
+        ]);
+      });
 
       const existing = '## Existing\n\n- Keep it short.';
       const result = await service.refineInstruction('coding style', existing);
 
-      expect(result.success).toBe(true);
-      expect(result.refinedInstruction).toBe('## Coding Style\n\n- Use TypeScript.\n- Prefer small diffs.');
+      expect(result).toEqual({
+        success: true,
+        refinedInstruction: '## Coding Style\n\n- Use TypeScript.\n- Prefer small diffs.',
+      });
+      expect(writeSystemPromptFileMock).toHaveBeenCalledWith(
+        '/test/vault/path',
+        expect.stringContaining('EXISTING INSTRUCTIONS'),
+      );
 
-      const options = getLastOptions();
-      expect(options?.systemPrompt).toContain('EXISTING INSTRUCTIONS');
-      expect(options?.systemPrompt).toContain(existing);
-      expect(options?.systemPrompt).toContain('Consider how it fits with existing instructions');
-      expect(options?.systemPrompt).toContain('Match the format of existing instructions');
+      const prompt = writeSystemPromptFileMock.mock.calls[0][1];
+      expect(prompt).toContain(existing);
+      expect(prompt).toContain('Consider how it fits with existing instructions');
+      expect(prompt).toContain('Match the format of existing instructions');
     });
 
-    it('should return clarification when no instruction tag in response', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: 'Could you clarify what you mean by concise?' }],
-          },
-        },
-        { type: 'result' },
-      ]);
+    it('returns clarification text when no instruction block is present', async () => {
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return queueProcessOutput(harness, [
+          { type: 'message', role: 'assistant', content: 'Could you clarify what you mean by concise?' },
+        ]);
+      });
 
       const result = await service.refineInstruction('be concise', '');
-      expect(result.success).toBe(true);
-      expect(result.clarification).toBe('Could you clarify what you mean by concise?');
-      expect(result.refinedInstruction).toBeUndefined();
+
+      expect(result).toEqual({
+        success: true,
+        clarification: 'Could you clarify what you mean by concise?',
+      });
     });
 
-    it('should return error for empty response', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: '' }],
-          },
-        },
-        { type: 'result' },
-      ]);
+    it('returns an error for an empty response', async () => {
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return queueProcessOutput(harness, []);
+      });
 
       const result = await service.refineInstruction('be concise', '');
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('Empty response');
+
+      expect(result).toEqual({
+        success: false,
+        error: 'Empty response',
+      });
     });
 
-    it('should call onProgress during streaming', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: '<instruction>- Be brief.</instruction>' }],
-          },
-        },
-        { type: 'result' },
-      ]);
+    it('reports streaming progress as assistant text arrives', async () => {
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        queueMicrotask(() => {
+          harness.pushJson({ type: 'message', role: 'assistant', content: '<instruction>- Be ' });
+          harness.pushJson({ type: 'message', role: 'assistant', content: 'brief.</instruction>' });
+          harness.finish();
+        });
+        return harness.child;
+      });
 
       const onProgress = jest.fn();
-      await service.refineInstruction('be concise', '', onProgress);
+      const result = await service.refineInstruction('be concise', '', onProgress);
+
+      expect(result).toEqual({
+        success: true,
+        refinedInstruction: '- Be brief.',
+      });
       expect(onProgress).toHaveBeenCalled();
-    });
-
-    it('should set thinking budget when configured', async () => {
-      mockPlugin.settings.thinkingBudget = 'medium';
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: '<instruction>ok</instruction>' }],
-          },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.refineInstruction('test', '');
-      const options = getLastOptions();
-      expect(options?.maxThinkingTokens).toBeGreaterThan(0);
-    });
-
-    it('should ignore non-text content blocks', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: {
-            content: [
-              { type: 'tool_use', name: 'test' },
-              { type: 'text', text: '<instruction>result</instruction>' },
-            ],
-          },
-        },
-        { type: 'result' },
-      ]);
-
-      const result = await service.refineInstruction('test', '');
-      expect(result.success).toBe(true);
-      expect(result.refinedInstruction).toBe('result');
-    });
-
-    it('should skip messages without content', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        { type: 'assistant' },
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: '<instruction>ok</instruction>' }],
-          },
-        },
-        { type: 'result' },
-      ]);
-
-      const result = await service.refineInstruction('test', '');
-      expect(result.success).toBe(true);
+      expect(onProgress).toHaveBeenLastCalledWith({
+        success: true,
+        refinedInstruction: '- Be brief.',
+      });
     });
   });
 
   describe('continueConversation', () => {
-    it('should return error when no active session', async () => {
+    it('returns an error when there is no active session', async () => {
       const result = await service.continueConversation('follow up');
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('No active conversation to continue');
+
+      expect(result).toEqual({
+        success: false,
+        error: 'No active conversation to continue',
+      });
     });
 
-    it('should continue with session id after initial refinement', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'session-abc' },
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: 'What do you mean?' }],
-          },
-        },
-        { type: 'result' },
-      ]);
+    it('resumes the stored session id after the initial refinement', async () => {
+      spawnGeminiCliMock
+        .mockImplementationOnce((options) => {
+          const harness = createProcessHarness(options.signal, 1);
+          return queueProcessOutput(harness, [
+            { type: 'init', session_id: 'session-abc' },
+            { type: 'message', role: 'assistant', content: 'What do you mean?' },
+          ]);
+        })
+        .mockImplementationOnce((options) => {
+          const harness = createProcessHarness(options.signal, 2);
+          return queueProcessOutput(harness, [
+            {
+              type: 'message',
+              role: 'assistant',
+              content: '<instruction>- Be concise and clear.</instruction>',
+            },
+          ]);
+        });
 
-      // First call establishes a session
       await service.refineInstruction('test', '');
-
-      // Set up messages for the continuation
-      resetMockMessages();
-      setMockMessages([
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: '<instruction>- Be concise and clear.</instruction>' }],
-          },
-        },
-        { type: 'result' },
-      ]);
-
       const result = await service.continueConversation('I mean short answers');
-      expect(result.success).toBe(true);
-      expect(result.refinedInstruction).toBe('- Be concise and clear.');
 
-      const options = getLastOptions();
-      expect(options?.resume).toBe('session-abc');
+      expect(result).toEqual({
+        success: true,
+        refinedInstruction: '- Be concise and clear.',
+      });
+
+      const secondSpawnOptions = spawnGeminiCliMock.mock.calls[1][0];
+      expect(secondSpawnOptions.args).toContain('--resume');
+      expect(secondSpawnOptions.args).toContain('session-abc');
     });
   });
 
   describe('resetConversation', () => {
-    it('should clear session so continueConversation fails', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'session-abc' },
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: 'clarification' }],
-          },
-        },
-        { type: 'result' },
-      ]);
+    it('clears the session so follow-up requests fail again', async () => {
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return queueProcessOutput(harness, [
+          { type: 'init', session_id: 'session-abc' },
+          { type: 'message', role: 'assistant', content: 'clarification' },
+        ]);
+      });
 
       await service.refineInstruction('test', '');
       service.resetConversation();
 
       const result = await service.continueConversation('follow up');
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('No active conversation to continue');
+      expect(result).toEqual({
+        success: false,
+        error: 'No active conversation to continue',
+      });
     });
   });
 
   describe('cancel', () => {
-    it('should abort the current request', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: {
-            content: [{ type: 'text', text: '<instruction>ok</instruction>' }],
-          },
-        },
-        { type: 'result' },
-      ]);
+    it('aborts the current request and returns an empty-response error', async () => {
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return harness.child;
+      });
 
       const promise = service.refineInstruction('test', '');
       service.cancel();
-      const result = await promise;
-      expect(result).toBeDefined();
+
+      await expect(promise).resolves.toEqual({
+        success: false,
+        error: 'Empty response',
+      });
     });
 
-    it('should be safe to cancel when nothing is running', () => {
-      service.cancel();
-      // Verify service is still usable after cancelling with no active request
-      expect(service).toBeDefined();
+    it('is safe to call when nothing is running', () => {
+      expect(() => service.cancel()).not.toThrow();
     });
   });
 
   describe('error handling', () => {
-    it('should return error when vault path cannot be determined', async () => {
+    it('returns an error when the vault path cannot be determined', async () => {
       mockPlugin.app.vault.adapter.basePath = undefined;
+
       const result = await service.refineInstruction('test', '');
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('Could not determine vault path');
+
+      expect(result).toEqual({
+        success: false,
+        error: 'Could not determine vault path',
+      });
+      expect(spawnGeminiCliMock).not.toHaveBeenCalled();
     });
 
-    it('should return error when Gemini CLI is not found', async () => {
+    it('returns an error when the Gemini CLI is not found', async () => {
       mockPlugin.getResolvedGeminiCliPath.mockReturnValue(null);
+
       const result = await service.refineInstruction('test', '');
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('Gemini CLI not found. Please install Gemini CLI CLI.');
+
+      expect(result).toEqual({
+        success: false,
+        error: 'Gemini CLI not found. Please install Gemini CLI.',
+      });
+      expect(spawnGeminiCliMock).not.toHaveBeenCalled();
     });
   });
 });

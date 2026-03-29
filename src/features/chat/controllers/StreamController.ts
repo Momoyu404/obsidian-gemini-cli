@@ -1009,6 +1009,17 @@ export class StreamController {
     }, StreamController.THINKING_INDICATOR_DELAY);
   }
 
+  showCancellationIndicator(): void {
+    const { state } = this.deps;
+    if (!state.currentContentEl) return;
+
+    this.hideThinkingIndicator();
+
+    const cls = 'geminese-thinking geminese-thinking--canceling';
+    state.thinkingEl = state.currentContentEl.createDiv({ cls });
+    state.thinkingEl.createSpan({ text: 'Canceling...' });
+  }
+
   /** Hides the thinking indicator and cancels any pending show timeout. */
   hideThinkingIndicator(): void {
     const { state } = this.deps;

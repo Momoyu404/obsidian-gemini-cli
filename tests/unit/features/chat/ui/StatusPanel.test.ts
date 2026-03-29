@@ -170,6 +170,10 @@ class MockElement {
     this.textContent = text;
   }
 
+  toggleClass(cls: string, force?: boolean): void {
+    this.classList.toggle(cls, force);
+  }
+
   querySelector(selector: string): MockElement | null {
     return this.querySelectorAll(selector)[0] || null;
   }
@@ -222,6 +226,16 @@ function createMockDocument() {
   };
 }
 
+function expectHidden(el: MockElement | null | undefined): void {
+  expect(el).not.toBeNull();
+  expect(el!.classList.contains('geminese-hidden')).toBe(true);
+}
+
+function expectVisible(el: MockElement | null | undefined): void {
+  expect(el).not.toBeNull();
+  expect(el!.classList.contains('geminese-hidden')).toBe(false);
+}
+
 describe('StatusPanel', () => {
   let containerEl: MockElement;
   let panel: StatusPanel;
@@ -257,7 +271,7 @@ describe('StatusPanel', () => {
 
       const todoContainer = containerEl.querySelector('.geminese-status-panel-todos');
       expect(todoContainer).not.toBeNull();
-      expect(todoContainer!.style.display).toBe('none');
+      expectHidden(todoContainer);
     });
   });
 
@@ -274,7 +288,7 @@ describe('StatusPanel', () => {
       panel.updateTodos(todos);
 
       const todoContainer = containerEl.querySelector('.geminese-status-panel-todos');
-      expect(todoContainer!.style.display).toBe('block');
+      expectVisible(todoContainer);
     });
 
     it('should hide panel when todos is null', () => {
@@ -286,7 +300,7 @@ describe('StatusPanel', () => {
       panel.updateTodos(null);
 
       const todoContainer = containerEl.querySelector('.geminese-status-panel-todos');
-      expect(todoContainer!.style.display).toBe('none');
+      expectHidden(todoContainer);
     });
 
     it('should hide panel when todos is empty array', () => {
@@ -298,7 +312,7 @@ describe('StatusPanel', () => {
       panel.updateTodos([]);
 
       const todoContainer = containerEl.querySelector('.geminese-status-panel-todos');
-      expect(todoContainer!.style.display).toBe('none');
+      expectHidden(todoContainer);
     });
 
     it('should display correct task count', () => {
@@ -383,11 +397,11 @@ describe('StatusPanel', () => {
       const header = containerEl.querySelector('.geminese-status-panel-header');
       const content = containerEl.querySelector('.geminese-status-panel-content');
 
-      expect(content!.style.display).toBe('none');
+      expectHidden(content);
 
       header!.click();
 
-      expect(content!.style.display).toBe('block');
+      expectVisible(content);
     });
 
     it('should collapse content on second click', () => {
@@ -395,10 +409,10 @@ describe('StatusPanel', () => {
       const content = containerEl.querySelector('.geminese-status-panel-content');
 
       header!.click();
-      expect(content!.style.display).toBe('block');
+      expectVisible(content);
 
       header!.click();
-      expect(content!.style.display).toBe('none');
+      expectHidden(content);
     });
 
     it('should show list icon in header', () => {
@@ -424,7 +438,7 @@ describe('StatusPanel', () => {
       const event = { type: 'keydown', key: 'Enter', preventDefault: jest.fn() };
       header!.dispatchEvent(event);
 
-      expect(content!.style.display).toBe('block');
+      expectVisible(content);
       expect(event.preventDefault).toHaveBeenCalled();
     });
 
@@ -435,7 +449,7 @@ describe('StatusPanel', () => {
       const event = { type: 'keydown', key: ' ', preventDefault: jest.fn() };
       header!.dispatchEvent(event);
 
-      expect(content!.style.display).toBe('block');
+      expectVisible(content);
       expect(event.preventDefault).toHaveBeenCalled();
     });
 
@@ -446,7 +460,7 @@ describe('StatusPanel', () => {
       const event = { type: 'keydown', key: 'Tab', preventDefault: jest.fn() };
       header!.dispatchEvent(event);
 
-      expect(content!.style.display).toBe('none');
+      expectHidden(content);
       expect(event.preventDefault).not.toHaveBeenCalled();
     });
   });
@@ -521,7 +535,7 @@ describe('StatusPanel', () => {
       panel.remount();
 
       const subagentsEl = containerEl.querySelector('.geminese-status-panel-subagents');
-      expect((subagentsEl as any)?.style?.display).toBe('block');
+      expectVisible(subagentsEl);
     });
 
     it('should not throw when called without mount', () => {
@@ -541,7 +555,7 @@ describe('StatusPanel', () => {
       panel.remount();
 
       const content = containerEl.querySelector('.geminese-status-panel-content');
-      expect(content!.style.display).toBe('none');
+      expectHidden(content);
     });
   });
 
@@ -566,7 +580,7 @@ describe('StatusPanel', () => {
       panel.removeSubagent('task-1');
 
       const subagentsEl = containerEl.querySelector('.geminese-status-panel-subagents');
-      expect((subagentsEl as any)?.style?.display).toBe('none');
+      expectHidden(subagentsEl);
     });
   });
 
@@ -658,7 +672,7 @@ describe('StatusPanel', () => {
       panel.updateSubagent({ id: 'task-1', description: 'New task', status: 'pending' });
 
       const containerEl2 = containerEl.querySelector('.geminese-status-panel-subagents');
-      expect((containerEl2 as any)?.style?.display).toBe('block');
+      expectVisible(containerEl2);
     });
 
     it('should show done row when status changes to completed', () => {
@@ -692,7 +706,7 @@ describe('StatusPanel', () => {
 
       // Orphaned subagents don't show in panel
       const subagentsEl = containerEl.querySelector('.geminese-status-panel-subagents');
-      expect((subagentsEl as any)?.style?.display).toBe('none');
+      expectHidden(subagentsEl);
     });
 
     it('should not show error subagents', () => {
@@ -700,7 +714,7 @@ describe('StatusPanel', () => {
 
       // Error subagents don't show in panel
       const subagentsEl = containerEl.querySelector('.geminese-status-panel-subagents');
-      expect((subagentsEl as any)?.style?.display).toBe('none');
+      expectHidden(subagentsEl);
     });
 
     it('should handle updateSubagent called before mount', () => {
@@ -721,7 +735,7 @@ describe('StatusPanel', () => {
       panel.updateSubagent({ id: 'task-1', description: 'Task', status: 'running' });
 
       const subagentsEl = containerEl.querySelector('.geminese-status-panel-subagents');
-      expect((subagentsEl as any)?.style?.display).toBe('block');
+      expectVisible(subagentsEl);
     });
 
     it('should hide container when no subagents', () => {
@@ -729,7 +743,7 @@ describe('StatusPanel', () => {
       panel.clearSubagents();
 
       const subagentsEl = containerEl.querySelector('.geminese-status-panel-subagents');
-      expect((subagentsEl as any)?.style?.display).toBe('none');
+      expectHidden(subagentsEl);
     });
 
     it('should show done rows for completed and running row for running', () => {
@@ -863,7 +877,7 @@ describe('StatusPanel', () => {
 
       const bashContainer = containerEl.querySelector('.geminese-status-panel-bash');
       expect(bashContainer).not.toBeNull();
-      expect(bashContainer!.style.display).toBe('block');
+      expectVisible(bashContainer);
 
       const header = containerEl.querySelector('.geminese-status-panel-bash-header');
       expect(header).not.toBeNull();
@@ -886,7 +900,7 @@ describe('StatusPanel', () => {
 
       const content = containerEl.querySelector('.geminese-status-panel-bash-content');
       expect(content).not.toBeNull();
-      expect(content!.style.display).toBe('block');
+      expectVisible(content);
 
       const header = containerEl.querySelector('.geminese-status-panel-bash-header');
       expect(header).not.toBeNull();
@@ -895,7 +909,7 @@ describe('StatusPanel', () => {
       expect(label!.textContent).toBe('Command panel');
 
       header!.click();
-      expect(content!.style.display).toBe('none');
+      expectHidden(content);
       const collapsedHeader = containerEl.querySelector('.geminese-status-panel-bash-header');
       expect(collapsedHeader).not.toBeNull();
       const collapsedLabel = collapsedHeader!.querySelector('.geminese-tool-label');
@@ -903,7 +917,7 @@ describe('StatusPanel', () => {
       expect(collapsedLabel!.textContent).toBe('echo hello');
 
       header!.click();
-      expect(content!.style.display).toBe('block');
+      expectVisible(content);
       const expandedHeaderAgain = containerEl.querySelector('.geminese-status-panel-bash-header');
       expect(expandedHeaderAgain).not.toBeNull();
       const expandedLabelAgain = expandedHeaderAgain!.querySelector('.geminese-tool-label');
@@ -927,7 +941,7 @@ describe('StatusPanel', () => {
       const entryContent = entry!.querySelector('.geminese-tool-content');
 
       expect(entryContent).not.toBeNull();
-      expect(entryContent!.style.display).toBe('block');
+      expectVisible(entryContent);
       expect(entryHeader!.getAttribute('aria-expanded')).toBe('true');
 
       entryHeader!.click();
@@ -936,7 +950,7 @@ describe('StatusPanel', () => {
       const contentAfterClick = entryAfterClick!.querySelector('.geminese-tool-content');
       const headerAfterClick = entryAfterClick!.querySelector('.geminese-tool-header');
 
-      expect(contentAfterClick!.style.display).toBe('none');
+      expectHidden(contentAfterClick);
       expect(headerAfterClick!.getAttribute('aria-expanded')).toBe('false');
 
       const event = { type: 'keydown', key: 'Enter', preventDefault: jest.fn() };
@@ -947,7 +961,7 @@ describe('StatusPanel', () => {
       const headerAfterKeydown = entryAfterKeydown!.querySelector('.geminese-tool-header');
 
       expect(event.preventDefault).toHaveBeenCalled();
-      expect(contentAfterKeydown!.style.display).toBe('block');
+      expectVisible(contentAfterKeydown);
       expect(headerAfterKeydown!.getAttribute('aria-expanded')).toBe('true');
     });
 
@@ -967,7 +981,7 @@ describe('StatusPanel', () => {
 
       const bashContainer = containerEl.querySelector('.geminese-status-panel-bash');
       expect(bashContainer).not.toBeNull();
-      expect(bashContainer!.style.display).toBe('none');
+      expectHidden(bashContainer);
     });
 
     it('should stopPropagation on clear button keydown to prevent header toggle', () => {
@@ -980,7 +994,7 @@ describe('StatusPanel', () => {
       });
 
       const content = containerEl.querySelector('.geminese-status-panel-bash-content');
-      expect(content!.style.display).toBe('block');
+      expectVisible(content);
 
       const clearButton = containerEl.querySelector('.geminese-status-panel-bash-action-clear');
       expect(clearButton).not.toBeNull();
@@ -1020,7 +1034,7 @@ describe('StatusPanel', () => {
       });
 
       const content = containerEl.querySelector('.geminese-status-panel-bash-content');
-      expect(content!.style.display).toBe('block');
+      expectVisible(content);
 
       const copyButton = containerEl.querySelector('.geminese-status-panel-bash-action-copy');
       expect(copyButton).not.toBeNull();

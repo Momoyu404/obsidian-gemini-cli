@@ -9,10 +9,24 @@ jest.mock('@/shared/components/SelectionHighlight', () => ({
 }));
 
 function createMockIndicator() {
-  return {
+  const hidden = new Set<string>(['geminese-hidden']);
+  const indicator = {
     textContent: '',
     style: { display: 'none' },
-  } as any;
+    classList: {
+      add: (cls: string) => {
+        hidden.add(cls);
+        if (cls === 'geminese-hidden') indicator.style.display = 'none';
+      },
+      remove: (cls: string) => {
+        hidden.delete(cls);
+        if (cls === 'geminese-hidden') indicator.style.display = 'block';
+      },
+      contains: (cls: string) => hidden.has(cls),
+    },
+  };
+
+  return indicator as any;
 }
 
 function createMockInput() {

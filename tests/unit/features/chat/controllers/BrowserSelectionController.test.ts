@@ -4,7 +4,7 @@ import { BrowserSelectionController } from '@/features/chat/controllers/BrowserS
 
 function createMockIndicator() {
   const indicatorEl = document.createElement('div');
-  indicatorEl.style.display = 'none';
+  indicatorEl.classList.add('geminese-hidden');
   return indicatorEl;
 }
 
@@ -102,7 +102,7 @@ describe('BrowserSelectionController', () => {
       title: 'Surfing',
       url: 'https://example.com',
     });
-    expect(indicatorEl.style.display).toBe('block');
+    expect(indicatorEl.classList.contains('geminese-hidden')).toBe(false);
     expect(indicatorEl.textContent).toBe('1 line selected');
     expect(indicatorEl.textContent).not.toContain('source=');
     expect(indicatorEl.getAttribute('title')).toContain('chars selected');
@@ -144,7 +144,7 @@ describe('BrowserSelectionController', () => {
     await flushMicrotasks();
 
     expect(controller.hasSelection()).toBe(false);
-    expect(indicatorEl.style.display).toBe('none');
+    expect(indicatorEl.classList.contains('geminese-hidden')).toBe(true);
   });
 
   it('keeps selection while input is focused', async () => {
@@ -170,7 +170,7 @@ describe('BrowserSelectionController', () => {
     controller.clear();
 
     expect(controller.hasSelection()).toBe(false);
-    expect(indicatorEl.style.display).toBe('none');
+    expect(indicatorEl.classList.contains('geminese-hidden')).toBe(true);
   });
 
   it('handles polling errors without unhandled rejection', async () => {

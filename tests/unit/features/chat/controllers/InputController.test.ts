@@ -26,7 +26,9 @@ function createMockInputEl() {
 }
 
 function createMockWelcomeEl() {
-  return { style: { display: '' } } as any;
+  const el = createMockEl();
+  el.style.display = '';
+  return el;
 }
 
 function createMockFileContextManager() {
@@ -65,6 +67,7 @@ function createMockAgentService() {
     clearApprovedPlanContent: jest.fn(),
     ensureReady: jest.fn().mockResolvedValue(true),
     getSessionId: jest.fn().mockReturnValue(null),
+    getResolvedModel: jest.fn().mockReturnValue(null),
   };
 }
 
@@ -86,7 +89,7 @@ function createMockDeps(overrides: Partial<InputControllerDeps> = {}): InputCont
   const state = new ChatState();
   const inputEl = createMockInputEl();
   const queueIndicatorEl = createMockEl();
-  queueIndicatorEl.style.display = 'none';
+  queueIndicatorEl.addClass('geminese-hidden');
   jest.spyOn(queueIndicatorEl, 'setText');
   state.queueIndicatorEl = queueIndicatorEl;
 
@@ -315,7 +318,7 @@ describe('InputController - Message Queue', () => {
 
       const queueIndicatorEl = deps.state.queueIndicatorEl as any;
       expect(queueIndicatorEl.setText).toHaveBeenCalledWith('⌙ Queued: test message');
-      expect(queueIndicatorEl.style.display).toBe('block');
+      expect(queueIndicatorEl.hasClass('geminese-hidden')).toBe(false);
     });
 
     it('should hide queue indicator when no message is queued', () => {
@@ -324,7 +327,7 @@ describe('InputController - Message Queue', () => {
       controller.updateQueueIndicator();
 
       const queueIndicatorEl = deps.state.queueIndicatorEl as any;
-      expect(queueIndicatorEl.style.display).toBe('none');
+      expect(queueIndicatorEl.hasClass('geminese-hidden')).toBe(true);
     });
 
     it('should truncate long message preview in indicator', () => {
@@ -369,7 +372,7 @@ describe('InputController - Message Queue', () => {
 
       expect(deps.state.queuedMessage).toBeNull();
       const queueIndicatorEl = deps.state.queueIndicatorEl as any;
-      expect(queueIndicatorEl.style.display).toBe('none');
+      expect(queueIndicatorEl.hasClass('geminese-hidden')).toBe(true);
     });
   });
 
@@ -409,7 +412,7 @@ describe('InputController - Message Queue', () => {
 
       await controller.sendMessage();
 
-      expect(welcomeEl.style.display).toBe('none');
+      expect(welcomeEl.hasClass('geminese-hidden')).toBe(true);
       expect(fileContextManager.startSession).toHaveBeenCalled();
       expect(deps.renderer.addMessage).toHaveBeenCalledTimes(2);
       expect(deps.state.messages).toHaveLength(2);
@@ -899,14 +902,14 @@ describe('InputController - Message Queue', () => {
     });
   });
 
-  describe('Built-in commands - /add-dir', () => {
+  describe('Built-in commands - /add-file', () => {
     beforeEach(() => {
       mockNotice.mockClear();
     });
 
     it('should show error notice when external context selector is not available', async () => {
       deps.getExternalContextSelector = () => null;
-      inputEl.value = '/add-dir /some/path';
+      inputEl.value = '/add-file /some/path';
       controller = new InputController(deps);
 
       await controller.sendMessage();
@@ -921,7 +924,7 @@ describe('InputController - Message Queue', () => {
         addExternalContext: jest.fn().mockReturnValue({ success: true, normalizedPath: '/some/path' }),
       };
       deps.getExternalContextSelector = () => mockExternalContextSelector;
-      inputEl.value = '/add-dir /some/path';
+      inputEl.value = '/add-file /some/path';
       controller = new InputController(deps);
 
       await controller.sendMessage();
@@ -931,22 +934,22 @@ describe('InputController - Message Queue', () => {
       expect(inputEl.value).toBe('');
     });
 
-    it('should show error notice when /add-dir is called without path', async () => {
+    it('should show error notice when /add-file is called without path', async () => {
       const mockExternalContextSelector = {
         getExternalContexts: jest.fn().mockReturnValue([]),
         addExternalContext: jest.fn().mockReturnValue({
           success: false,
-          error: 'No path provided. Usage: /add-dir /absolute/path',
+          error: 'No path provided. Usage: /add-file /absolute/path',
         }),
       };
       deps.getExternalContextSelector = () => mockExternalContextSelector;
-      inputEl.value = '/add-dir';
+      inputEl.value = '/add-file';
       controller = new InputController(deps);
 
       await controller.sendMessage();
 
       expect(mockExternalContextSelector.addExternalContext).toHaveBeenCalledWith('');
-      expect(mockNotice).toHaveBeenCalledWith('No path provided. Usage: /add-dir /absolute/path');
+      expect(mockNotice).toHaveBeenCalledWith('No path provided. Usage: /add-file /absolute/path');
       expect(inputEl.value).toBe('');
     });
 
@@ -955,28 +958,28 @@ describe('InputController - Message Queue', () => {
         getExternalContexts: jest.fn().mockReturnValue([]),
         addExternalContext: jest.fn().mockReturnValue({
           success: false,
-          error: 'Path must be absolute. Usage: /add-dir /absolute/path',
+          error: 'Path must be absolute. Usage: /add-file /absolute/path',
         }),
       };
       deps.getExternalContextSelector = () => mockExternalContextSelector;
-      inputEl.value = '/add-dir relative/path';
+      inputEl.value = '/add-file relative/path';
       controller = new InputController(deps);
 
       await controller.sendMessage();
 
       expect(mockExternalContextSelector.addExternalContext).toHaveBeenCalledWith('relative/path');
-      expect(mockNotice).toHaveBeenCalledWith('Path must be absolute. Usage: /add-dir /absolute/path');
+      expect(mockNotice).toHaveBeenCalledWith('Path must be absolute. Usage: /add-file /absolute/path');
       expect(inputEl.value).toBe('');
     });
 
-    it('should handle /add-dir with home path expansion', async () => {
+    it('should handle /add-file with home path expansion', async () => {
       const expandedPath = '/Users/test/projects';
       const mockExternalContextSelector = {
         getExternalContexts: jest.fn().mockReturnValue([]),
         addExternalContext: jest.fn().mockReturnValue({ success: true, normalizedPath: expandedPath }),
       };
       deps.getExternalContextSelector = () => mockExternalContextSelector;
-      inputEl.value = '/add-dir ~/projects';
+      inputEl.value = '/add-file ~/projects';
       controller = new InputController(deps);
 
       await controller.sendMessage();
@@ -985,14 +988,14 @@ describe('InputController - Message Queue', () => {
       expect(mockNotice).toHaveBeenCalledWith(`Added external context: ${expandedPath}`);
     });
 
-    it('should handle /add-dir with quoted path', async () => {
+    it('should handle /add-file with quoted path', async () => {
       const normalizedPath = '/path/with spaces';
       const mockExternalContextSelector = {
         getExternalContexts: jest.fn().mockReturnValue([]),
         addExternalContext: jest.fn().mockReturnValue({ success: true, normalizedPath }),
       };
       deps.getExternalContextSelector = () => mockExternalContextSelector;
-      inputEl.value = '/add-dir "/path/with spaces"';
+      inputEl.value = '/add-file "/path/with spaces"';
       controller = new InputController(deps);
 
       await controller.sendMessage();
@@ -1374,8 +1377,13 @@ describe('InputController - Message Queue', () => {
       });
 
       ((deps as any).mockAgentService.query as jest.Mock).mockReturnValue(
-        createMockStream([{ type: 'done' }])
+        createMockStream([{ type: 'text', content: 'visible assistant text' }, { type: 'done' }])
       );
+      (deps.streamController.handleStreamChunk as jest.Mock).mockImplementation(async (chunk, msg) => {
+        if (chunk.type === 'text') {
+          msg.content += chunk.content;
+        }
+      });
 
       inputEl = deps.getInputEl();
       inputEl.value = 'test message';
@@ -1689,13 +1697,13 @@ describe('InputController - Message Queue', () => {
         ],
       });
 
-      expect(inputContainerEl.style.display).toBe('none');
+      expect(inputContainerEl.hasClass('geminese-hidden')).toBe(true);
 
       controller.dismissPendingApproval();
 
       await expect(approvalPromise).resolves.toBe('cancel');
       await expect(askPromise).resolves.toBeNull();
-      expect(inputContainerEl.style.display).toBe('');
+      expect(inputContainerEl.hasClass('geminese-hidden')).toBe(false);
     });
 
     it('should keep input hidden until overlapping exit-plan prompt is dismissed', async () => {
@@ -1713,7 +1721,7 @@ describe('InputController - Message Queue', () => {
       );
       const exitPlanPromise = controller.handleExitPlanMode({});
 
-      expect(inputContainerEl.style.display).toBe('none');
+      expect(inputContainerEl.hasClass('geminese-hidden')).toBe(true);
 
       const items = parentEl.querySelectorAll('geminese-ask-item');
       const allowOnceItem = items.find((item: any) => {
@@ -1724,11 +1732,11 @@ describe('InputController - Message Queue', () => {
 
       allowOnceItem!.click();
       await expect(approvalPromise).resolves.toBe('allow');
-      expect(inputContainerEl.style.display).toBe('none');
+      expect(inputContainerEl.hasClass('geminese-hidden')).toBe(true);
 
       controller.dismissPendingApproval();
       await expect(exitPlanPromise).resolves.toBeNull();
-      expect(inputContainerEl.style.display).toBe('');
+      expect(inputContainerEl.hasClass('geminese-hidden')).toBe(false);
     });
   });
 

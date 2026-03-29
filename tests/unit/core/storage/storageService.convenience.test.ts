@@ -79,7 +79,7 @@ describe('StorageService convenience methods', () => {
     it('delegates to ccSettings.getPermissions', async () => {
       const { plugin } = createMockPlugin({
         initialFiles: {
-          '.claude/settings.json': ccSettingsJson,
+          '.gemini/settings.json': ccSettingsJson,
         },
       });
       const storage = new StorageService(plugin);
@@ -95,7 +95,7 @@ describe('StorageService convenience methods', () => {
     it('saves updated permissions via ccSettings', async () => {
       const { plugin, files } = createMockPlugin({
         initialFiles: {
-          '.claude/settings.json': ccSettingsJson,
+          '.gemini/settings.json': ccSettingsJson,
         },
       });
       const storage = new StorageService(plugin);
@@ -107,7 +107,7 @@ describe('StorageService convenience methods', () => {
         ask: [],
       });
 
-      const saved = JSON.parse(files.get('.claude/settings.json')!) as Record<string, unknown>;
+      const saved = JSON.parse(files.get('.gemini/settings.json')!) as Record<string, unknown>;
       expect((saved.permissions as { allow: string[] }).allow).toContainEqual('Read');
     });
   });
@@ -116,7 +116,7 @@ describe('StorageService convenience methods', () => {
     it('adds a new allow rule', async () => {
       const { plugin, files } = createMockPlugin({
         initialFiles: {
-          '.claude/settings.json': ccSettingsJson,
+          '.gemini/settings.json': ccSettingsJson,
         },
       });
       const storage = new StorageService(plugin);
@@ -124,7 +124,7 @@ describe('StorageService convenience methods', () => {
 
       await storage.addAllowRule('Read(/vault/*)');
 
-      const saved = JSON.parse(files.get('.claude/settings.json')!) as Record<string, unknown>;
+      const saved = JSON.parse(files.get('.gemini/settings.json')!) as Record<string, unknown>;
       expect((saved.permissions as { allow: string[] }).allow).toContainEqual('Read(/vault/*)');
     });
   });
@@ -133,7 +133,7 @@ describe('StorageService convenience methods', () => {
     it('adds a new deny rule', async () => {
       const { plugin, files } = createMockPlugin({
         initialFiles: {
-          '.claude/settings.json': ccSettingsJson,
+          '.gemini/settings.json': ccSettingsJson,
         },
       });
       const storage = new StorageService(plugin);
@@ -141,7 +141,7 @@ describe('StorageService convenience methods', () => {
 
       await storage.addDenyRule('Write(/etc/*)');
 
-      const saved = JSON.parse(files.get('.claude/settings.json')!) as Record<string, unknown>;
+      const saved = JSON.parse(files.get('.gemini/settings.json')!) as Record<string, unknown>;
       expect((saved.permissions as { deny: string[] }).deny).toContainEqual('Write(/etc/*)');
     });
   });
@@ -156,14 +156,14 @@ describe('StorageService convenience methods', () => {
         },
       });
       const { plugin, files } = createMockPlugin({
-        initialFiles: { '.claude/settings.json': settings },
+        initialFiles: { '.gemini/settings.json': settings },
       });
       const storage = new StorageService(plugin);
       await storage.initialize();
 
       await storage.removePermissionRule('Bash(git *)');
 
-      const saved = JSON.parse(files.get('.claude/settings.json')!) as Record<string, unknown>;
+      const saved = JSON.parse(files.get('.gemini/settings.json')!) as Record<string, unknown>;
       const perms = saved.permissions as { allow: string[]; deny: string[]; ask: string[] };
       expect(perms.allow).not.toContainEqual('Bash(git *)');
       expect(perms.deny).not.toContainEqual('Bash(git *)');
@@ -175,7 +175,7 @@ describe('StorageService convenience methods', () => {
     it('updates partial geminese settings', async () => {
       const { plugin, files } = createMockPlugin({
         initialFiles: {
-          '.claude/geminese-settings.json': gemineseSettingsJson,
+          '.gemini/geminese-settings.json': gemineseSettingsJson,
         },
       });
       const storage = new StorageService(plugin);
@@ -183,7 +183,7 @@ describe('StorageService convenience methods', () => {
 
       await storage.updateGemineseSettings({ userName: 'NewUser' });
 
-      const saved = JSON.parse(files.get('.claude/geminese-settings.json')!) as Record<string, unknown>;
+      const saved = JSON.parse(files.get('.gemini/geminese-settings.json')!) as Record<string, unknown>;
       expect(saved.userName).toBe('NewUser');
     });
   });
@@ -192,7 +192,7 @@ describe('StorageService convenience methods', () => {
     it('saves full geminese settings', async () => {
       const { plugin, files } = createMockPlugin({
         initialFiles: {
-          '.claude/geminese-settings.json': gemineseSettingsJson,
+          '.gemini/geminese-settings.json': gemineseSettingsJson,
         },
       });
       const storage = new StorageService(plugin);
@@ -202,7 +202,7 @@ describe('StorageService convenience methods', () => {
       existing.userName = 'FullSave';
       await storage.saveGemineseSettings(existing);
 
-      const saved = JSON.parse(files.get('.claude/geminese-settings.json')!) as Record<string, unknown>;
+      const saved = JSON.parse(files.get('.gemini/geminese-settings.json')!) as Record<string, unknown>;
       expect(saved.userName).toBe('FullSave');
     });
   });
@@ -211,7 +211,7 @@ describe('StorageService convenience methods', () => {
     it('loads geminese settings', async () => {
       const { plugin } = createMockPlugin({
         initialFiles: {
-          '.claude/geminese-settings.json': gemineseSettingsJson,
+          '.gemini/geminese-settings.json': gemineseSettingsJson,
         },
       });
       const storage = new StorageService(plugin);
@@ -239,8 +239,8 @@ describe('StorageService convenience methods', () => {
       ].join('\n');
       const { plugin } = createMockPlugin({
         initialFiles: {
-          '.claude/commands/review.md': commandContent,
-          '.claude/skills/my-skill/SKILL.md': skillContent,
+          '.gemini/commands/review.md': commandContent,
+          '.gemini/skills/my-skill/SKILL.md': skillContent,
         },
       });
       const storage = new StorageService(plugin);
@@ -279,7 +279,7 @@ describe('StorageService convenience methods', () => {
       });
       const { plugin } = createMockPlugin({
         initialFiles: {
-          '.claude/geminese-settings.json': settings,
+          '.gemini/geminese-settings.json': settings,
         },
       });
       const storage = new StorageService(plugin);
@@ -293,7 +293,7 @@ describe('StorageService convenience methods', () => {
       const { plugin } = createMockPlugin({
         dataJson: { activeConversationId: 'conv-from-data' },
         initialFiles: {
-          '.claude/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
+          '.gemini/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
         },
       });
       const storage = new StorageService(plugin);
@@ -307,7 +307,7 @@ describe('StorageService convenience methods', () => {
       const { plugin } = createMockPlugin({
         dataJson: {},
         initialFiles: {
-          '.claude/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
+          '.gemini/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
         },
       });
       const storage = new StorageService(plugin);
@@ -323,7 +323,7 @@ describe('StorageService convenience methods', () => {
       const { plugin } = createMockPlugin({
         dataJson: { activeConversationId: 'conv-1', otherField: 'keep' },
         initialFiles: {
-          '.claude/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
+          '.gemini/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
         },
       });
       const storage = new StorageService(plugin);
@@ -347,7 +347,7 @@ describe('StorageService convenience methods', () => {
       const { plugin } = createMockPlugin({
         dataJson: { otherField: 'keep' },
         initialFiles: {
-          '.claude/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
+          '.gemini/geminese-settings.json': JSON.stringify({ userName: 'Test' }),
         },
       });
       const storage = new StorageService(plugin);

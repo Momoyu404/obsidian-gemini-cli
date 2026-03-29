@@ -34,9 +34,23 @@ export function spawnGeminiCli(options: GeminiSpawnOptions): ChildProcess {
 
   return spawn(command, spawnArgs, {
     cwd,
+    detached: process.platform !== 'win32',
     env: env as NodeJS.ProcessEnv,
     signal,
     stdio: ['pipe', 'pipe', 'pipe'],
     windowsHide: true,
   });
+}
+
+export function killGeminiCliProcess(child: ChildProcess, signal: NodeJS.Signals): void {
+  if (process.platform !== 'win32' && typeof child.pid === 'number' && child.pid > 0) {
+    try {
+      process.kill(-child.pid, signal);
+      return;
+    } catch {
+      // Fall through to direct child kill if process-group termination fails.
+    }
+  }
+
+  child.kill(signal);
 }

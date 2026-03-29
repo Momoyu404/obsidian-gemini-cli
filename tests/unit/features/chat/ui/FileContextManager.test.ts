@@ -64,6 +64,16 @@ function findAllByClass(root: MockElement, className: string): MockElement[] {
   return results;
 }
 
+function expectHidden(el: MockElement | undefined): void {
+  expect(el).toBeDefined();
+  expect(el!.hasClass('geminese-hidden')).toBe(true);
+}
+
+function expectVisible(el: MockElement | undefined): void {
+  expect(el).toBeDefined();
+  expect(el!.hasClass('geminese-hidden')).toBe(false);
+}
+
 function createMockApp(options: {
   files?: string[];
   activeFilePath?: string | null;
@@ -205,7 +215,7 @@ describe('FileContextManager', () => {
 
     const indicator = findByClass(containerEl, 'geminese-file-indicator');
     expect(indicator).toBeDefined();
-    expect(indicator?.style.display).toBe('flex');
+    expectVisible(indicator);
 
     const removeEl = findByClass(containerEl, 'geminese-file-chip-remove');
     expect(removeEl).toBeDefined();
@@ -213,7 +223,7 @@ describe('FileContextManager', () => {
     removeEl!.click();
 
     expect(manager.getCurrentNotePath()).toBeNull();
-    expect(indicator?.style.display).toBe('none');
+    expectHidden(indicator);
 
     manager.destroy();
   });

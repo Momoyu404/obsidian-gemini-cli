@@ -37,13 +37,13 @@ function createMockAdapter(files: Record<string, string> = {}): VaultFileAdapter
 
 describe('SkillStorage', () => {
   it('exports SKILLS_PATH', () => {
-    expect(SKILLS_PATH).toBe('.claude/skills');
+    expect(SKILLS_PATH).toBe('.gemini/skills');
   });
 
   describe('loadAll', () => {
     it('loads skills from subdirectories with SKILL.md', async () => {
       const adapter = createMockAdapter({
-        '.claude/skills/my-skill/SKILL.md': `---
+        '.gemini/skills/my-skill/SKILL.md': `---
 description: A helpful skill
 userInvocable: true
 ---
@@ -63,11 +63,11 @@ Do the thing`,
 
     it('loads multiple skills', async () => {
       const adapter = createMockAdapter({
-        '.claude/skills/skill-a/SKILL.md': `---
+        '.gemini/skills/skill-a/SKILL.md': `---
 description: Skill A
 ---
 Prompt A`,
-        '.claude/skills/skill-b/SKILL.md': `---
+        '.gemini/skills/skill-b/SKILL.md': `---
 description: Skill B
 disableModelInvocation: true
 ---
@@ -82,11 +82,11 @@ Prompt B`,
 
     it('skips folders without SKILL.md', async () => {
       const adapter = createMockAdapter({
-        '.claude/skills/has-skill/SKILL.md': `---
+        '.gemini/skills/has-skill/SKILL.md': `---
 description: Valid
 ---
 Prompt`,
-        '.claude/skills/no-skill/README.md': 'Just a readme',
+        '.gemini/skills/no-skill/README.md': 'Just a readme',
       });
       const storage = new SkillStorage(adapter);
       const skills = await storage.loadAll();
@@ -115,11 +115,11 @@ Prompt`,
 
     it('skips malformed skill and continues loading valid ones', async () => {
       const adapter = createMockAdapter({
-        '.claude/skills/good/SKILL.md': `---
+        '.gemini/skills/good/SKILL.md': `---
 description: Valid
 ---
 Prompt`,
-        '.claude/skills/bad/SKILL.md': 'content',
+        '.gemini/skills/bad/SKILL.md': 'content',
       });
       const originalRead = adapter.read as jest.Mock;
       const originalImpl = originalRead.getMockImplementation()!;
@@ -136,7 +136,7 @@ Prompt`,
 
     it('parses all skill frontmatter fields', async () => {
       const adapter = createMockAdapter({
-        '.claude/skills/full/SKILL.md': `---
+        '.gemini/skills/full/SKILL.md': `---
 description: Full skill
 disableModelInvocation: true
 userInvocable: true
@@ -166,11 +166,11 @@ Full prompt`,
 
     it('loads skills without frontmatter as content-only', async () => {
       const adapter = createMockAdapter({
-        '.claude/skills/valid/SKILL.md': `---
+        '.gemini/skills/valid/SKILL.md': `---
 description: Valid
 ---
 Prompt`,
-        '.claude/skills/invalid/SKILL.md': 'No frontmatter at all',
+        '.gemini/skills/invalid/SKILL.md': 'No frontmatter at all',
       });
       const storage = new SkillStorage(adapter);
       const skills = await storage.loadAll();
@@ -192,9 +192,9 @@ Prompt`,
         content: 'Do the thing',
       });
 
-      expect(adapter.ensureFolder).toHaveBeenCalledWith('.claude/skills/my-skill');
+      expect(adapter.ensureFolder).toHaveBeenCalledWith('.gemini/skills/my-skill');
       expect(adapter.write).toHaveBeenCalledWith(
-        '.claude/skills/my-skill/SKILL.md',
+        '.gemini/skills/my-skill/SKILL.md',
         expect.stringContaining('description: A skill')
       );
     });
@@ -259,7 +259,7 @@ Prompt`,
   describe('delete', () => {
     it('deletes skill file and cleans up directory', async () => {
       const adapter = createMockAdapter({
-        '.claude/skills/target/SKILL.md': `---
+        '.gemini/skills/target/SKILL.md': `---
 description: Target
 ---
 Prompt`,
@@ -268,8 +268,8 @@ Prompt`,
 
       await storage.delete('skill-target');
 
-      expect(adapter.delete).toHaveBeenCalledWith('.claude/skills/target/SKILL.md');
-      expect(adapter.deleteFolder).toHaveBeenCalledWith('.claude/skills/target');
+      expect(adapter.delete).toHaveBeenCalledWith('.gemini/skills/target/SKILL.md');
+      expect(adapter.deleteFolder).toHaveBeenCalledWith('.gemini/skills/target');
     });
   });
 });

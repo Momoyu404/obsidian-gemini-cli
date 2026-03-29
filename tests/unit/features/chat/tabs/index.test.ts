@@ -1,3 +1,8 @@
+jest.mock('@/shared/components/SelectionHighlight', () => ({
+  hideSelectionHighlight: jest.fn(),
+  showSelectionHighlight: jest.fn(),
+}));
+
 import { createTab,TabBar, TabManager } from '@/features/chat/tabs';
 
 describe('features/chat/tabs index', () => {

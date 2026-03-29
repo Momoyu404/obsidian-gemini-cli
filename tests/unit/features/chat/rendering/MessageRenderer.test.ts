@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import { createMockEl } from '@test/helpers/mockElement';
 
 import { TOOL_AGENT_OUTPUT, TOOL_TASK } from '@/core/tools/toolNames';
@@ -110,11 +112,12 @@ describe('MessageRenderer', () => {
     expect(messagesEl.children.length).toBe(1);
     const msgEl = messagesEl.children[0];
     expect(msgEl.hasClass('geminese-message-assistant')).toBe(true);
-    // Check the content contains interrupt styling
     const contentEl = msgEl.children[0];
     const textEl = contentEl.children[0];
-    expect(textEl.innerHTML).toContain('geminese-interrupted');
-    expect(textEl.innerHTML).toContain('Interrupted');
+    const interruptLabel = textEl.children.find((child: any) => child?.hasClass?.('geminese-interrupted'));
+    const interruptHint = textEl.children.find((child: any) => child?.hasClass?.('geminese-interrupted-hint'));
+    expect(interruptLabel?.textContent).toBe('Interrupted');
+    expect(interruptHint?.textContent).toContain('What should Geminese do instead?');
   });
 
   it('skips rebuilt context messages', () => {
@@ -440,6 +443,32 @@ describe('MessageRenderer', () => {
     const footerEl = contentEl.children.find((c: any) => c.hasClass('geminese-response-footer'));
     expect(footerEl).toBeDefined();
     expect(footerEl!.children[0].textContent).toContain('Baked');
+  });
+
+  it('does not render duration footer when the assistant has no visible text', () => {
+    const messagesEl = createMockEl();
+    const { renderer } = createRenderer(messagesEl);
+
+    const msg: ChatMessage = {
+      id: 'm1',
+      role: 'assistant',
+      content: '',
+      timestamp: Date.now(),
+      contentBlocks: [
+        { type: 'tool_use', toolId: 'tool-1' } as any,
+      ],
+      toolCalls: [
+        { id: 'tool-1', name: 'Read', input: { file_path: 'note.md' }, status: 'completed' } as any,
+      ],
+      durationSeconds: 12,
+    };
+
+    renderer.renderStoredMessage(msg);
+
+    const msgEl = messagesEl.children[0];
+    const contentEl = msgEl.children[0];
+    const footerEl = contentEl.children.find((c: any) => c.hasClass('geminese-response-footer'));
+    expect(footerEl).toBeUndefined();
   });
 
   it('renders fallback content for old conversations without contentBlocks', () => {
@@ -843,17 +872,19 @@ describe('MessageRenderer', () => {
       source: 'file',
     };
 
-    // Mock document.body.createDiv (document may not exist in node env)
     const overlayEl = createMockEl();
-    const mockBody = { createDiv: jest.fn().mockReturnValue(overlayEl) };
-    const origDocument = globalThis.document;
-    (globalThis as any).document = { body: mockBody, addEventListener: jest.fn(), removeEventListener: jest.fn() };
+    const originalCreateDiv = (document.body as any).createDiv;
+    (document.body as any).createDiv = jest.fn().mockReturnValue(overlayEl);
 
     try {
       renderer.showFullImage(image);
-      expect(mockBody.createDiv).toHaveBeenCalledWith({ cls: 'geminese-image-modal-overlay' });
+      expect((document.body as any).createDiv).toHaveBeenCalledWith({ cls: 'geminese-image-modal-overlay' });
     } finally {
-      (globalThis as any).document = origDocument;
+      if (originalCreateDiv === undefined) {
+        delete (document.body as any).createDiv;
+      } else {
+        (document.body as any).createDiv = originalCreateDiv;
+      }
     }
   });
 
@@ -988,7 +1019,7 @@ describe('MessageRenderer', () => {
       await clickHandlers![0]({ stopPropagation: jest.fn() });
 
       expect(writeTextMock).toHaveBeenCalledWith('markdown content');
-      expect(copyBtn.textContent).toBe('copied!');
+      expect(copyBtn.textContent).toBe('Copied!');
       expect(copyBtn.classList.contains('copied')).toBe(true);
     });
 
@@ -1012,7 +1043,7 @@ describe('MessageRenderer', () => {
       await clickHandlers![0]({ stopPropagation: jest.fn() });
 
       // Should not show feedback on error
-      expect(copyBtn.textContent).not.toBe('copied!');
+      expect(copyBtn.textContent).not.toBe('Copied!');
     });
   });
 
@@ -1198,29 +1229,29 @@ describe('MessageRenderer', () => {
       const overlayEl = createMockEl();
       const mockBody = { createDiv: jest.fn().mockReturnValue(overlayEl) };
       const docListeners = new Map<string, ((...args: any[]) => void)[]>();
-      const origDocument = globalThis.document;
+      const originalCreateDiv = (document.body as any).createDiv;
+      const originalAddEventListener = document.addEventListener;
+      const originalRemoveEventListener = document.removeEventListener;
 
-      (globalThis as any).document = {
-        body: mockBody,
-        addEventListener: jest.fn((event: string, handler: (...args: any[]) => void) => {
-          if (!docListeners.has(event)) docListeners.set(event, []);
-          docListeners.get(event)!.push(handler);
-        }),
-        removeEventListener: jest.fn((event: string, handler: (...args: any[]) => void) => {
-          const handlers = docListeners.get(event);
-          if (handlers) {
-            const idx = handlers.indexOf(handler);
-            if (idx !== -1) handlers.splice(idx, 1);
-          }
-        }),
-      };
+      (document.body as any).createDiv = mockBody.createDiv;
+      document.addEventListener = jest.fn((event: string, handler: (...args: any[]) => void) => {
+        if (!docListeners.has(event)) docListeners.set(event, []);
+        docListeners.get(event)!.push(handler);
+      }) as any;
+      document.removeEventListener = jest.fn((event: string, handler: (...args: any[]) => void) => {
+        const handlers = docListeners.get(event);
+        if (handlers) {
+          const idx = handlers.indexOf(handler);
+          if (idx !== -1) handlers.splice(idx, 1);
+        }
+      }) as any;
 
-      return { overlayEl, docListeners, origDocument };
+      return { overlayEl, docListeners, originalAddEventListener, originalCreateDiv, originalRemoveEventListener };
     }
 
     it('closeBtn click removes overlay', () => {
       const { renderer } = createRenderer();
-      const { overlayEl, origDocument } = setupDocumentMock();
+      const { overlayEl, originalAddEventListener, originalCreateDiv, originalRemoveEventListener } = setupDocumentMock();
 
       try {
         renderer.showFullImage(image);
@@ -1236,13 +1267,19 @@ describe('MessageRenderer', () => {
 
         expect(removeSpy).toHaveBeenCalled();
       } finally {
-        (globalThis as any).document = origDocument;
+        if (originalCreateDiv === undefined) {
+          delete (document.body as any).createDiv;
+        } else {
+          (document.body as any).createDiv = originalCreateDiv;
+        }
+        document.addEventListener = originalAddEventListener;
+        document.removeEventListener = originalRemoveEventListener;
       }
     });
 
     it('clicking overlay background removes overlay', () => {
       const { renderer } = createRenderer();
-      const { overlayEl, origDocument } = setupDocumentMock();
+      const { overlayEl, originalAddEventListener, originalCreateDiv, originalRemoveEventListener } = setupDocumentMock();
 
       try {
         renderer.showFullImage(image);
@@ -1256,13 +1293,19 @@ describe('MessageRenderer', () => {
 
         expect(removeSpy).toHaveBeenCalled();
       } finally {
-        (globalThis as any).document = origDocument;
+        if (originalCreateDiv === undefined) {
+          delete (document.body as any).createDiv;
+        } else {
+          (document.body as any).createDiv = originalCreateDiv;
+        }
+        document.addEventListener = originalAddEventListener;
+        document.removeEventListener = originalRemoveEventListener;
       }
     });
 
     it('ESC key removes overlay', () => {
       const { renderer } = createRenderer();
-      const { overlayEl, docListeners, origDocument } = setupDocumentMock();
+      const { overlayEl, docListeners, originalAddEventListener, originalCreateDiv, originalRemoveEventListener } = setupDocumentMock();
 
       try {
         renderer.showFullImage(image);
@@ -1279,7 +1322,13 @@ describe('MessageRenderer', () => {
         // After close, the keydown handler should be removed
         expect(document.removeEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
       } finally {
-        (globalThis as any).document = origDocument;
+        if (originalCreateDiv === undefined) {
+          delete (document.body as any).createDiv;
+        } else {
+          (document.body as any).createDiv = originalCreateDiv;
+        }
+        document.addEventListener = originalAddEventListener;
+        document.removeEventListener = originalRemoveEventListener;
       }
     });
   });
@@ -1347,14 +1396,14 @@ describe('MessageRenderer', () => {
 
       // First click
       await clickHandlers![0]({ stopPropagation: jest.fn() });
-      expect(copyBtn.textContent).toBe('copied!');
+      expect(copyBtn.textContent).toBe('Copied!');
 
       // Second rapid click before timeout expires
       await clickHandlers![0]({ stopPropagation: jest.fn() });
 
       // clearTimeout should have been called for the first pending timeout
       expect(clearTimeoutSpy).toHaveBeenCalled();
-      expect(copyBtn.textContent).toBe('copied!');
+      expect(copyBtn.textContent).toBe('Copied!');
 
       clearTimeoutSpy.mockRestore();
     });
@@ -1371,7 +1420,7 @@ describe('MessageRenderer', () => {
 
       // Click to copy
       await clickHandlers![0]({ stopPropagation: jest.fn() });
-      expect(copyBtn.textContent).toBe('copied!');
+      expect(copyBtn.textContent).toBe('Copied!');
       expect(copyBtn.classList.contains('copied')).toBe(true);
 
       // Advance timers by 1500ms (the feedback duration)

@@ -54,6 +54,16 @@ function clickButton(root: any, text: string): void {
   btn.click();
 }
 
+function expectHidden(el: any): void {
+  expect(el).not.toBeNull();
+  expect(el.hasClass('geminese-hidden')).toBe(true);
+}
+
+function expectVisible(el: any): void {
+  expect(el).not.toBeNull();
+  expect(el.hasClass('geminese-hidden')).toBe(false);
+}
+
 describe('InstructionModal', () => {
   describe('onOpen', () => {
     it('renders the raw instruction text', () => {
@@ -73,13 +83,13 @@ describe('InstructionModal', () => {
 
       const loadingEl = findByClass(contentEl, 'geminese-instruction-loading');
       expect(loadingEl).not.toBeNull();
-      expect(loadingEl.style.display).not.toBe('none');
+      expectVisible(loadingEl);
 
       const clarificationEl = findByClass(contentEl, 'geminese-instruction-clarification-section');
-      expect(clarificationEl.style.display).toBe('none');
+      expectHidden(clarificationEl);
 
       const confirmationEl = findByClass(contentEl, 'geminese-instruction-confirmation-section');
-      expect(confirmationEl.style.display).toBe('none');
+      expectHidden(confirmationEl);
     });
 
     it('renders Cancel button in loading state', () => {
@@ -102,10 +112,10 @@ describe('InstructionModal', () => {
       modal.showClarification('What style do you want?');
 
       const loadingEl = findByClass(contentEl, 'geminese-instruction-loading');
-      expect(loadingEl.style.display).toBe('none');
+      expectHidden(loadingEl);
 
       const clarificationEl = findByClass(contentEl, 'geminese-instruction-clarification-section');
-      expect(clarificationEl.style.display).toBe('block');
+      expectVisible(clarificationEl);
     });
 
     it('displays the clarification text', () => {
@@ -142,10 +152,10 @@ describe('InstructionModal', () => {
       modal.showConfirmation('Refined instruction text');
 
       const loadingEl = findByClass(contentEl, 'geminese-instruction-loading');
-      expect(loadingEl.style.display).toBe('none');
+      expectHidden(loadingEl);
 
       const confirmationEl = findByClass(contentEl, 'geminese-instruction-confirmation-section');
-      expect(confirmationEl.style.display).toBe('block');
+      expectVisible(confirmationEl);
     });
 
     it('displays the refined instruction', () => {
@@ -296,10 +306,10 @@ describe('InstructionModal', () => {
       modal.showClarificationLoading();
 
       const loadingEl = findByClass(contentEl, 'geminese-instruction-loading');
-      expect(loadingEl.style.display).not.toBe('none');
+      expectVisible(loadingEl);
 
       const clarificationEl = findByClass(contentEl, 'geminese-instruction-clarification-section');
-      expect(clarificationEl.style.display).toBe('none');
+      expectHidden(clarificationEl);
     });
   });
 });

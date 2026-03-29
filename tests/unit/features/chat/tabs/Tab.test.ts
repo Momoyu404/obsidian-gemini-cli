@@ -35,6 +35,7 @@ jest.mock('@/core/agent', () => ({
     ensureReady: jest.fn().mockResolvedValue(true),
     closePersistentQuery: jest.fn(),
     isReady: jest.fn().mockReturnValue(false),
+    setActiveModel: jest.fn(),
     applyForkState: jest.fn((conv: any) => conv.sessionId ?? conv.forkSource?.sessionId ?? null),
     onReadyStateChange: jest.fn((listener: (ready: boolean) => void) => {
       listener(false);
@@ -54,10 +55,13 @@ const createMockFileContextManager = () => ({
   handleMentionKeydown: jest.fn().mockReturnValue(false),
   isMentionDropdownVisible: jest.fn().mockReturnValue(false),
   hideMentionDropdown: jest.fn(),
+  getCurrentNotePath: jest.fn().mockReturnValue(null),
+  getAttachedFiles: jest.fn().mockReturnValue(new Set()),
   destroy: jest.fn(),
 });
 
 const createMockImageContextManager = () => ({
+  getAttachedImages: jest.fn().mockReturnValue([]),
   destroy: jest.fn(),
 });
 
@@ -112,6 +116,7 @@ const createMockGemineseService = (overrides?: {
   ensureReady: overrides?.ensureReady ?? jest.fn().mockResolvedValue(true),
   closePersistentQuery: jest.fn(),
   isReady: jest.fn().mockReturnValue(false),
+  setActiveModel: jest.fn(),
   applyForkState: jest.fn((conv: any) => conv.sessionId ?? conv.forkSource?.sessionId ?? null),
   onReadyStateChange: overrides?.onReadyStateChange ?? jest.fn((listener: (ready: boolean) => void) => {
     listener(false);
@@ -121,6 +126,7 @@ const createMockGemineseService = (overrides?: {
 
 const createMockThinkingBudgetSelector = () => ({
   updateDisplay: jest.fn(),
+  setDisabled: jest.fn(),
 });
 
 const createMockContextUsageMeter = () => ({
@@ -137,9 +143,12 @@ const createMockExternalContextSelector = () => ({
 const createMockMcpServerSelector = () => ({
   setMcpManager: jest.fn(),
   addMentionedServers: jest.fn(),
+  setDisabled: jest.fn(),
 });
 
-const createMockPermissionToggle = () => ({});
+const createMockPermissionToggle = () => ({
+  setDisabled: jest.fn(),
+});
 
 // Shared mock instances (reset in beforeEach)
 let mockFileContextManager: ReturnType<typeof createMockFileContextManager>;
@@ -424,7 +433,7 @@ describe('Tab - Creation', () => {
       const tab = createTab(options);
 
       expect(tab.dom.contentEl).toBeDefined();
-      expect(tab.dom.contentEl.style.display).toBe('none');
+      expect(tab.dom.contentEl.hasClass('geminese-hidden')).toBe(true);
       expect(tab.dom.messagesEl).toBeDefined();
       expect(tab.dom.inputEl).toBeDefined();
     });
@@ -554,7 +563,7 @@ describe('Tab - Activation/Deactivation', () => {
 
       activateTab(tab);
 
-      expect(tab.dom.contentEl.style.display).toBe('flex');
+      expect(tab.dom.contentEl.hasClass('geminese-hidden')).toBe(false);
     });
   });
 
@@ -567,7 +576,7 @@ describe('Tab - Activation/Deactivation', () => {
       activateTab(tab);
       deactivateTab(tab);
 
-      expect(tab.dom.contentEl.style.display).toBe('none');
+      expect(tab.dom.contentEl.hasClass('geminese-hidden')).toBe(true);
     });
   });
 });
@@ -606,7 +615,7 @@ describe('Tab - Event Wiring', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      expect(tab.dom.eventCleanups.length).toBe(4); // keydown, input, focus, scroll
+      expect(tab.dom.eventCleanups.length).toBe(5); // keydown, input, focus, drag/drop, scroll
     });
   });
 });
@@ -748,7 +757,7 @@ describe('Tab - Title', () => {
 
       const title = getTabTitle(tab, options.plugin);
 
-      expect(title).toBe('New Chat');
+      expect(title).toBe('New chat');
     });
 
     it('should return conversation title when available', () => {
@@ -782,7 +791,7 @@ describe('Tab - Title', () => {
 
       const title = getTabTitle(tab, plugin);
 
-      expect(title).toBe('New Chat');
+      expect(title).toBe('New chat');
     });
   });
 });
@@ -827,7 +836,7 @@ describe('Tab - UI Initialization', () => {
       initializeTabUI(tab, options.plugin);
 
       expect(tab.dom.selectionIndicatorEl).toBeDefined();
-      expect(tab.dom.selectionIndicatorEl!.style.display).toBe('none');
+      expect(tab.dom.selectionIndicatorEl!.hasClass('geminese-hidden')).toBe(true);
     });
 
     it('should create SlashCommandDropdown', () => {
@@ -1734,10 +1743,7 @@ describe('Tab - UI Callback Wiring', () => {
       const constructorCall = SlashCommandDropdown.mock.calls[0];
       const callbacks = constructorCall[2]; // 3rd argument is callbacks
 
-      // Verify getSdkCommands callback is wired
-      expect(callbacks.getSdkCommands).toBe(getSdkCommands);
-
-      // Verify it returns the expected commands
+      expect(callbacks.getSdkCommands).toEqual(expect.any(Function));
       const returnedCommands = await callbacks.getSdkCommands();
       expect(returnedCommands).toEqual(mockSdkCommands);
     });
@@ -2039,7 +2045,7 @@ describe('Tab - handleForkRequest', () => {
     // Extract the fork callback from the MessageRenderer constructor
     const { MessageRenderer } = jest.requireMock('@/features/chat/rendering');
     const lastCall = MessageRenderer.mock.calls[MessageRenderer.mock.calls.length - 1];
-    const forkCallback = lastCall[4]; // 5th argument is forkCallback
+    const forkCallback = lastCall[3];
 
     return { tab, forkCallback, forkRequestCallback, plugin: options.plugin };
   }
@@ -2305,7 +2311,7 @@ describe('Tab - handleForkRequest', () => {
 
     const { MessageRenderer } = jest.requireMock('@/features/chat/rendering');
     const lastCall = MessageRenderer.mock.calls[MessageRenderer.mock.calls.length - 1];
-    const forkCallback = lastCall[4];
+    const forkCallback = lastCall[3];
 
     expect(forkCallback).toBeUndefined();
   });

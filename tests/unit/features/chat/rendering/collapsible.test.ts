@@ -19,12 +19,20 @@ describe('collapsible', () => {
     state = { isExpanded: false };
   });
 
+  const expectHidden = (el: ReturnType<typeof createMockEl>) => {
+    expect(el.hasClass('geminese-hidden')).toBe(true);
+  };
+
+  const expectVisible = (el: ReturnType<typeof createMockEl>) => {
+    expect(el.hasClass('geminese-hidden')).toBe(false);
+  };
+
   describe('setupCollapsible', () => {
     it('should start collapsed by default', () => {
       setupCollapsible(wrapper, header, content, state);
 
       expect(state.isExpanded).toBe(false);
-      expect(content.style.display).toBe('none');
+      expectHidden(content);
       expect(header.getAttribute('aria-expanded')).toBe('false');
       expect(wrapper.hasClass('expanded')).toBe(false);
     });
@@ -33,7 +41,7 @@ describe('collapsible', () => {
       setupCollapsible(wrapper, header, content, state, { initiallyExpanded: true });
 
       expect(state.isExpanded).toBe(true);
-      expect(content.style.display).toBe('block');
+      expectVisible(content);
       expect(header.getAttribute('aria-expanded')).toBe('true');
       expect(wrapper.hasClass('expanded')).toBe(true);
     });
@@ -48,14 +56,14 @@ describe('collapsible', () => {
       clickHandlers[0]();
       expect(state.isExpanded).toBe(true);
       expect(wrapper.hasClass('expanded')).toBe(true);
-      expect(content.style.display).toBe('block');
+      expectVisible(content);
       expect(header.getAttribute('aria-expanded')).toBe('true');
 
       // Collapse
       clickHandlers[0]();
       expect(state.isExpanded).toBe(false);
       expect(wrapper.hasClass('expanded')).toBe(false);
-      expect(content.style.display).toBe('none');
+      expectHidden(content);
       expect(header.getAttribute('aria-expanded')).toBe('false');
     });
 
@@ -137,14 +145,14 @@ describe('collapsible', () => {
     it('should collapse an expanded element', () => {
       state.isExpanded = true;
       wrapper.addClass('expanded');
-      content.style.display = 'block';
+      content.removeClass('geminese-hidden');
       header.setAttribute('aria-expanded', 'true');
 
       collapseElement(wrapper, header, content, state);
 
       expect(state.isExpanded).toBe(false);
       expect(wrapper.hasClass('expanded')).toBe(false);
-      expect(content.style.display).toBe('none');
+      expectHidden(content);
       expect(header.getAttribute('aria-expanded')).toBe('false');
     });
 
@@ -152,7 +160,7 @@ describe('collapsible', () => {
       collapseElement(wrapper, header, content, state);
 
       expect(state.isExpanded).toBe(false);
-      expect(content.style.display).toBe('none');
+      expectHidden(content);
     });
   });
 });

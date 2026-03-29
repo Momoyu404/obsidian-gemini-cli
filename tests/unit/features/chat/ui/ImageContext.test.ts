@@ -649,12 +649,12 @@ describe('ImageContextManager - Private Helpers', () => {
   describe('Image preview rendering', () => {
     it('updateImagePreview should hide preview when no images', () => {
       manager['updateImagePreview']();
-      expect(manager['imagePreviewEl'].style.display).toBe('none');
+      expect(manager['imagePreviewEl'].hasClass('geminese-hidden')).toBe(true);
     });
 
     it('updateImagePreview should show preview when images exist', () => {
       manager.setImages([createImageAttachment()]);
-      expect(manager['imagePreviewEl'].style.display).toBe('flex');
+      expect(manager['imagePreviewEl'].hasClass('geminese-hidden')).toBe(false);
     });
 
     it('renderImagePreview should create chip with thumbnail, info, and remove button', () => {

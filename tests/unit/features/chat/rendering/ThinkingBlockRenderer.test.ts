@@ -49,12 +49,12 @@ describe('ThinkingBlockRenderer', () => {
 
       // Manually expand first
       state.wrapperEl.addClass('expanded');
-      state.contentEl.style.display = 'block';
+      state.contentEl.removeClass('geminese-hidden');
 
       finalizeThinkingBlock(state);
 
       expect(state.wrapperEl.hasClass('expanded')).toBe(false);
-      expect(state.contentEl.style.display).toBe('none');
+      expect(state.contentEl.hasClass('geminese-hidden')).toBe(true);
     });
 
     it('should update label with final duration', () => {
@@ -92,7 +92,7 @@ describe('ThinkingBlockRenderer', () => {
       clickHandlers[0]();
       expect(state.isExpanded).toBe(true);
       expect((state.wrapperEl as any).hasClass('expanded')).toBe(true);
-      expect((state.contentEl as any).style.display).toBe('block');
+      expect((state.contentEl as any).hasClass('geminese-hidden')).toBe(false);
     });
 
     it('should update aria-expanded on finalize', () => {

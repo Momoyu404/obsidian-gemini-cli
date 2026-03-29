@@ -25,6 +25,8 @@ interface ScanCache {
 }
 
 const CACHE_TTL_MS = 30000;
+const DEFAULT_MAX_SCAN_DEPTH = 20;
+const HOME_DIR_MAX_SCAN_DEPTH = 1;
 
 class ExternalContextScanner {
   private cache = new Map<string, ScanCache>();
@@ -35,6 +37,9 @@ class ExternalContextScanner {
 
     for (const contextPath of externalContextPaths) {
       const expandedPath = normalizePathForFilesystem(contextPath);
+      const maxDepth = expandedPath === normalizePathForFilesystem('~')
+        ? HOME_DIR_MAX_SCAN_DEPTH
+        : DEFAULT_MAX_SCAN_DEPTH;
 
       const cached = this.cache.get(expandedPath);
       if (cached && now - cached.timestamp < CACHE_TTL_MS) {
@@ -42,7 +47,7 @@ class ExternalContextScanner {
         continue;
       }
 
-      const files = this.scanDirectory(expandedPath, expandedPath);
+      const files = this.scanDirectory(expandedPath, expandedPath, maxDepth);
       this.cache.set(expandedPath, { files, timestamp: now });
       allFiles.push(...files);
     }
@@ -52,26 +57,69 @@ class ExternalContextScanner {
 
   private scanDirectory(
     dir: string,
-    contextRoot: string
+    contextRoot: string,
+    maxDepth: number,
+    depth = 0
   ): ExternalContextFile[] {
     try {
       if (!fs.existsSync(dir)) return [];
 
       const stat = fs.statSync(dir);
       if (stat.isFile()) {
+        const name = path.basename(dir);
+        if (this.shouldSkipEntry(name)) {
+          return [];
+        }
+
         return [{
           path: dir,
-          name: path.basename(dir),
-          relativePath: path.relative(contextRoot, dir),
+          name,
+          relativePath: path.relative(contextRoot, dir) || name,
           contextRoot,
           mtime: stat.mtimeMs,
         }];
       }
 
-      return [];
+      if (depth > maxDepth) {
+        return [];
+      }
+
+      const files: ExternalContextFile[] = [];
+
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (this.shouldSkipEntry(entry.name)) {
+          continue;
+        }
+
+        const fullPath = path.join(dir, entry.name);
+
+        if (entry.isDirectory()) {
+          files.push(...this.scanDirectory(fullPath, contextRoot, maxDepth, depth + 1));
+          continue;
+        }
+
+        if (!entry.isFile()) {
+          continue;
+        }
+
+        const entryStat = fs.statSync(fullPath);
+        files.push({
+          path: fullPath,
+          name: entry.name,
+          relativePath: path.relative(contextRoot, fullPath),
+          contextRoot,
+          mtime: entryStat.mtimeMs,
+        });
+      }
+
+      return files;
     } catch {
       return [];
     }
+  }
+
+  private shouldSkipEntry(name: string): boolean {
+    return name.startsWith('.') || name === 'node_modules';
   }
 
   invalidateCache(): void {
