@@ -109,7 +109,7 @@ describe('processFileLinks', () => {
 
       const link = container.querySelector('a.geminese-file-link');
       expect(link).not.toBeNull();
-      expect(link!.textContent).toBe('My Note');
+      expect(link!.textContent).toBe('My note');
     });
 
     it('resolves files without .md extension using vault fallback', () => {

@@ -833,7 +833,7 @@ describe('session utilities', () => {
 
       const result = formatToolCallForContext(toolCall);
 
-      expect(result).toContain('config=[object]');
+      expect(result).toContain('config={"nested":true}');
       expect(result).toContain('count=42');
     });
 

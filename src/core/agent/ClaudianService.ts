@@ -30,6 +30,7 @@ import { getVaultPath } from '../../utils/path';
 import {
   buildContextFromHistory,
   buildPromptWithHistoryContext,
+  isSessionExpiredError,
 } from '../../utils/session';
 import { isSkill } from '../../utils/slashCommand';
 import type { McpServerManager } from '../mcp';
@@ -53,7 +54,7 @@ import {
   getModelSelection,
   supportsGeminiNativeFeatures,
 } from '../types';
-import { spawnGeminiCli } from './customSpawn';
+import { killGeminiCliProcess, spawnGeminiCli } from './customSpawn';
 import { OllamaToolExecutor } from './OllamaToolExecutor';
 import {
   type ColdStartQueryContext,
@@ -98,6 +99,85 @@ export interface EnsureReadyOptions {
   preserveHandlers?: boolean;
 }
 
+const CANCEL_FORCE_KILL_DELAY_MS = 1000;
+const STDERR_EXCERPT_MAX_LENGTH = 1000;
+
+type GeminiErrorCategory =
+  | 'capacity_exhausted'
+  | 'process_exit'
+  | 'session_invalid'
+  | 'spawn_failure'
+  | 'stream_parse_failure'
+  | 'timeout'
+  | 'unknown';
+
+interface GeminiAttemptResult {
+  retryWithAuto: boolean;
+}
+
+function buildProFallbackNotice(): string {
+  return '\n\n_Pro currently has no capacity. This request was temporarily retried with Auto._\n\n';
+}
+
+function isManualProSelection(model: GeminiModel): boolean {
+  return getModelId(model) === 'pro';
+}
+
+function buildStderrExcerpt(stderrData: string): string | undefined {
+  const trimmed = stderrData.trim();
+  if (!trimmed) return undefined;
+  return trimmed.length > STDERR_EXCERPT_MAX_LENGTH
+    ? `${trimmed.slice(0, STDERR_EXCERPT_MAX_LENGTH)}...`
+    : trimmed;
+}
+
+function categorizeGeminiError(
+  errorMessage: string | undefined,
+  exitCode: number | null | undefined,
+  invalidStdoutLineCount: number,
+): GeminiErrorCategory | undefined {
+  if (!errorMessage && exitCode == null && invalidStdoutLineCount === 0) {
+    return undefined;
+  }
+
+  if (invalidStdoutLineCount > 0 && exitCode !== 0) {
+    return 'stream_parse_failure';
+  }
+
+  const lower = errorMessage?.toLowerCase() ?? '';
+  if (
+    lower.includes('model_capacity_exhausted') ||
+    lower.includes('resource_exhausted') ||
+    lower.includes('ratelimitexceeded') ||
+    lower.includes('no capacity available for model')
+  ) {
+    return 'capacity_exhausted';
+  }
+
+  if (errorMessage && isSessionExpiredError(new Error(errorMessage))) {
+    return 'session_invalid';
+  }
+
+  if (lower.includes('timeout') || lower.includes('timed out')) {
+    return 'timeout';
+  }
+
+  if (
+    lower.includes('spawn') ||
+    lower.includes('enoent') ||
+    lower.includes('gemini cli not found') ||
+    lower.includes('failed to create gemini cli process stdout')
+  ) {
+    return 'spawn_failure';
+  }
+
+  if (exitCode !== null && exitCode !== 0) {
+    return 'process_exit';
+  }
+
+  return 'unknown';
+}
+
 export class GemineseService {
   private plugin: GeminesePlugin;
   private abortController: AbortController | null = null;
@@ -112,6 +192,7 @@ export class GemineseService {
   private sessionManager = new SessionManager();
   private mcpManager: McpServerManager;
   private currentProcess: ChildProcess | null = null;
+  private cancelForceKillTimeout: ReturnType<typeof setTimeout> | null = null;
   private ready = false;
   private lastResolvedModel: string | null = null;
   private activeModel: GeminiModel;
@@ -218,9 +299,10 @@ export class GemineseService {
   }
 
   closePersistentQuery(_reason?: string): void {
+    this.clearCancelForceKillTimeout();
     if (this.currentProcess) {
       try {
-        this.currentProcess.kill();
+        killGeminiCliProcess(this.currentProcess, 'SIGTERM');
       } catch {
         // Process may already be dead
       }
@@ -233,6 +315,13 @@ export class GemineseService {
       intendedModel: modelOverride ?? this.activeModel,
       customContextLimits: this.plugin.settings.customContextLimits,
     };
+  }
+
+  private clearCancelForceKillTimeout(): void {
+    if (this.cancelForceKillTimeout) {
+      clearTimeout(this.cancelForceKillTimeout);
+      this.cancelForceKillTimeout = null;
+    }
   }
 
   async *query(
@@ -262,10 +351,62 @@ export class GemineseService {
       return;
     }
 
+    let attemptModel = selectedModel;
+    let allowResume = true;
+    let fallbackTriggered = false;
+
+    try {
+      while (true) {
+        const attemptResult = yield* this.queryGeminiAttempt(
+          prompt,
+          attemptModel,
+          images,
+          conversationHistory,
+          queryOptions,
+          allowResume,
+        );
+
+        if (
+          attemptResult.retryWithAuto &&
+          isManualProSelection(selectedModel) &&
+          !fallbackTriggered
+        ) {
+          fallbackTriggered = true;
+          yield { type: 'text', content: buildProFallbackNotice() };
+          attemptModel = 'auto';
+          allowResume = false;
+          continue;
+        }
+
+        break;
+      }
+    } finally {
+      this.abortController = null;
+      this.clearCancelForceKillTimeout();
+      this.currentProcess = null;
+    }
+
+    yield { type: 'done' };
+  }
+
+  private async *queryGeminiAttempt(
+    prompt: string,
+    attemptModel: GeminiModel,
+    images: ImageAttachment[] | undefined,
+    conversationHistory: ChatMessage[] | undefined,
+    queryOptions: QueryOptions | undefined,
+    allowResume: boolean,
+  ): AsyncGenerator<StreamChunk, GeminiAttemptResult> {
+    const vaultPath = getVaultPath(this.plugin.app);
+    if (!vaultPath) {
+      yield { type: 'error', content: 'Could not determine vault path' };
+      return { retryWithAuto: false };
+    }
+
     const resolvedCliPath = this.plugin.getResolvedGeminiCliPath();
     if (!resolvedCliPath) {
       yield { type: 'error', content: 'Gemini CLI not found. Please install Gemini CLI: npm install -g @google/gemini-cli' };
-      return;
+      return { retryWithAuto: false };
     }
 
     const customEnv = parseEnvironmentVariables(this.plugin.getActiveEnvironmentVariables());
@@ -275,33 +416,26 @@ export class GemineseService {
       const missingNodeError = getMissingNodeError(resolvedCliPath, enhancedPath);
       if (missingNodeError) {
         yield { type: 'error', content: missingNodeError };
-        return;
+        return { retryWithAuto: false };
       }
     }
 
     this.vaultPath = vaultPath;
 
     let promptToSend = prompt;
+    const resumedSessionId = allowResume ? (this.sessionManager.getSessionId() ?? undefined) : undefined;
+    const hasConversationHistory = !!(conversationHistory && conversationHistory.length > 0);
 
-    // Session mismatch recovery: rebuild history context if SDK gave us a different session
-    if (this.sessionManager.needsHistoryRebuild() && conversationHistory && conversationHistory.length > 0) {
+    if (hasConversationHistory && (this.sessionManager.needsHistoryRebuild() || !resumedSessionId)) {
       const historyContext = buildContextFromHistory(conversationHistory);
       const actualPrompt = stripCurrentNoteContext(prompt);
       promptToSend = buildPromptWithHistoryContext(historyContext, prompt, actualPrompt, conversationHistory);
-      this.sessionManager.clearHistoryRebuild();
+
+      if (this.sessionManager.needsHistoryRebuild()) {
+        this.sessionManager.clearHistoryRebuild();
+      }
     }
 
-    // No session yet but has conversation history — include context for continuity
-    const noSessionButHasHistory = !this.sessionManager.getSessionId() &&
-      conversationHistory && conversationHistory.length > 0;
-
-    if (noSessionButHasHistory) {
-      const historyContext = buildContextFromHistory(conversationHistory);
-      const actualPrompt = stripCurrentNoteContext(prompt);
-      promptToSend = buildPromptWithHistoryContext(historyContext, prompt, actualPrompt, conversationHistory);
-    }
-
-    // Write image attachments to temp files and reference them in the prompt
     if (images && images.length > 0) {
       const imagePromptParts: string[] = [];
       for (const image of images) {
@@ -327,8 +461,8 @@ export class GemineseService {
     const ctx: ColdStartQueryContext = {
       ...baseContext,
       abortController: this.abortController ?? undefined,
-      sessionId: this.sessionManager.getSessionId() ?? undefined,
-      modelOverride: queryOptions?.model,
+      sessionId: resumedSessionId,
+      modelOverride: attemptModel,
       mcpMentions: queryOptions?.mcpMentions,
       enabledMcpServers: queryOptions?.enabledMcpServers,
       allowedTools: queryOptions?.allowedTools,
@@ -337,22 +471,20 @@ export class GemineseService {
     };
 
     const cliArgs = QueryOptionsBuilder.buildColdStartCliArgs(ctx, promptToSend);
-    this.sessionManager.setPendingModel(selectedModel);
+    this.sessionManager.setPendingModel(attemptModel);
 
     this.abortController = new AbortController();
 
     try {
-      yield* this.spawnAndStream(cliArgs, selectedModel);
+      return yield* this.spawnAndStream(cliArgs, attemptModel);
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
       yield { type: 'error', content: msg };
+      return { retryWithAuto: false };
     } finally {
       this.sessionManager.clearPendingModel();
-      this.abortController = null;
       this.currentProcess = null;
     }
-
-    yield { type: 'done' };
   }
 
   private async *queryOllama(
@@ -779,8 +911,8 @@ export class GemineseService {
 
   private async *spawnAndStream(
     cliArgs: ReturnType<typeof QueryOptionsBuilder.buildColdStartCliArgs>,
-    selectedModel: string
-  ): AsyncGenerator<StreamChunk> {
+    selectedModel: GeminiModel,
+  ): AsyncGenerator<StreamChunk, GeminiAttemptResult> {
     const child = spawnGeminiCli({
       cliPath: cliArgs.cliPath,
       args: cliArgs.args,
@@ -798,11 +930,43 @@ export class GemineseService {
     }
 
     let stderrData = '';
+    let capacityExhaustedDetected = false;
+    let processErrorMessage: string | null = null;
     if (child.stderr) {
       child.stderr.on('data', (data: Buffer) => {
-        stderrData += data.toString();
+        const chunkText = data.toString();
+        stderrData += chunkText;
+
+        if (
+          !capacityExhaustedDetected &&
+          categorizeGeminiError(chunkText, undefined, 0) === 'capacity_exhausted'
+        ) {
+          capacityExhaustedDetected = true;
+
+          try {
+            killGeminiCliProcess(child, 'SIGTERM');
+          } catch {
+            // Process may already be dead.
+          }
+
+          this.clearCancelForceKillTimeout();
+          this.cancelForceKillTimeout = setTimeout(() => {
+            if (!this.currentProcess) {
+              return;
+            }
+
+            try {
+              killGeminiCliProcess(this.currentProcess, 'SIGKILL');
+            } catch {
+              // Process may already be dead.
+            }
+          }, CANCEL_FORCE_KILL_DELAY_MS);
+        }
       });
     }
+    child.on('error', (error) => {
+      processErrorMessage = error.message;
+    });
 
     const rl = readline.createInterface({
       input: child.stdout,
@@ -815,8 +979,14 @@ export class GemineseService {
       for await (const line of rl) {
         if (this.abortController?.signal.aborted) break;
 
+        if (line.trim().length === 0) {
+          continue;
+        }
+
         const geminiEvent = parseGeminiJsonLine(line);
-        if (!geminiEvent) continue;
+        if (!geminiEvent) {
+          continue;
+        }
 
         for (const event of transformGeminiEvent(geminiEvent, transformOptions)) {
           if (isSessionInitEvent(event)) {
@@ -832,10 +1002,9 @@ export class GemineseService {
         }
       }
     } catch (error) {
-      if (this.abortController?.signal.aborted) {
-        return;
+      if (!this.abortController?.signal.aborted) {
+        throw error;
       }
-      throw error;
     }
 
     const exitCode = await new Promise<number | null>((resolve) => {
@@ -847,13 +1016,41 @@ export class GemineseService {
       child.on('error', () => resolve(null));
     });
 
+    this.clearCancelForceKillTimeout();
+
+    if (
+      !this.abortController?.signal.aborted &&
+      capacityExhaustedDetected &&
+      isManualProSelection(selectedModel)
+    ) {
+      this.currentProcess = null;
+      this.notifyReadyStateChange();
+      return { retryWithAuto: true };
+    }
+
+    if (
+      !this.abortController?.signal.aborted &&
+      capacityExhaustedDetected &&
+      !isManualProSelection(selectedModel)
+    ) {
+      const errorMsg =
+        processErrorMessage ||
+        buildStderrExcerpt(stderrData) ||
+        'The selected Gemini route is temporarily unavailable due to model capacity.';
+      yield { type: 'error', content: errorMsg };
+      this.currentProcess = null;
+      this.notifyReadyStateChange();
+      return { retryWithAuto: false };
+    }
+
     if (exitCode !== null && exitCode !== 0 && !this.abortController?.signal.aborted) {
-      const errorMsg = stderrData.trim() || `Gemini CLI exited with code ${exitCode}`;
+      const errorMsg = processErrorMessage || stderrData.trim() || `Gemini CLI exited with code ${exitCode}`;
       yield { type: 'error', content: errorMsg };
     }
 
     this.currentProcess = null;
     this.notifyReadyStateChange();
+    return { retryWithAuto: false };
   }
 
   cancel() {
@@ -866,10 +1063,23 @@ export class GemineseService {
 
     if (this.currentProcess) {
       try {
-        this.currentProcess.kill('SIGTERM');
+        killGeminiCliProcess(this.currentProcess, 'SIGTERM');
       } catch {
         // Process may already be dead
       }
+
+      this.clearCancelForceKillTimeout();
+      this.cancelForceKillTimeout = setTimeout(() => {
+        if (!this.currentProcess) {
+          return;
+        }
+
+        try {
+          killGeminiCliProcess(this.currentProcess, 'SIGKILL');
+        } catch {
+          // Process may already be dead
+        }
+      }, CANCEL_FORCE_KILL_DELAY_MS);
     }
   }
 

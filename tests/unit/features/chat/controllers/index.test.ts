@@ -1,3 +1,8 @@
+jest.mock('@/shared/components/SelectionHighlight', () => ({
+  hideSelectionHighlight: jest.fn(),
+  showSelectionHighlight: jest.fn(),
+}));
+
 import {
   ConversationController,
   InputController,
@@ -15,4 +20,3 @@ describe('features/chat/controllers index', () => {
     expect(StreamController).toBeDefined();
   });
 });
-

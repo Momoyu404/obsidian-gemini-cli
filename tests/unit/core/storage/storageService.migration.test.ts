@@ -104,7 +104,7 @@ describe('StorageService migration', () => {
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    expect(files.has('.claude/commands/review.md')).toBe(true);
+    expect(files.has('.gemini/commands/review.md')).toBe(true);
     expect(plugin.saveData).toHaveBeenCalledWith({});
   });
 
@@ -117,7 +117,7 @@ describe('StorageService migration', () => {
 
     const { plugin } = createMockPlugin({
       dataJson: { slashCommands: [command] },
-      shouldFailWrite: (path) => path.startsWith('.claude/commands/'),
+      shouldFailWrite: (path) => path.startsWith('.gemini/commands/'),
     });
 
     const storage = new StorageService(plugin);
@@ -136,14 +136,14 @@ describe('StorageService migration', () => {
     const { plugin, files } = createMockPlugin({
       dataJson: null,
       initialFiles: {
-        '.claude/settings.json': JSON.stringify(legacySettings),
+        '.gemini/settings.json': JSON.stringify(legacySettings),
       },
     });
 
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    const saved = JSON.parse(files.get('.claude/geminese-settings.json') || '{}') as Record<string, unknown>;
+    const saved = JSON.parse(files.get('.gemini/geminese-settings.json') || '{}') as Record<string, unknown>;
     const blocked = saved.blockedCommands as { unix: string[]; windows: string[] };
 
     expect(blocked.unix).toEqual(['rm -rf']);
@@ -158,7 +158,7 @@ describe('StorageService migration', () => {
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    const rawSettings = files.get('.claude/geminese-settings.json');
+    const rawSettings = files.get('.gemini/geminese-settings.json');
     // If settings file was created, it should NOT contain the legacy activeConversationId
     const containsLegacyField = rawSettings
       ? 'activeConversationId' in (JSON.parse(rawSettings) as Record<string, unknown>)
@@ -199,14 +199,14 @@ describe('StorageService migration', () => {
     const { plugin, files } = createMockPlugin({
       dataJson: null,
       initialFiles: {
-        '.claude/settings.json': JSON.stringify(legacySettings),
+        '.gemini/settings.json': JSON.stringify(legacySettings),
       },
     });
 
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    const saved = JSON.parse(files.get('.claude/geminese-settings.json') || '{}') as Record<string, unknown>;
+    const saved = JSON.parse(files.get('.gemini/geminese-settings.json') || '{}') as Record<string, unknown>;
     expect(saved.persistentExternalContextPaths).toEqual([]);
   });
 
@@ -221,14 +221,14 @@ describe('StorageService migration', () => {
     const { plugin, files } = createMockPlugin({
       dataJson: null,
       initialFiles: {
-        '.claude/settings.json': JSON.stringify(legacySettings),
+        '.gemini/settings.json': JSON.stringify(legacySettings),
       },
     });
 
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    const saved = JSON.parse(files.get('.claude/geminese-settings.json') || '{}') as Record<string, unknown>;
+    const saved = JSON.parse(files.get('.gemini/geminese-settings.json') || '{}') as Record<string, unknown>;
     const envVars = saved.environmentVariables as string;
     expect(envVars).toContain('FOO=bar');
     expect(envVars).toContain('BAZ=qux');
@@ -249,14 +249,14 @@ describe('StorageService migration', () => {
     const { plugin, files } = createMockPlugin({
       dataJson: null,
       initialFiles: {
-        '.claude/settings.json': JSON.stringify(legacySettings),
+        '.gemini/settings.json': JSON.stringify(legacySettings),
       },
     });
 
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    const ccSettings = JSON.parse(files.get('.claude/settings.json') || '{}') as Record<string, any>;
+    const ccSettings = JSON.parse(files.get('.gemini/settings.json') || '{}') as Record<string, any>;
     expect(ccSettings.permissions.allow).toEqual([{ toolName: 'Read', ruleContent: '/vault/*' }]);
     expect(ccSettings.permissions.defaultMode).toBe('default');
     expect(ccSettings.permissions.additionalDirectories).toEqual(['/external']);
@@ -264,7 +264,7 @@ describe('StorageService migration', () => {
 
   it('migrates data.json state fields to geminese-settings when empty', async () => {
     // Migration only writes when the target field is falsy.
-    // Default lastGeminiModel='haiku' (truthy) → won't overwrite
+    // Default lastGeminiModel='auto' (truthy) → won't overwrite
     // Default lastCustomModel='' (falsy) → will overwrite
     // Default lastEnvHash='' (falsy) → will overwrite
     const { plugin, files } = createMockPlugin({
@@ -278,10 +278,10 @@ describe('StorageService migration', () => {
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    const saved = JSON.parse(files.get('.claude/geminese-settings.json') || '{}') as Record<string, unknown>;
+    const saved = JSON.parse(files.get('.gemini/geminese-settings.json') || '{}') as Record<string, unknown>;
     expect(saved.lastEnvHash).toBe('abc123');
-    // lastGeminiModel defaults to 'haiku' (truthy), so migration doesn't overwrite it
-    expect(saved.lastGeminiModel).toBe('haiku');
+    // lastGeminiModel defaults to 'auto' (truthy), so migration doesn't overwrite it
+    expect(saved.lastGeminiModel).toBe('auto');
     expect(saved.lastCustomModel).toBe('custom-model');
   });
 
@@ -292,7 +292,7 @@ describe('StorageService migration', () => {
         lastGeminiModel: 'old-model',
       },
       initialFiles: {
-        '.claude/geminese-settings.json': JSON.stringify({
+        '.gemini/geminese-settings.json': JSON.stringify({
           userName: 'Test User',
           lastEnvHash: 'existing-hash',
           lastGeminiModel: 'existing-model',
@@ -303,7 +303,7 @@ describe('StorageService migration', () => {
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    const saved = JSON.parse(files.get('.claude/geminese-settings.json') || '{}') as Record<string, unknown>;
+    const saved = JSON.parse(files.get('.gemini/geminese-settings.json') || '{}') as Record<string, unknown>;
     expect(saved.lastEnvHash).toBe('existing-hash');
     expect(saved.lastGeminiModel).toBe('existing-model');
   });
@@ -318,7 +318,7 @@ describe('StorageService migration', () => {
     const { plugin, files } = createMockPlugin({
       dataJson: { slashCommands: [command] },
       initialFiles: {
-        '.claude/commands/review.md': 'Existing content',
+        '.gemini/commands/review.md': 'Existing content',
       },
     });
 
@@ -326,7 +326,7 @@ describe('StorageService migration', () => {
     await storage.initialize();
 
     // Should keep existing file, not overwrite
-    expect(files.get('.claude/commands/review.md')).toBe('Existing content');
+    expect(files.get('.gemini/commands/review.md')).toBe('Existing content');
   });
 
   it('migrates conversations from data.json', async () => {
@@ -346,7 +346,7 @@ describe('StorageService migration', () => {
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    expect(files.has('.claude/sessions/conv-1.jsonl')).toBe(true);
+    expect(files.has('.gemini/sessions/conv-1.jsonl')).toBe(true);
   });
 
   it('skips existing conversations during migration', async () => {
@@ -362,7 +362,7 @@ describe('StorageService migration', () => {
     const { plugin, files } = createMockPlugin({
       dataJson: { conversations: [conversation] },
       initialFiles: {
-        '.claude/sessions/conv-1.jsonl': '{"existing": true}',
+        '.gemini/sessions/conv-1.jsonl': '{"existing": true}',
       },
     });
 
@@ -370,7 +370,7 @@ describe('StorageService migration', () => {
     await storage.initialize();
 
     // Should keep existing file
-    expect(files.get('.claude/sessions/conv-1.jsonl')).toBe('{"existing": true}');
+    expect(files.get('.gemini/sessions/conv-1.jsonl')).toBe('{"existing": true}');
   });
 
   it('handles conversation migration errors gracefully', async () => {
@@ -420,14 +420,14 @@ describe('StorageService migration', () => {
     const { plugin, files } = createMockPlugin({
       dataJson: null,
       initialFiles: {
-        '.claude/settings.json': JSON.stringify(legacySettings),
+        '.gemini/settings.json': JSON.stringify(legacySettings),
       },
     });
 
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    const ccSettings = JSON.parse(files.get('.claude/settings.json') || '{}') as Record<string, any>;
+    const ccSettings = JSON.parse(files.get('.gemini/settings.json') || '{}') as Record<string, any>;
     // Legacy format should be converted to CC format with allow/deny/ask arrays
     expect(ccSettings.permissions).toHaveProperty('allow');
     expect(ccSettings.permissions).toHaveProperty('deny');
@@ -446,14 +446,14 @@ describe('StorageService migration', () => {
     const { plugin, files } = createMockPlugin({
       dataJson: null,
       initialFiles: {
-        '.claude/settings.json': JSON.stringify(legacySettings),
+        '.gemini/settings.json': JSON.stringify(legacySettings),
       },
     });
 
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    const ccSettings = JSON.parse(files.get('.claude/settings.json') || '{}') as Record<string, any>;
+    const ccSettings = JSON.parse(files.get('.gemini/settings.json') || '{}') as Record<string, any>;
     // Legacy format should be converted via legacyPermissionsToCCPermissions
     // Only 'always' scope permissions are converted
     expect(ccSettings.permissions.allow).toContain('Bash(git *)');
@@ -470,10 +470,10 @@ describe('StorageService migration', () => {
         lastGeminiModel: 'claude-3-sonnet',
       },
       initialFiles: {
-        '.claude/settings.json': JSON.stringify({
+        '.gemini/settings.json': JSON.stringify({
           permissions: { allow: [], deny: [], ask: [] },
         }),
-        '.claude/geminese-settings.json': JSON.stringify({
+        '.gemini/geminese-settings.json': JSON.stringify({
           userName: 'Test User',
           lastGeminiModel: '',
         }),
@@ -483,7 +483,7 @@ describe('StorageService migration', () => {
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    const saved = JSON.parse(files.get('.claude/geminese-settings.json') || '{}') as Record<string, unknown>;
+    const saved = JSON.parse(files.get('.gemini/geminese-settings.json') || '{}') as Record<string, unknown>;
     expect(saved.lastGeminiModel).toBe('claude-3-sonnet');
   });
 
@@ -581,14 +581,14 @@ describe('StorageService migration', () => {
     const { plugin, files } = createMockPlugin({
       dataJson: null,
       initialFiles: {
-        '.claude/geminese-settings.json': JSON.stringify(existingSettings),
+        '.gemini/geminese-settings.json': JSON.stringify(existingSettings),
       },
     });
 
     const storage = new StorageService(plugin);
     await storage.initialize();
 
-    const saved = JSON.parse(files.get('.claude/geminese-settings.json') || '{}') as Record<string, unknown>;
+    const saved = JSON.parse(files.get('.gemini/geminese-settings.json') || '{}') as Record<string, unknown>;
     expect(saved.persistentExternalContextPaths).toEqual(['/path/a', '/path/b']);
   });
 });

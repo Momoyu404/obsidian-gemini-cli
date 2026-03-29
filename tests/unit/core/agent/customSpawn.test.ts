@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 
-import { type GeminiSpawnOptions,spawnGeminiCli } from '@/core/agent/customSpawn';
+import { type GeminiSpawnOptions, killGeminiCliProcess, spawnGeminiCli } from '@/core/agent/customSpawn';
 import * as env from '@/utils/env';
 
 jest.mock('child_process', () => ({
@@ -146,6 +146,21 @@ describe('spawnGeminiCli', () => {
     expect(spawnOptions.stdio).toEqual(['pipe', 'pipe', 'pipe']);
   });
 
+  it('starts Gemini in a detached process group on Unix-like systems', () => {
+    const mockProcess = createMockProcess();
+    spawnMock.mockReturnValue(mockProcess as unknown as ReturnType<typeof spawn>);
+
+    spawnGeminiCli({
+      cliPath: '/usr/local/bin/gemini',
+      args: [],
+      cwd: '/tmp',
+      env: {},
+    });
+
+    const spawnOptions = spawnMock.mock.calls[0][2];
+    expect(spawnOptions.detached).toBe(process.platform !== 'win32');
+  });
+
   it('uses PATH from env when enhancedPath is not provided for .js cliPath', () => {
     const mockProcess = createMockProcess();
     spawnMock.mockReturnValue(mockProcess as unknown as ReturnType<typeof spawn>);
@@ -160,5 +175,45 @@ describe('spawnGeminiCli', () => {
     });
 
     expect(findNodeExecutable).toHaveBeenCalledWith('/some/path');
+  });
+});
+
+describe('killGeminiCliProcess', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('kills the process group on Unix-like platforms when pid is available', () => {
+    if (process.platform === 'win32') {
+      return;
+    }
+
+    const child = {
+      kill: jest.fn(),
+      pid: 4321,
+    } as any;
+    const processKillSpy = jest.spyOn(process, 'kill').mockImplementation(() => true);
+
+    killGeminiCliProcess(child, 'SIGTERM');
+
+    expect(processKillSpy).toHaveBeenCalledWith(-4321, 'SIGTERM');
+    expect(child.kill).not.toHaveBeenCalled();
+  });
+
+  it('falls back to direct child kill when process-group kill fails', () => {
+    const child = {
+      kill: jest.fn(),
+      pid: 4321,
+    } as any;
+
+    if (process.platform !== 'win32') {
+      jest.spyOn(process, 'kill').mockImplementation(() => {
+        throw new Error('group kill failed');
+      });
+    }
+
+    killGeminiCliProcess(child, 'SIGKILL');
+
+    expect(child.kill).toHaveBeenCalledWith('SIGKILL');
   });
 });

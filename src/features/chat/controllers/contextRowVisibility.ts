@@ -1,3 +1,15 @@
+function isVisible(el: Element | null): boolean {
+  if (!el) return false;
+
+  const maybeClassList = (el as { classList?: { contains?: (cls: string) => boolean } }).classList;
+  if (maybeClassList?.contains) {
+    return !maybeClassList.contains('geminese-hidden');
+  }
+
+  const maybeStyle = (el as { style?: { display?: string } }).style;
+  return maybeStyle?.display !== 'none';
+}
+
 export function updateContextRowHasContent(contextRowEl: HTMLElement): void {
   const editorIndicator = contextRowEl.querySelector('.geminese-selection-indicator');
   const browserIndicator = contextRowEl.querySelector('.geminese-browser-selection-indicator');
@@ -5,11 +17,11 @@ export function updateContextRowHasContent(contextRowEl: HTMLElement): void {
   const fileIndicator = contextRowEl.querySelector('.geminese-file-indicator');
   const imagePreview = contextRowEl.querySelector('.geminese-image-preview');
 
-  const hasEditorSelection = editorIndicator !== null && !editorIndicator.classList.contains('geminese-hidden');
-  const hasBrowserSelection = browserIndicator !== null && !browserIndicator.classList.contains('geminese-hidden');
-  const hasCanvasSelection = canvasIndicator !== null && !canvasIndicator.classList.contains('geminese-hidden');
-  const hasFileChips = fileIndicator !== null && !fileIndicator.classList.contains('geminese-hidden');
-  const hasImageChips = imagePreview !== null && !imagePreview.classList.contains('geminese-hidden');
+  const hasEditorSelection = isVisible(editorIndicator);
+  const hasBrowserSelection = isVisible(browserIndicator);
+  const hasCanvasSelection = isVisible(canvasIndicator);
+  const hasFileChips = isVisible(fileIndicator);
+  const hasImageChips = isVisible(imagePreview);
 
   contextRowEl.classList.toggle(
     'has-content',

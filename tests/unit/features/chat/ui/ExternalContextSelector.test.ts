@@ -29,6 +29,14 @@ function createMockCallbacks() {
   };
 }
 
+function mockFileStat() {
+  return { isDirectory: () => false, isFile: () => true };
+}
+
+function mockDirectoryStat() {
+  return { isDirectory: () => true, isFile: () => false };
+}
+
 describe('ExternalContextSelector', () => {
   let parentEl: any;
   let selector: ExternalContextSelector;
@@ -36,8 +44,8 @@ describe('ExternalContextSelector', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // By default, all paths are valid (exist on filesystem)
-    (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => true });
+    // By default, all paths are valid files.
+    (fs.statSync as jest.Mock).mockReturnValue(mockFileStat());
     parentEl = createMockEl();
     callbacks = createMockCallbacks();
     selector = new ExternalContextSelector(parentEl, callbacks);
@@ -173,7 +181,7 @@ describe('ExternalContextSelector', () => {
 
       expect(result).toEqual({
         success: false,
-        error: 'No path provided. Usage: /add-dir /absolute/path',
+        error: 'No path provided. Usage: /add-file /absolute/path',
       });
       expect(selector.getExternalContexts()).toEqual([]);
       expect(onChange).not.toHaveBeenCalled();
@@ -187,7 +195,7 @@ describe('ExternalContextSelector', () => {
 
       expect(result).toEqual({
         success: false,
-        error: 'No path provided. Usage: /add-dir /absolute/path',
+        error: 'No path provided. Usage: /add-file /absolute/path',
       });
       expect(selector.getExternalContexts()).toEqual([]);
       expect(onChange).not.toHaveBeenCalled();
@@ -201,7 +209,7 @@ describe('ExternalContextSelector', () => {
 
       expect(result).toEqual({
         success: false,
-        error: 'Path must be absolute. Usage: /add-dir /absolute/path',
+        error: 'Path must be absolute. Usage: /add-file /absolute/path',
       });
       expect(selector.getExternalContexts()).toEqual([]);
       expect(onChange).not.toHaveBeenCalled();
@@ -247,18 +255,18 @@ describe('ExternalContextSelector', () => {
       expect(result).toMatchObject({ error: expect.stringContaining('Permission denied') });
     });
 
-    it('should reject paths that exist but are not directories', () => {
-      (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => false });
+    it('should reject paths that exist but are not files', () => {
+      (fs.statSync as jest.Mock).mockReturnValue(mockDirectoryStat());
 
       const absolutePath = path.resolve('some', 'file.txt');
       const result = selector.addExternalContext(absolutePath);
 
       expect(result.success).toBe(false);
-      expect(result).toMatchObject({ error: expect.stringContaining('Path exists but is not a directory') });
+      expect(result).toMatchObject({ error: expect.stringContaining('Path exists but is not a file') });
     });
 
     it('should accept double-quoted absolute paths', () => {
-      const absolutePath = path.resolve('external', 'dir with spaces');
+      const absolutePath = path.resolve('external', 'note with spaces.md');
 
       const result = selector.addExternalContext(`"${absolutePath}"`);
 
@@ -267,7 +275,7 @@ describe('ExternalContextSelector', () => {
     });
 
     it('should accept single-quoted absolute paths', () => {
-      const absolutePath = path.resolve('external', 'dir with spaces');
+      const absolutePath = path.resolve('external', 'note with spaces.md');
 
       const result = selector.addExternalContext(`'${absolutePath}'`);
 
@@ -277,11 +285,12 @@ describe('ExternalContextSelector', () => {
 
     it('should expand home paths', () => {
       const homeDir = os.homedir();
+      const homeFile = path.join(homeDir, 'note.md');
 
-      const result = selector.addExternalContext('~');
+      const result = selector.addExternalContext('~/note.md');
 
-      expect(result).toEqual({ success: true, normalizedPath: homeDir });
-      expect(selector.getExternalContexts()).toEqual([homeDir]);
+      expect(result).toEqual({ success: true, normalizedPath: homeFile });
+      expect(selector.getExternalContexts()).toEqual([homeFile]);
     });
 
     it('should reject duplicate paths', () => {
@@ -292,7 +301,7 @@ describe('ExternalContextSelector', () => {
 
       expect(result).toEqual({
         success: false,
-        error: 'This folder is already added as an external context.',
+        error: 'This file is already added as an external context.',
       });
       expect(selector.getExternalContexts()).toEqual([absolutePath]);
     });
@@ -399,7 +408,7 @@ describe('ExternalContextSelector', () => {
   describe('Edge Cases', () => {
     it('should handle duplicate paths in setPersistentPaths', () => {
       // All paths are valid for this test
-      (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => true });
+      (fs.statSync as jest.Mock).mockReturnValue(mockFileStat());
 
       selector.setPersistentPaths(['/path/a', '/path/a', '/path/b']);
 
@@ -410,7 +419,7 @@ describe('ExternalContextSelector', () => {
 
     it('should handle toggling same path multiple times', () => {
       // All paths are valid for this test
-      (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => true });
+      (fs.statSync as jest.Mock).mockReturnValue(mockFileStat());
 
       selector.setExternalContexts(['/path/a']);
 
@@ -429,7 +438,7 @@ describe('ExternalContextSelector', () => {
 
     it('should preserve persistent paths across setExternalContexts calls', () => {
       // All paths are valid for this test
-      (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => true });
+      (fs.statSync as jest.Mock).mockReturnValue(mockFileStat());
 
       selector.setPersistentPaths(['/persistent/path']);
 
@@ -477,9 +486,11 @@ describe('ExternalContextSelector', () => {
       // Mock: /valid/path exists, /invalid/path does not
       (fs.statSync as jest.Mock).mockImplementation((p: string) => {
         if (p === '/valid/path') {
-          return { isDirectory: () => true };
+          return mockFileStat();
         }
-        throw new Error('ENOENT');
+        const error = new Error('ENOENT') as NodeJS.ErrnoException;
+        error.code = 'ENOENT';
+        throw error;
       });
 
       selector.setPersistentPaths(['/valid/path', '/invalid/path']);
@@ -496,7 +507,7 @@ describe('ExternalContextSelector', () => {
       const onPersistenceChange = jest.fn();
       selector.setOnPersistenceChange(onPersistenceChange);
 
-      (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => true });
+      (fs.statSync as jest.Mock).mockReturnValue(mockFileStat());
 
       selector.setPersistentPaths(['/path/a', '/path/b']);
 
@@ -510,7 +521,9 @@ describe('ExternalContextSelector', () => {
       selector.setOnPersistenceChange(onPersistenceChange);
 
       (fs.statSync as jest.Mock).mockImplementation(() => {
-        throw new Error('ENOENT');
+        const error = new Error('ENOENT') as NodeJS.ErrnoException;
+        error.code = 'ENOENT';
+        throw error;
       });
 
       selector.setPersistentPaths(['/invalid/a', '/invalid/b']);

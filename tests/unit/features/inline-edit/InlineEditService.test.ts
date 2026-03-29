@@ -1,16 +1,14 @@
-// eslint-disable-next-line jest/no-mocks-import
-import {
-  getLastOptions,
-  resetMockMessages,
-  setMockMessages,
-} from '@test/__mocks__/gemini-cli-sdk';
+import type { ChildProcess } from 'child_process';
+import { EventEmitter } from 'events';
 import * as fs from 'fs';
 import * as os from 'os';
+import { PassThrough } from 'stream';
 
 // Mock fs module
 jest.mock('fs');
 
-// Now import after all mocks are set up
+import { spawnGeminiCli } from '@/core/agent/customSpawn';
+import { QueryOptionsBuilder } from '@/core/agent/QueryOptionsBuilder';
 import { getPathFromToolInput } from '@/core/tools/toolInput';
 import type { InlineEditRequest } from '@/features/inline-edit/InlineEditService';
 import {
@@ -23,11 +21,24 @@ import {
 } from '@/features/inline-edit/InlineEditService';
 import { buildCursorContext } from '@/utils/editor';
 
+jest.mock('@/core/agent/customSpawn', () => ({
+  spawnGeminiCli: jest.fn(),
+}));
+
+jest.mock('@/core/agent/QueryOptionsBuilder', () => ({
+  QueryOptionsBuilder: {
+    writeSystemPromptFile: jest.fn(),
+  },
+}));
+
+const spawnGeminiCliMock = jest.mocked(spawnGeminiCli);
+const writeSystemPromptFileMock = jest.mocked(QueryOptionsBuilder.writeSystemPromptFile);
+
 // Create a mock plugin
 function createMockPlugin(settings = {}) {
   return {
     settings: {
-      model: 'sonnet',
+      model: 'gemini-2.5-pro',
       thinkingBudget: 'off',
       ...settings,
     },
@@ -39,8 +50,71 @@ function createMockPlugin(settings = {}) {
       },
     },
     getActiveEnvironmentVariables: jest.fn().mockReturnValue(''),
-    getResolvedGeminiCliPath: jest.fn().mockReturnValue('/fake/claude'),
+    getResolvedGeminiCliPath: jest.fn().mockReturnValue('/fake/gemini'),
   } as any;
+}
+
+function getArgValue(args: string[], flag: string): string | undefined {
+  const index = args.indexOf(flag);
+  return index >= 0 ? args[index + 1] : undefined;
+}
+
+type ProcessHarness = ReturnType<typeof createProcessHarness>;
+
+function createProcessHarness(signal?: AbortSignal, pid = 2468) {
+  const stdout = new PassThrough();
+  const stderr = new PassThrough();
+  const stdin = new PassThrough();
+  const emitter = new EventEmitter();
+
+  let finished = false;
+
+  const child = emitter as any;
+  Object.assign(child, {
+    stdin,
+    stdout,
+    stderr,
+    pid,
+    killed: false,
+    exitCode: null,
+    kill: jest.fn(() => {
+      child.killed = true;
+      finish();
+      return true;
+    }),
+  });
+
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    child.exitCode = 0;
+    stdout.end();
+    stderr.end();
+    emitter.emit('exit', 0, null);
+  };
+
+  signal?.addEventListener('abort', finish, { once: true });
+
+  return {
+    child: child as ChildProcess,
+    finish,
+    pushJson(event: unknown) {
+      if (!finished) {
+        stdout.write(`${JSON.stringify(event)}\n`);
+      }
+    },
+  };
+}
+
+function queueProcessOutput(harness: ProcessHarness, stdoutEvents: unknown[]): ChildProcess {
+  queueMicrotask(() => {
+    for (const event of stdoutEvents) {
+      harness.pushJson(event);
+    }
+    harness.finish();
+  });
+
+  return harness.child;
 }
 
 // Hook functions accept typed HookInput / return typed HookJSONOutput, but the
@@ -55,9 +129,9 @@ describe('InlineEditService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    resetMockMessages();
     mockPlugin = createMockPlugin();
     service = new InlineEditService(mockPlugin);
+    writeSystemPromptFileMock.mockReturnValue('/tmp/inline-edit-system.md');
   });
 
 
@@ -109,32 +183,32 @@ describe('InlineEditService', () => {
       expect(res.continue).toBe(false);
     });
 
-    it('should allow Read inside ~/.claude/ directory', async () => {
+    it('should allow Read inside ~/.gemini/ directory', async () => {
       // Mock os.homedir to return a known path
       jest.spyOn(os, 'homedir').mockReturnValue('/home/test');
 
       const hook = createVaultRestrictionHook('/test/vault/path');
       const res = await callHook(hook.hooks[0],
-        { tool_name: 'Read', tool_input: { file_path: '/home/test/.claude/settings.json' } },
+        { tool_name: 'Read', tool_input: { file_path: '/home/test/.gemini/settings.json' } },
         'tool-4', {},
       );
 
       expect(res.continue).toBe(true);
     });
 
-    it('should allow Glob inside ~/.claude/ directory', async () => {
+    it('should allow Glob inside ~/.gemini/ directory', async () => {
       jest.spyOn(os, 'homedir').mockReturnValue('/home/test');
 
       const hook = createVaultRestrictionHook('/test/vault/path');
       const res = await callHook(hook.hooks[0],
-        { tool_name: 'Glob', tool_input: { pattern: '/home/test/.claude/**/*.md' } },
+        { tool_name: 'Glob', tool_input: { pattern: '/home/test/.gemini/**/*.md' } },
         'tool-5', {},
       );
 
       expect(res.continue).toBe(true);
     });
 
-    it('should still block paths outside vault and ~/.claude/', async () => {
+    it('should still block paths outside vault and ~/.gemini/', async () => {
       jest.spyOn(os, 'homedir').mockReturnValue('/home/test');
 
       const hook = createVaultRestrictionHook('/test/vault/path');
@@ -147,12 +221,12 @@ describe('InlineEditService', () => {
       expect(res.hookSpecificOutput.permissionDecisionReason).toContain('outside allowed paths');
     });
 
-    it('should block path traversal via ~/.claude/../ to escape allowed directory', async () => {
+    it('should block path traversal via ~/.gemini/../ to escape allowed directory', async () => {
       jest.spyOn(os, 'homedir').mockReturnValue('/home/test');
 
       const hook = createVaultRestrictionHook('/test/vault/path');
       const res = await callHook(hook.hooks[0],
-        { tool_name: 'Read', tool_input: { file_path: '/home/test/.claude/../.ssh/id_rsa' } },
+        { tool_name: 'Read', tool_input: { file_path: '/home/test/.gemini/../.ssh/id_rsa' } },
         'tool-7', {},
       );
 
@@ -382,10 +456,6 @@ describe('InlineEditService', () => {
   });
 
   describe('editText', () => {
-    beforeEach(() => {
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-    });
-
     it('should return error when vault path cannot be determined', async () => {
       mockPlugin.app.vault.adapter.basePath = undefined;
       service = new InlineEditService(mockPlugin);
@@ -401,7 +471,7 @@ describe('InlineEditService', () => {
       expect(result.error).toContain('vault path');
     });
 
-    it('should return error when claude CLI not found', async () => {
+    it('should return error when Gemini CLI is not found', async () => {
       mockPlugin.getResolvedGeminiCliPath.mockReturnValue(null);
 
       const result = await service.editText({
@@ -415,170 +485,49 @@ describe('InlineEditService', () => {
       expect(result.error).toContain('Gemini CLI not found');
     });
 
-    it('should use restricted read-only tools', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<replacement>fixed</replacement>' }] },
-        },
-        { type: 'result' },
-      ]);
+    it('should use the current CLI subprocess args and read-only allowed-tools', async () => {
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return queueProcessOutput(harness, [
+          { type: 'init', session_id: 'test-session' },
+          { type: 'message', role: 'assistant', content: '<replacement>fixed</replacement>' },
+        ]);
+      });
 
-      await service.editText({
+      const result = await service.editText({
         mode: 'selection',
         selectedText: 'test',
         instruction: 'fix',
         notePath: 'test.md',
       });
 
-      const options = getLastOptions();
-      expect(options?.tools).toContain('Read');
-      expect(options?.tools).toContain('Grep');
-      expect(options?.tools).toContain('Glob');
-      expect(options?.tools).toContain('LS');
-      expect(options?.tools).toContain('WebSearch');
-      expect(options?.tools).toContain('WebFetch');
-      // Should NOT include write tools
-      expect(options?.tools).not.toContain('Write');
-      expect(options?.tools).not.toContain('Edit');
-      expect(options?.tools).not.toContain('Bash');
-    });
-
-    it('should bypass permissions for read-only tools', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<replacement>fixed</replacement>' }] },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.editText({
-        mode: 'selection',
-        selectedText: 'test',
-        instruction: 'fix',
-        notePath: 'test.md',
+      expect(result).toEqual({
+        success: true,
+        editedText: 'fixed',
       });
 
-      const options = getLastOptions();
-      expect(options?.permissionMode).toBe('bypassPermissions');
-    });
-
-    it('should set settingSources to project only when loadUserGeminiSettings is false', async () => {
-      mockPlugin.settings.loadUserGeminiSettings = false;
-      service = new InlineEditService(mockPlugin);
-
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<replacement>fixed</replacement>' }] },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.editText({
-        mode: 'selection',
-        selectedText: 'test',
-        instruction: 'fix',
-        notePath: 'test.md',
-      });
-
-      const options = getLastOptions();
-      expect(options?.settingSources).toEqual(['project']);
-    });
-
-    it('should set settingSources to include user when loadUserGeminiSettings is true', async () => {
-      mockPlugin.settings.loadUserGeminiSettings = true;
-      service = new InlineEditService(mockPlugin);
-
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<replacement>fixed</replacement>' }] },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.editText({
-        mode: 'selection',
-        selectedText: 'test',
-        instruction: 'fix',
-        notePath: 'test.md',
-      });
-
-      const options = getLastOptions();
-      expect(options?.settingSources).toEqual(['user', 'project']);
-    });
-
-    it('should enable thinking when configured', async () => {
-      mockPlugin.settings.thinkingBudget = 'medium';
-      service = new InlineEditService(mockPlugin);
-
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<replacement>fixed</replacement>' }] },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.editText({
-        mode: 'selection',
-        selectedText: 'test',
-        instruction: 'fix',
-        notePath: 'test.md',
-      });
-
-      const options = getLastOptions();
-      expect(options?.maxThinkingTokens).toBeGreaterThan(0);
-    });
-
-    it('should capture session ID for conversation continuity', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'inline-session-123' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: 'What do you want to change?' }] },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.editText({
-        mode: 'selection',
-        selectedText: 'test',
-        instruction: 'fix',
-        notePath: 'test.md',
-      });
-
-      // Verify session was captured by checking continueConversation resumes it
-      setMockMessages([
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<replacement>fixed</replacement>' }] },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.continueConversation('make it better');
-
-      const options = getLastOptions();
-      expect(options?.resume).toBe('inline-session-123');
+      const spawnOptions = spawnGeminiCliMock.mock.calls[0][0];
+      const allowedTools = getArgValue(spawnOptions.args, '--allowed-tools');
+      expect(getArgValue(spawnOptions.args, '--approval-mode')).toBe('yolo');
+      expect(getArgValue(spawnOptions.args, '--model')).toBe('gemini-2.5-pro');
+      expect(spawnOptions.env?.GEMINI_SYSTEM_MD).toBe('/tmp/inline-edit-system.md');
+      expect(writeSystemPromptFileMock).toHaveBeenCalledWith('/test/vault/path', expect.any(String));
+      expect(allowedTools).toContain('Read');
+      expect(allowedTools).toContain('Grep');
+      expect(allowedTools).toContain('Glob');
+      expect(allowedTools).toContain('LS');
+      expect(allowedTools).not.toContain('Write');
+      expect(allowedTools).not.toContain('Edit');
+      expect(allowedTools).not.toContain('Bash');
     });
 
     it('should return clarification response', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: 'Could you clarify what "fix" means?' }] },
-        },
-        { type: 'result' },
-      ]);
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return queueProcessOutput(harness, [
+          { type: 'message', role: 'assistant', content: 'Could you clarify what "fix" means?' },
+        ]);
+      });
 
       const result = await service.editText({
         mode: 'selection',
@@ -593,10 +542,6 @@ describe('InlineEditService', () => {
   });
 
   describe('continueConversation', () => {
-    beforeEach(() => {
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-    });
-
     it('should return error when no active conversation', async () => {
       const result = await service.continueConversation('more details');
 
@@ -605,15 +550,20 @@ describe('InlineEditService', () => {
     });
 
     it('should resume session on follow-up', async () => {
-      // First message to establish session
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'continue-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: 'What do you want?' }] },
-        },
-        { type: 'result' },
-      ]);
+      spawnGeminiCliMock
+        .mockImplementationOnce((options) => {
+          const harness = createProcessHarness(options.signal, 1);
+          return queueProcessOutput(harness, [
+            { type: 'init', session_id: 'continue-session' },
+            { type: 'message', role: 'assistant', content: 'What do you want?' },
+          ]);
+        })
+        .mockImplementationOnce((options) => {
+          const harness = createProcessHarness(options.signal, 2);
+          return queueProcessOutput(harness, [
+            { type: 'message', role: 'assistant', content: '<replacement>final result</replacement>' },
+          ]);
+        });
 
       await service.editText({
         mode: 'selection',
@@ -622,31 +572,33 @@ describe('InlineEditService', () => {
         notePath: 'test.md',
       });
 
-      // Follow-up message
-      setMockMessages([
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<replacement>final result</replacement>' }] },
-        },
-        { type: 'result' },
-      ]);
+      const result = await service.continueConversation('make it blue');
 
-      await service.continueConversation('make it blue');
+      expect(result).toEqual({
+        success: true,
+        editedText: 'final result',
+      });
 
-      const options = getLastOptions();
-      expect(options?.resume).toBe('continue-session');
+      const followUpOptions = spawnGeminiCliMock.mock.calls[1][0];
+      expect(followUpOptions.args).toContain('--resume');
+      expect(followUpOptions.args).toContain('continue-session');
     });
 
     it('should prepend context files when provided', async () => {
-      // First message to establish session
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'context-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: 'What do you want?' }] },
-        },
-        { type: 'result' },
-      ]);
+      spawnGeminiCliMock
+        .mockImplementationOnce((options) => {
+          const harness = createProcessHarness(options.signal, 1);
+          return queueProcessOutput(harness, [
+            { type: 'init', session_id: 'context-session' },
+            { type: 'message', role: 'assistant', content: 'What do you want?' },
+          ]);
+        })
+        .mockImplementationOnce((options) => {
+          const harness = createProcessHarness(options.signal, 2);
+          return queueProcessOutput(harness, [
+            { type: 'message', role: 'assistant', content: '<replacement>final result</replacement>' },
+          ]);
+        });
 
       await service.editText({
         mode: 'selection',
@@ -654,104 +606,26 @@ describe('InlineEditService', () => {
         instruction: 'fix',
         notePath: 'test.md',
       });
-
-      // Follow-up message with context files
-      setMockMessages([
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<replacement>final result</replacement>' }] },
-        },
-        { type: 'result' },
-      ]);
 
       await service.continueConversation('make it blue', ['notes/helper.md', 'docs/api.md']);
 
-      // The prompt should include the context files
-      // Since we can't directly access the prompt, we verify the session resumed
-      const options = getLastOptions();
-      expect(options?.resume).toBe('context-session');
-    });
-
-    it('should not modify prompt when no context files provided', async () => {
-      // First message to establish session
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'no-context-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: 'What do you want?' }] },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.editText({
-        mode: 'selection',
-        selectedText: 'test',
-        instruction: 'fix',
-        notePath: 'test.md',
-      });
-
-      // Follow-up without context files
-      setMockMessages([
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<replacement>result</replacement>' }] },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.continueConversation('make it blue');
-
-      const options = getLastOptions();
-      expect(options?.resume).toBe('no-context-session');
-    });
-
-    it('should handle empty context files array', async () => {
-      // First message to establish session
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'empty-context-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: 'What do you want?' }] },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.editText({
-        mode: 'selection',
-        selectedText: 'test',
-        instruction: 'fix',
-        notePath: 'test.md',
-      });
-
-      // Follow-up with empty context files array
-      setMockMessages([
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<replacement>result</replacement>' }] },
-        },
-        { type: 'result' },
-      ]);
-
-      await service.continueConversation('make it blue', []);
-
-      const options = getLastOptions();
-      expect(options?.resume).toBe('empty-context-session');
+      const followUpOptions = spawnGeminiCliMock.mock.calls[1][0];
+      const prompt = getArgValue(followUpOptions.args, '--prompt');
+      expect(followUpOptions.args).toContain('context-session');
+      expect(prompt).toContain('<context_files>');
+      expect(prompt).toContain('notes/helper.md, docs/api.md');
     });
   });
 
   describe('resetConversation', () => {
     it('should clear session so continueConversation fails', async () => {
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-
-      // First establish a session
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'some-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: 'What do you want?' }] },
-        },
-        { type: 'result' },
-      ]);
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return queueProcessOutput(harness, [
+          { type: 'init', session_id: 'some-session' },
+          { type: 'message', role: 'assistant', content: 'What do you want?' },
+        ]);
+      });
 
       await service.editText({
         mode: 'selection',
@@ -772,15 +646,10 @@ describe('InlineEditService', () => {
 
   describe('cancel', () => {
     it('should abort ongoing request', async () => {
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'test-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<replacement>fixed</replacement>' }] },
-        },
-      ]);
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return harness.child;
+      });
 
       const editPromise = service.editText({
         mode: 'selection',
@@ -794,7 +663,7 @@ describe('InlineEditService', () => {
 
       const result = await editPromise;
       expect(result.success).toBe(false);
-      expect(result.error).toBe('Cancelled');
+      expect(result.error).toBe('Empty response');
     });
 
     it('should handle cancel when no request is running', () => {
@@ -923,30 +792,20 @@ describe('InlineEditService', () => {
   });
 
   describe('error handling', () => {
-    beforeEach(() => {
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-    });
-
-    it('should surface SDK query errors', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports, jest/no-mocks-import
-      const sdk = require('@test/__mocks__/gemini-cli-sdk');
-      const spy = jest.spyOn(sdk, 'query').mockImplementation(() => {
+    it('should surface CLI spawn errors', async () => {
+      spawnGeminiCliMock.mockImplementationOnce(() => {
         throw new Error('boom');
       });
 
-      try {
-        const result = await service.editText({
-          mode: 'selection',
-          selectedText: 'text',
-          instruction: 'edit',
-          notePath: 'note.md',
-        });
+      const result = await service.editText({
+        mode: 'selection',
+        selectedText: 'text',
+        instruction: 'edit',
+        notePath: 'note.md',
+      });
 
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('boom');
-      } finally {
-        spy.mockRestore();
-      }
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('boom');
     });
 
     it('returns null path for unknown tool input', () => {
@@ -1308,19 +1167,14 @@ describe('InlineEditService', () => {
   });
 
   describe('editText with cursor mode', () => {
-    beforeEach(() => {
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
-    });
-
     it('should handle cursor mode request', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'cursor-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<insertion>fox</insertion>' }] },
-        },
-        { type: 'result' },
-      ]);
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return queueProcessOutput(harness, [
+          { type: 'init', session_id: 'cursor-session' },
+          { type: 'message', role: 'assistant', content: '<insertion>fox</insertion>' },
+        ]);
+      });
 
       const result = await service.editText({
         mode: 'cursor',
@@ -1340,14 +1194,17 @@ describe('InlineEditService', () => {
     });
 
     it('should handle inbetween mode request', async () => {
-      setMockMessages([
-        { type: 'system', subtype: 'init', session_id: 'inbetween-session' },
-        {
-          type: 'assistant',
-          message: { content: [{ type: 'text', text: '<insertion>## Description\n\nNew section content</insertion>' }] },
-        },
-        { type: 'result' },
-      ]);
+      spawnGeminiCliMock.mockImplementationOnce((options) => {
+        const harness = createProcessHarness(options.signal);
+        return queueProcessOutput(harness, [
+          { type: 'init', session_id: 'inbetween-session' },
+          {
+            type: 'message',
+            role: 'assistant',
+            content: '<insertion>## Description\n\nNew section content</insertion>',
+          },
+        ]);
+      });
 
       const result = await service.editText({
         mode: 'cursor',

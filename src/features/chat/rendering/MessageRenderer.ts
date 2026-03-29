@@ -395,9 +395,9 @@ export class MessageRenderer {
       }
     }
 
-    // Render response duration footer (skip when message contains a compaction boundary)
+    // Render response duration footer only when the assistant produced visible text.
     const hasCompactBoundary = msg.contentBlocks?.some(b => b.type === 'compact_boundary');
-    if (msg.durationSeconds && msg.durationSeconds > 0 && !hasCompactBoundary) {
+    if (msg.durationSeconds && msg.durationSeconds > 0 && !hasCompactBoundary && this.hasVisibleAssistantText(msg)) {
       const flavorWord = msg.durationFlavorWord || 'Baked';
       const footerEl = contentEl.createDiv({ cls: 'geminese-response-footer' });
       footerEl.createSpan({
@@ -405,6 +405,17 @@ export class MessageRenderer {
         cls: 'geminese-baked-duration',
       });
     }
+  }
+
+  private hasVisibleAssistantText(msg: ChatMessage): boolean {
+    if (msg.content.trim().length > 0) {
+      return true;
+    }
+
+    return msg.contentBlocks?.some(
+      (block): block is { type: 'text'; content: string } =>
+        block.type === 'text' && block.content.trim().length > 0
+    ) ?? false;
   }
 
   /**

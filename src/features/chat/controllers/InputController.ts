@@ -246,7 +246,7 @@ export class InputController {
     // Hide welcome message when sending first message
     const welcomeEl = this.deps.getWelcomeEl();
     if (welcomeEl) {
-      welcomeEl.classList.add('geminese-hidden');
+      welcomeEl.classList?.add?.('geminese-hidden');
     }
 
     fileContextManager?.startSession();
@@ -346,7 +346,7 @@ export class InputController {
     state.addMessage(userMsg);
     renderer.addMessage(userMsg);
 
-    await this.triggerTitleGeneration();
+    await this.prepareConversationForSend();
 
     const assistantMsg: ChatMessage = {
       id: this.deps.generateId(),
@@ -403,6 +403,8 @@ export class InputController {
     let wasInterrupted = false;
     let wasInvalidated = false;
     let didEnqueueToSdk = false;
+    let sawExplicitTerminalDiagnostic = false;
+    let sawVisibleAssistantText = false;
 
     // Lazy initialization: ensure service is ready before first query
     if (this.deps.ensureServiceInitialized) {
@@ -453,6 +455,13 @@ export class InputController {
           continue;
         }
 
+        if (chunk.type === 'text' && chunk.content.trim().length > 0) {
+          sawVisibleAssistantText = true;
+        }
+        if (chunk.type === 'error' || chunk.type === 'blocked') {
+          sawExplicitTerminalDiagnostic = true;
+        }
+
         if (state.streamGeneration !== streamGeneration) {
           wasInvalidated = true;
           break;
@@ -462,13 +471,14 @@ export class InputController {
           break;
         }
 
-        const resolvedModel = this.getAgentService()?.getResolvedModel();
+        const resolvedModel = this.getAgentService()?.getResolvedModel?.();
         if (resolvedModel) this.deps.onResolvedModel?.(resolvedModel);
 
         await streamController.handleStreamChunk(chunk, assistantMsg);
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      sawExplicitTerminalDiagnostic = true;
       streamController.appendText(`\n\n**Error:** ${errorMsg}`);
     } finally {
       // ALWAYS clear the timer interval, even on stream invalidation (prevents memory leaks)
@@ -485,8 +495,12 @@ export class InputController {
         state.cancelRequested = false;
 
         // Capture response duration before resetting state (skip for interrupted responses and compaction)
-        const hasCompactBoundary = assistantMsg.contentBlocks?.some(b => b.type === 'compact_boundary');
-        if (!didCancelThisTurn && !hasCompactBoundary) {
+        const hasCompactBoundary = assistantMsg.contentBlocks?.some(b => b.type === 'compact_boundary') ?? false;
+        if (!didCancelThisTurn && !hasCompactBoundary && !sawVisibleAssistantText && !sawExplicitTerminalDiagnostic) {
+          streamController.appendText(this.buildNoVisibleAssistantTextDiagnostic());
+        }
+
+        if (!didCancelThisTurn && !hasCompactBoundary && sawVisibleAssistantText) {
           const durationSeconds = state.responseStartTime
             ? Math.floor((performance.now() - state.responseStartTime) / 1000)
             : 0;
@@ -540,6 +554,12 @@ export class InputController {
         // Only clear resumeSessionAt if enqueue succeeded; preserve checkpoint on failure for retry
         const saveExtras = didEnqueueToSdk ? { resumeSessionAt: undefined } : undefined;
         await conversationController.save(true, saveExtras);
+
+        await this.maybeTriggerDeferredTitleGeneration(assistantMsg, {
+          hasCompactBoundary,
+          sawVisibleAssistantText,
+          wasInterrupted: didCancelThisTurn,
+        });
 
         const userMsgIndex = state.messages.indexOf(userMsg);
         renderer.refreshActionButtons(userMsg, state.messages, userMsgIndex >= 0 ? userMsgIndex : undefined);
@@ -640,13 +660,13 @@ export class InputController {
   // ============================================
 
   /**
-   * Triggers AI title generation after first user message.
-   * Handles setting fallback title, firing async generation, and updating UI.
+   * Ensures the first-turn conversation exists early and gets a fallback title.
    */
-  private async triggerTitleGeneration(): Promise<void> {
+  private async prepareConversationForSend(): Promise<void> {
     const { plugin, state, conversationController } = this.deps;
 
-    if (state.messages.length !== 1) {
+    const userMessages = state.messages.filter(message => message.role === 'user');
+    if (userMessages.length !== 1) {
       return;
     }
 
@@ -662,8 +682,7 @@ export class InputController {
       state.currentConversationId = conversation.id;
     }
 
-    // Find first user message by role (not by index)
-    const firstUserMsg = state.messages.find(m => m.role === 'user');
+    const [firstUserMsg] = userMessages;
 
     if (!firstUserMsg) {
       return;
@@ -674,16 +693,46 @@ export class InputController {
     // Set immediate fallback title
     const fallbackTitle = conversationController.generateFallbackTitle(userContent);
     await plugin.renameConversation(state.currentConversationId, fallbackTitle);
+  }
+
+  private async maybeTriggerDeferredTitleGeneration(
+    assistantMsg: ChatMessage,
+    options: { hasCompactBoundary: boolean; sawVisibleAssistantText: boolean; wasInterrupted: boolean },
+  ): Promise<void> {
+    const { plugin, state, conversationController } = this.deps;
+
+    if (options.wasInterrupted || options.hasCompactBoundary) {
+      return;
+    }
+
+    if (!options.sawVisibleAssistantText) {
+      return;
+    }
+
+    const userMessages = state.messages.filter(message => message.role === 'user');
+    if (userMessages.length !== 1) {
+      return;
+    }
+
+    const [firstUserMsg] = userMessages;
+    if (!firstUserMsg) {
+      return;
+    }
+
+    const userContent = firstUserMsg.displayContent || firstUserMsg.content;
+    const fallbackTitle = conversationController.generateFallbackTitle(userContent);
+    const conversationId = state.currentConversationId;
+    if (!conversationId) {
+      return;
+    }
 
     if (!plugin.settings.enableAutoTitleGeneration) {
       return;
     }
 
-    const currentConversation = state.currentConversationId
-      ? await plugin.getConversationById(state.currentConversationId)
-      : null;
+    const currentConversation = await plugin.getConversationById(conversationId);
     if (currentConversation && !supportsGeminiNativeFeatures(currentConversation.selectedModel ?? this.getSelectedModel())) {
-      await plugin.updateConversation(state.currentConversationId, { titleGenerationStatus: undefined });
+      await plugin.updateConversation(conversationId, { titleGenerationStatus: undefined });
       return;
     }
 
@@ -695,10 +744,10 @@ export class InputController {
     }
 
     // Mark as pending only when we're actually starting generation
-    await plugin.updateConversation(state.currentConversationId, { titleGenerationStatus: 'pending' });
+    await plugin.updateConversation(conversationId, { titleGenerationStatus: 'pending' });
     conversationController.updateHistoryDropdown();
 
-    const convId = state.currentConversationId;
+    const convId = conversationId;
     const expectedTitle = fallbackTitle; // Store to check if user renamed during generation
 
     titleService.generateTitle(
@@ -729,6 +778,10 @@ export class InputController {
     });
   }
 
+  private buildNoVisibleAssistantTextDiagnostic(): string {
+    return '\n\n**No visible response was rendered.** The request completed without assistant text. If this keeps happening, retry the request or switch to a different Gemini model.\n';
+  }
+
   // ============================================
   // Streaming Control
   // ============================================
@@ -737,10 +790,14 @@ export class InputController {
     const { state, streamController } = this.deps;
     if (!state.isStreaming) return;
     state.cancelRequested = true;
+    if (typeof streamController.showCancellationIndicator === 'function') {
+      streamController.showCancellationIndicator();
+    } else {
+      streamController.hideThinkingIndicator();
+    }
     // Restore queued message to input instead of discarding
     this.restoreQueuedMessageToInput();
     this.getAgentService()?.cancel();
-    streamController.hideThinkingIndicator();
   }
 
   private syncScrollToBottomAfterRenderUpdates(): void {

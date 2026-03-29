@@ -50,7 +50,7 @@ describe('McpStorage', () => {
       };
 
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify(config),
+        '.gemini/mcp.json': JSON.stringify(config),
       });
       const storage = new McpStorage(adapter);
       const servers = await storage.load();
@@ -80,7 +80,7 @@ describe('McpStorage', () => {
       };
 
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify(config),
+        '.gemini/mcp.json': JSON.stringify(config),
       });
       const storage = new McpStorage(adapter);
       const servers = await storage.load();
@@ -103,7 +103,7 @@ describe('McpStorage', () => {
       };
 
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify(config),
+        '.gemini/mcp.json': JSON.stringify(config),
       });
       const storage = new McpStorage(adapter);
       const servers = await storage.load();
@@ -113,7 +113,7 @@ describe('McpStorage', () => {
 
     it('returns empty array on JSON parse error', async () => {
       const adapter = createMockAdapter({
-        '.claude/mcp.json': 'invalid json{',
+        '.gemini/mcp.json': 'invalid json{',
       });
       const storage = new McpStorage(adapter);
 
@@ -123,7 +123,7 @@ describe('McpStorage', () => {
 
     it('returns empty array when mcpServers is missing', async () => {
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify({}),
+        '.gemini/mcp.json': JSON.stringify({}),
       });
       const storage = new McpStorage(adapter);
       const servers = await storage.load();
@@ -132,7 +132,7 @@ describe('McpStorage', () => {
 
     it('returns empty array when mcpServers is not an object', async () => {
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify({ mcpServers: 'invalid' }),
+        '.gemini/mcp.json': JSON.stringify({ mcpServers: 'invalid' }),
       });
       const storage = new McpStorage(adapter);
       const servers = await storage.load();
@@ -147,7 +147,7 @@ describe('McpStorage', () => {
         },
       };
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify(config),
+        '.gemini/mcp.json': JSON.stringify(config),
       });
       const storage = new McpStorage(adapter);
       const servers = await storage.load();
@@ -163,7 +163,7 @@ describe('McpStorage', () => {
         },
       };
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify(config),
+        '.gemini/mcp.json': JSON.stringify(config),
       });
       const storage = new McpStorage(adapter);
       const servers = await storage.load();
@@ -186,7 +186,7 @@ describe('McpStorage', () => {
         },
       };
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify(config),
+        '.gemini/mcp.json': JSON.stringify(config),
       });
       const storage = new McpStorage(adapter);
       const servers = await storage.load();
@@ -209,7 +209,7 @@ describe('McpStorage', () => {
         },
       ]);
 
-      const saved = JSON.parse(adapter._store['.claude/mcp.json']);
+      const saved = JSON.parse(adapter._store['.gemini/mcp.json']);
       expect(saved._geminese.servers.alpha.disabledTools).toEqual(['tool_a', 'tool_b']);
     });
 
@@ -227,7 +227,7 @@ describe('McpStorage', () => {
         },
       ]);
 
-      const saved = JSON.parse(adapter._store['.claude/mcp.json']);
+      const saved = JSON.parse(adapter._store['.gemini/mcp.json']);
       expect(saved._geminese.servers.alpha.disabledTools).toEqual(['tool_a', 'tool_b']);
     });
 
@@ -245,7 +245,7 @@ describe('McpStorage', () => {
         },
       ]);
 
-      const saved = JSON.parse(adapter._store['.claude/mcp.json']);
+      const saved = JSON.parse(adapter._store['.gemini/mcp.json']);
       // No _geminese since all fields are default
       expect(saved._geminese).toBeUndefined();
     });
@@ -264,7 +264,7 @@ describe('McpStorage', () => {
       };
 
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify(existing),
+        '.gemini/mcp.json': JSON.stringify(existing),
       });
       const storage = new McpStorage(adapter);
 
@@ -278,7 +278,7 @@ describe('McpStorage', () => {
         },
       ]);
 
-      const saved = JSON.parse(adapter._store['.claude/mcp.json']);
+      const saved = JSON.parse(adapter._store['.gemini/mcp.json']);
       expect(saved._geminese.customField).toBe('should be preserved');
       expect(saved._geminese.servers.alpha.disabledTools).toEqual(['tool_a']);
     });
@@ -332,7 +332,7 @@ describe('McpStorage', () => {
         },
       ]);
 
-      const saved = JSON.parse(adapter._store['.claude/mcp.json']);
+      const saved = JSON.parse(adapter._store['.gemini/mcp.json']);
       expect(saved._geminese.servers.alpha.description).toBe('A test server');
     });
 
@@ -349,7 +349,7 @@ describe('McpStorage', () => {
         },
       ]);
 
-      const saved = JSON.parse(adapter._store['.claude/mcp.json']);
+      const saved = JSON.parse(adapter._store['.gemini/mcp.json']);
       expect(saved._geminese.servers.alpha.enabled).toBe(false);
     });
 
@@ -366,7 +366,7 @@ describe('McpStorage', () => {
         },
       ]);
 
-      const saved = JSON.parse(adapter._store['.claude/mcp.json']);
+      const saved = JSON.parse(adapter._store['.gemini/mcp.json']);
       expect(saved._geminese.servers.alpha.contextSaving).toBe(false);
     });
 
@@ -376,7 +376,7 @@ describe('McpStorage', () => {
         _geminese: { servers: { alpha: { enabled: false } } },
       };
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify(existing),
+        '.gemini/mcp.json': JSON.stringify(existing),
       });
       const storage = new McpStorage(adapter);
 
@@ -389,7 +389,7 @@ describe('McpStorage', () => {
         },
       ]);
 
-      const saved = JSON.parse(adapter._store['.claude/mcp.json']);
+      const saved = JSON.parse(adapter._store['.gemini/mcp.json']);
       expect(saved._geminese).toBeUndefined();
     });
 
@@ -402,7 +402,7 @@ describe('McpStorage', () => {
         },
       };
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify(existing),
+        '.gemini/mcp.json': JSON.stringify(existing),
       });
       const storage = new McpStorage(adapter);
 
@@ -415,13 +415,13 @@ describe('McpStorage', () => {
         },
       ]);
 
-      const saved = JSON.parse(adapter._store['.claude/mcp.json']);
+      const saved = JSON.parse(adapter._store['.gemini/mcp.json']);
       expect(saved._geminese).toEqual({ customField: 'keep' });
     });
 
     it('handles corrupted existing file gracefully', async () => {
       const adapter = createMockAdapter({
-        '.claude/mcp.json': 'not json',
+        '.gemini/mcp.json': 'not json',
       });
       const storage = new McpStorage(adapter);
 
@@ -434,7 +434,7 @@ describe('McpStorage', () => {
         },
       ]);
 
-      const saved = JSON.parse(adapter._store['.claude/mcp.json']);
+      const saved = JSON.parse(adapter._store['.gemini/mcp.json']);
       expect(saved.mcpServers.alpha).toEqual({ command: 'cmd' });
     });
 
@@ -444,7 +444,7 @@ describe('McpStorage', () => {
         someExtraField: 'preserved',
       };
       const adapter = createMockAdapter({
-        '.claude/mcp.json': JSON.stringify(existing),
+        '.gemini/mcp.json': JSON.stringify(existing),
       });
       const storage = new McpStorage(adapter);
 
@@ -457,7 +457,7 @@ describe('McpStorage', () => {
         },
       ]);
 
-      const saved = JSON.parse(adapter._store['.claude/mcp.json']);
+      const saved = JSON.parse(adapter._store['.gemini/mcp.json']);
       expect(saved.someExtraField).toBe('preserved');
       expect(saved.mcpServers).toEqual({ new: { command: 'new-cmd' } });
     });
@@ -472,7 +472,7 @@ describe('McpStorage', () => {
 
     it('returns true when mcp.json exists', async () => {
       const adapter = createMockAdapter({
-        '.claude/mcp.json': '{}',
+        '.gemini/mcp.json': '{}',
       });
       const storage = new McpStorage(adapter);
       expect(await storage.exists()).toBe(true);

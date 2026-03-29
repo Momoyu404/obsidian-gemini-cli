@@ -64,9 +64,9 @@ Run tests for $ARGUMENTS.`;
   describe('loadAll', () => {
     it('loads all commands from vault', async () => {
       mockAdapter.listFilesRecursive.mockResolvedValue([
-        '.claude/commands/review-code.md',
-        '.claude/commands/test/coverage.md',
-        '.claude/commands/deploy.sh',
+        '.gemini/commands/review-code.md',
+        '.gemini/commands/test/coverage.md',
+        '.gemini/commands/deploy.sh',
       ]);
       mockAdapter.read
         .mockResolvedValueOnce(validMarkdown)
@@ -89,9 +89,9 @@ Run tests for $ARGUMENTS.`;
 
     it('handles files that are not markdown', async () => {
       mockAdapter.listFilesRecursive.mockResolvedValue([
-        '.claude/commands/review-code.md',
-        '.claude/commands/deploy.sh',
-        '.claude/commands/config.json',
+        '.gemini/commands/review-code.md',
+        '.gemini/commands/deploy.sh',
+        '.gemini/commands/config.json',
       ]);
       mockAdapter.read.mockResolvedValue(validMarkdown);
 
@@ -102,9 +102,9 @@ Run tests for $ARGUMENTS.`;
 
     it('continues loading if one file fails', async () => {
       mockAdapter.listFilesRecursive.mockResolvedValue([
-        '.claude/commands/good.md',
-        '.claude/commands/bad.md',
-        '.claude/commands/good2.md',
+        '.gemini/commands/good.md',
+        '.gemini/commands/bad.md',
+        '.gemini/commands/good2.md',
       ]);
       mockAdapter.read
         .mockResolvedValueOnce(validMarkdown)
@@ -127,7 +127,7 @@ Run tests for $ARGUMENTS.`;
 
     it('handles deeply nested commands', async () => {
       mockAdapter.listFilesRecursive.mockResolvedValue([
-        '.claude/commands/level1/level2/level3/deep.md',
+        '.gemini/commands/level1/level2/level3/deep.md',
       ]);
       mockAdapter.read.mockResolvedValue(validMarkdown);
 
@@ -140,7 +140,7 @@ Run tests for $ARGUMENTS.`;
 
   describe('loading single files (tested through loadAll)', () => {
     it('loads a command from file path', async () => {
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/review-code.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/review-code.md']);
       mockAdapter.read.mockResolvedValue(validMarkdown);
 
       const commands = await storage.loadAll();
@@ -152,7 +152,7 @@ Run tests for $ARGUMENTS.`;
     });
 
     it('loads nested command correctly', async () => {
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/test/coverage.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/test/coverage.md']);
       mockAdapter.read.mockResolvedValue(nestedMarkdown);
 
       const commands = await storage.loadAll();
@@ -168,7 +168,7 @@ description: Simple command
 ---
 Just a simple prompt with $ARGUMENTS.`;
 
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/simple.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/simple.md']);
       mockAdapter.read.mockResolvedValue(simpleMarkdown);
 
       const commands = await storage.loadAll();
@@ -189,7 +189,7 @@ agent: code-reviewer
 ---
 Do the thing`;
 
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/skill-cmd.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/skill-cmd.md']);
       mockAdapter.read.mockResolvedValue(skillMarkdown);
 
       const commands = await storage.loadAll();
@@ -206,14 +206,14 @@ Do the thing`;
     it('saves command to correct file path', async () => {
       await storage.save(mockCommand1);
 
-      const expectedPath = '.claude/commands/review-code.md';
+      const expectedPath = '.gemini/commands/review-code.md';
       expect(mockAdapter.write).toHaveBeenCalledWith(expectedPath, expect.stringContaining('description: Review code for issues'));
     });
 
     it('saves nested command to correct nested path', async () => {
       await storage.save(mockCommand2);
 
-      const expectedPath = '.claude/commands/test/coverage.md';
+      const expectedPath = '.gemini/commands/test/coverage.md';
       expect(mockAdapter.write).toHaveBeenCalledWith(expectedPath, expect.stringContaining('description: Run test coverage'));
     });
 
@@ -221,27 +221,27 @@ Do the thing`;
       await storage.save(mockCommand1);
 
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/commands/review-code.md',
+        '.gemini/commands/review-code.md',
         expect.stringContaining('---')
       );
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/commands/review-code.md',
+        '.gemini/commands/review-code.md',
         expect.stringContaining('description: Review code for issues')
       );
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/commands/review-code.md',
+        '.gemini/commands/review-code.md',
         expect.stringContaining('argument-hint: "[file] [focus]"')
       );
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/commands/review-code.md',
+        '.gemini/commands/review-code.md',
         expect.stringContaining('allowed-tools:')
       );
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/commands/review-code.md',
+        '.gemini/commands/review-code.md',
         expect.stringContaining('model: claude-sonnet-4-5')
       );
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/commands/review-code.md',
+        '.gemini/commands/review-code.md',
         expect.stringContaining('Please review $ARGUMENTS')
       );
     });
@@ -283,7 +283,7 @@ Do the thing`;
       await storage.save(commandWithInvalidName);
 
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/commands/test-command---.md',
+        '.gemini/commands/test-command---.md',
         expect.anything()
       );
     });
@@ -297,7 +297,7 @@ Do the thing`;
       await storage.save(command);
 
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/commands/level1/level2/level3.md',
+        '.gemini/commands/level1/level2/level3.md',
         expect.anything()
       );
     });
@@ -363,7 +363,7 @@ Do the thing`;
 
       const written = mockAdapter.write.mock.calls[0][1];
       mockAdapter.read.mockResolvedValue(written);
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/roundtrip.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/roundtrip.md']);
       const loaded = await storage.loadAll();
 
       expect(loaded).toHaveLength(1);
@@ -378,38 +378,38 @@ Do the thing`;
   describe('delete', () => {
     it('deletes command by ID', async () => {
       mockAdapter.listFilesRecursive.mockResolvedValue([
-        '.claude/commands/review-code.md',
-        '.claude/commands/test/coverage.md',
+        '.gemini/commands/review-code.md',
+        '.gemini/commands/test/coverage.md',
       ]);
 
       await storage.delete('cmd-review-_code');
 
-      expect(mockAdapter.delete).toHaveBeenCalledWith('.claude/commands/review-code.md');
+      expect(mockAdapter.delete).toHaveBeenCalledWith('.gemini/commands/review-code.md');
     });
 
     it('deletes nested command by ID', async () => {
       mockAdapter.listFilesRecursive.mockResolvedValue([
-        '.claude/commands/test/coverage.md',
+        '.gemini/commands/test/coverage.md',
       ]);
 
       await storage.delete('cmd-test--coverage');
 
-      expect(mockAdapter.delete).toHaveBeenCalledWith('.claude/commands/test/coverage.md');
+      expect(mockAdapter.delete).toHaveBeenCalledWith('.gemini/commands/test/coverage.md');
     });
 
     it('handles command with dashes in name', async () => {
       mockAdapter.listFilesRecursive.mockResolvedValue([
-        '.claude/commands/test-command.md',
+        '.gemini/commands/test-command.md',
       ]);
 
       await storage.delete('cmd-test-_command');
 
-      expect(mockAdapter.delete).toHaveBeenCalledWith('.claude/commands/test-command.md');
+      expect(mockAdapter.delete).toHaveBeenCalledWith('.gemini/commands/test-command.md');
     });
 
     it('does nothing if command ID not found', async () => {
       mockAdapter.listFilesRecursive.mockResolvedValue([
-        '.claude/commands/review-code.md',
+        '.gemini/commands/review-code.md',
       ]);
 
       await storage.delete('cmd-nonexistent');
@@ -426,7 +426,7 @@ Do the thing`;
 
     it('handles non-markdown files', async () => {
       mockAdapter.listFilesRecursive.mockResolvedValue([
-        '.claude/commands/config.json',
+        '.gemini/commands/config.json',
       ]);
 
       await storage.delete('cmd-config');
@@ -437,7 +437,7 @@ Do the thing`;
 
   describe('filePathToId (private method tested through loadAll)', () => {
     it('encodes simple path correctly', async () => {
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/test.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/test.md']);
       mockAdapter.read.mockResolvedValue(validMarkdown);
 
       const commands = await storage.loadAll();
@@ -445,7 +445,7 @@ Do the thing`;
     });
 
     it('encodes path with slashes correctly', async () => {
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/a/b.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/a/b.md']);
       mockAdapter.read.mockResolvedValue(validMarkdown);
 
       const commands = await storage.loadAll();
@@ -453,7 +453,7 @@ Do the thing`;
     });
 
     it('encodes path with dashes correctly', async () => {
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/a-b.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/a-b.md']);
       mockAdapter.read.mockResolvedValue(validMarkdown);
 
       const commands = await storage.loadAll();
@@ -461,7 +461,7 @@ Do the thing`;
     });
 
     it('encodes path with both slashes and dashes correctly', async () => {
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/a/b-c.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/a/b-c.md']);
       mockAdapter.read.mockResolvedValue(validMarkdown);
 
       const commands = await storage.loadAll();
@@ -469,7 +469,7 @@ Do the thing`;
     });
 
     it('encodes path with double dashes correctly', async () => {
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/a--b.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/a--b.md']);
       mockAdapter.read.mockResolvedValue(validMarkdown);
 
       const commands = await storage.loadAll();
@@ -479,7 +479,7 @@ Do the thing`;
 
   describe('filePathToName (private method tested through loadAll)', () => {
     it('extracts name from simple path', async () => {
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/test.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/test.md']);
       mockAdapter.read.mockResolvedValue(validMarkdown);
 
       const commands = await storage.loadAll();
@@ -487,7 +487,7 @@ Do the thing`;
     });
 
     it('extracts name from nested path', async () => {
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/a/b/c.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/a/b/c.md']);
       mockAdapter.read.mockResolvedValue(validMarkdown);
 
       const commands = await storage.loadAll();
@@ -592,7 +592,7 @@ Do the thing`;
 
       // Simulate loading it back - should parse correctly
       mockAdapter.read.mockResolvedValue(writtenContent);
-      mockAdapter.listFilesRecursive.mockResolvedValue(['.claude/commands/simple.md']);
+      mockAdapter.listFilesRecursive.mockResolvedValue(['.gemini/commands/simple.md']);
       const loaded = await storage.loadAll();
 
       expect(loaded).toHaveLength(1);

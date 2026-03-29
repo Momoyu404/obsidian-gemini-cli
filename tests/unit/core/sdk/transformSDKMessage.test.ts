@@ -751,8 +751,8 @@ describe('transformSDKMessage', () => {
       expect(usage.cacheCreationInputTokens).toBe(300);
       expect(usage.cacheReadInputTokens).toBe(200);
       expect(usage.contextTokens).toBe(1500); // 1000 + 300 + 200
-      expect(usage.contextWindow).toBe(200000); // Standard context window
-      expect(usage.percentage).toBe(1); // 1500 / 200000 * 100 rounded
+      expect(usage.contextWindow).toBe(1000000); // Standard context window
+      expect(usage.percentage).toBe(0); // 1500 / 1000000 * 100 rounded
     });
 
     it('skips usage extraction for subagent messages', () => {

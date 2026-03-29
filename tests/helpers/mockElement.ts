@@ -22,6 +22,7 @@ export interface MockElement {
   createSpan: (opts?: { cls?: string; text?: string }) => MockElement;
   createEl: (tag: string, opts?: { cls?: string; text?: string; attr?: Record<string, string> }) => MockElement;
   appendChild: (child: any) => any;
+  replaceChildren: (...children: any[]) => void;
   insertBefore: (el: MockElement, ref: MockElement | null) => void;
   firstChild: MockElement | null;
   remove: () => void;
@@ -131,6 +132,10 @@ export function createMockEl(tag = 'div'): any {
     },
 
     appendChild(child: any) { children.push(child); return child; },
+    replaceChildren(...nextChildren: any[]) {
+      children.length = 0;
+      nextChildren.forEach(child => children.push(child));
+    },
     insertBefore(el: MockElement, _ref: MockElement | null) { children.unshift(el); },
     get firstChild() { return children[0] || null; },
     remove() {},
@@ -211,7 +216,7 @@ export function createMockEl(tag = 'div'): any {
       if (force) { classes.add(cls); } else { classes.delete(cls); }
     },
     value: '',
-    closest() { return { clientHeight: 600 }; },
+    closest() { return { clientHeight: 600, style: {} }; },
     getEventListeners() { return eventListeners; },
 
     _classes: classes,

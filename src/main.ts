@@ -522,6 +522,10 @@ export default class GeminesePlugin extends Plugin {
   private computeEnvHash(envText: string): string {
     const envVars = parseEnvironmentVariables(envText || '');
     const modelKeys = [
+      'ANTHROPIC_MODEL',
+      'ANTHROPIC_DEFAULT_OPUS_MODEL',
+      'ANTHROPIC_DEFAULT_SONNET_MODEL',
+      'ANTHROPIC_DEFAULT_HAIKU_MODEL',
       'GEMINI_MODEL',
       'GEMINI_DEFAULT_PRO_MODEL',
       'GEMINI_DEFAULT_FLASH_MODEL',
@@ -1181,4 +1185,5 @@ export default class GeminesePlugin extends Plugin {
     }
     return [];
   }
+
 }

@@ -27,6 +27,16 @@ const getTextByClass = (el: MockElement, cls: string): string[] => {
   return results;
 };
 
+const expectHidden = (el: MockElement | null | undefined): void => {
+  expect(el).toBeTruthy();
+  expect(el!.hasClass('geminese-hidden')).toBe(true);
+};
+
+const expectVisible = (el: MockElement | null | undefined): void => {
+  expect(el).toBeTruthy();
+  expect(el!.hasClass('geminese-hidden')).toBe(false);
+};
+
 describe('Sync Subagent Renderer', () => {
   let parentEl: MockElement;
 
@@ -52,7 +62,7 @@ describe('Sync Subagent Renderer', () => {
     it('should hide content by default', () => {
       const state = createSubagentBlock(parentEl as any, 'task-1', { description: 'Test task' });
 
-      expect((state.contentEl as any).style.display).toBe('none');
+      expectHidden(state.contentEl as any);
     });
 
     it('should set correct ARIA attributes for accessibility', () => {
@@ -70,7 +80,7 @@ describe('Sync Subagent Renderer', () => {
       // Initially collapsed
       expect(state.info.isExpanded).toBe(false);
       expect((state.wrapperEl as any).hasClass('expanded')).toBe(false);
-      expect((state.contentEl as any).style.display).toBe('none');
+      expectHidden(state.contentEl as any);
 
       // Trigger click
       (state.headerEl as any).click();
@@ -78,13 +88,13 @@ describe('Sync Subagent Renderer', () => {
       // Should be expanded
       expect(state.info.isExpanded).toBe(true);
       expect((state.wrapperEl as any).hasClass('expanded')).toBe(true);
-      expect((state.contentEl as any).style.display).toBe('block');
+      expectVisible(state.contentEl as any);
 
       // Click again to collapse
       (state.headerEl as any).click();
       expect(state.info.isExpanded).toBe(false);
       expect((state.wrapperEl as any).hasClass('expanded')).toBe(false);
-      expect((state.contentEl as any).style.display).toBe('none');
+      expectHidden(state.contentEl as any);
     });
 
     it('should update aria-expanded on toggle', () => {
@@ -157,7 +167,7 @@ describe('Sync Subagent Renderer', () => {
       const wrapperEl = renderStoredSubagent(parentEl as any, subagent);
 
       const contentEl = (wrapperEl as any).children[1];
-      expect(contentEl.style.display).toBe('none');
+      expectHidden(contentEl);
     });
 
     it('should toggle expand/collapse on click', () => {
@@ -175,18 +185,18 @@ describe('Sync Subagent Renderer', () => {
 
       // Initially collapsed
       expect((wrapperEl as any).hasClass('expanded')).toBe(false);
-      expect(contentEl.style.display).toBe('none');
+      expectHidden(contentEl);
 
       // Click to expand
       headerEl.click();
       expect((wrapperEl as any).hasClass('expanded')).toBe(true);
-      expect(contentEl.style.display).toBe('block');
+      expectVisible(contentEl);
       expect(headerEl.getAttribute('aria-expanded')).toBe('true');
 
       // Click to collapse
       headerEl.click();
       expect((wrapperEl as any).hasClass('expanded')).toBe(false);
-      expect(contentEl.style.display).toBe('none');
+      expectHidden(contentEl);
       expect(headerEl.getAttribute('aria-expanded')).toBe('false');
     });
   });

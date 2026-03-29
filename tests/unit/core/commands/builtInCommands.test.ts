@@ -41,19 +41,19 @@ describe('builtInCommands', () => {
       expect(result?.args).toBe('some arguments');
     });
 
-    it('detects /add-dir command with path argument', () => {
-      const result = detectBuiltInCommand('/add-dir /path/to/dir');
+    it('detects /add-file command with path argument', () => {
+      const result = detectBuiltInCommand('/add-file /path/to/file');
       expect(result).not.toBeNull();
-      expect(result?.command.name).toBe('add-dir');
-      expect(result?.command.action).toBe('add-dir');
-      expect(result?.args).toBe('/path/to/dir');
+      expect(result?.command.name).toBe('add-file');
+      expect(result?.command.action).toBe('add-file');
+      expect(result?.args).toBe('/path/to/file');
     });
 
-    it('detects /add-dir command with home path', () => {
-      const result = detectBuiltInCommand('/add-dir ~/projects');
+    it('detects /add-file command with home path', () => {
+      const result = detectBuiltInCommand('/add-file ~/projects/file.md');
       expect(result).not.toBeNull();
-      expect(result?.command.name).toBe('add-dir');
-      expect(result?.args).toBe('~/projects');
+      expect(result?.command.name).toBe('add-file');
+      expect(result?.args).toBe('~/projects/file.md');
     });
 
     it('returns null for non-slash input', () => {
@@ -130,12 +130,12 @@ describe('builtInCommands', () => {
       expect(clearCmd?.action).toBe('clear');
     });
 
-    it('has add-dir command that accepts args', () => {
-      const addDirCmd = BUILT_IN_COMMANDS.find((c) => c.name === 'add-dir');
-      expect(addDirCmd).toBeDefined();
-      expect(addDirCmd?.action).toBe('add-dir');
-      expect(addDirCmd?.hasArgs).toBe(true);
-      expect(addDirCmd?.description).toBe('Add external context directory');
+    it('has add-file command that accepts args', () => {
+      const addFileCmd = BUILT_IN_COMMANDS.find((c) => c.name === 'add-file');
+      expect(addFileCmd).toBeDefined();
+      expect(addFileCmd?.action).toBe('add-file');
+      expect(addFileCmd?.hasArgs).toBe(true);
+      expect(addFileCmd?.description).toBe('Add external context file');
     });
 
     it('has resume command', () => {

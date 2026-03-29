@@ -40,8 +40,8 @@ Run the tests.`;
   describe('loadAll', () => {
     it('loads all agent files', async () => {
       mockAdapter.listFiles.mockResolvedValue([
-        '.claude/agents/code-reviewer.md',
-        '.claude/agents/test-runner.md',
+        '.gemini/agents/code-reviewer.md',
+        '.gemini/agents/test-runner.md',
       ]);
       mockAdapter.read
         .mockResolvedValueOnce(validAgentMd)
@@ -61,9 +61,9 @@ Run the tests.`;
 
     it('skips non-markdown files', async () => {
       mockAdapter.listFiles.mockResolvedValue([
-        '.claude/agents/agent.md',
-        '.claude/agents/readme.txt',
-        '.claude/agents/config.json',
+        '.gemini/agents/agent.md',
+        '.gemini/agents/readme.txt',
+        '.gemini/agents/config.json',
       ]);
       mockAdapter.read.mockResolvedValue(validAgentMd);
 
@@ -82,8 +82,8 @@ Run the tests.`;
 
     it('skips malformed files', async () => {
       mockAdapter.listFiles.mockResolvedValue([
-        '.claude/agents/good.md',
-        '.claude/agents/bad.md',
+        '.gemini/agents/good.md',
+        '.gemini/agents/bad.md',
       ]);
       mockAdapter.read
         .mockResolvedValueOnce(validAgentMd)
@@ -97,9 +97,9 @@ Run the tests.`;
 
     it('continues loading if one file throws', async () => {
       mockAdapter.listFiles.mockResolvedValue([
-        '.claude/agents/good.md',
-        '.claude/agents/error.md',
-        '.claude/agents/also-good.md',
+        '.gemini/agents/good.md',
+        '.gemini/agents/error.md',
+        '.gemini/agents/also-good.md',
       ]);
       mockAdapter.read
         .mockResolvedValueOnce(validAgentMd)
@@ -121,13 +121,13 @@ Run the tests.`;
 
     it('preserves filePath from disk', async () => {
       mockAdapter.listFiles.mockResolvedValue([
-        '.claude/agents/custom-filename.md',
+        '.gemini/agents/custom-filename.md',
       ]);
       mockAdapter.read.mockResolvedValue(validAgentMd);
 
       const agents = await storage.loadAll();
 
-      expect(agents[0].filePath).toBe('.claude/agents/custom-filename.md');
+      expect(agents[0].filePath).toBe('.gemini/agents/custom-filename.md');
     });
 
     it('parses permissionMode from frontmatter', async () => {
@@ -138,7 +138,7 @@ permissionMode: dontAsk
 ---
 Be strict.`;
 
-      mockAdapter.listFiles.mockResolvedValue(['.claude/agents/strict-agent.md']);
+      mockAdapter.listFiles.mockResolvedValue(['.gemini/agents/strict-agent.md']);
       mockAdapter.read.mockResolvedValue(agentWithPermission);
 
       const agents = await storage.loadAll();
@@ -159,7 +159,7 @@ Be strict.`;
       });
 
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/agents/code-reviewer.md',
+        '.gemini/agents/code-reviewer.md',
         expect.stringContaining('name: code-reviewer')
       );
     });
@@ -192,10 +192,10 @@ Be strict.`;
         description: 'Reviews code',
         prompt: 'Review.',
         source: 'vault',
-        filePath: '.claude/agents/custom-filename.md',
+        filePath: '.gemini/agents/custom-filename.md',
       });
 
-      expect(mockAdapter.delete).toHaveBeenCalledWith('.claude/agents/custom-filename.md');
+      expect(mockAdapter.delete).toHaveBeenCalledWith('.gemini/agents/custom-filename.md');
     });
 
     it('falls back to name-based path when no filePath', async () => {
@@ -207,7 +207,7 @@ Be strict.`;
         source: 'vault',
       });
 
-      expect(mockAdapter.delete).toHaveBeenCalledWith('.claude/agents/code-reviewer.md');
+      expect(mockAdapter.delete).toHaveBeenCalledWith('.gemini/agents/code-reviewer.md');
     });
 
     it('converts absolute filePath to vault-relative', async () => {
@@ -217,10 +217,10 @@ Be strict.`;
         description: 'Reviews code',
         prompt: 'Review.',
         source: 'vault',
-        filePath: '/Users/user/vault/.claude/agents/code-reviewer.md',
+        filePath: '/Users/user/vault/.gemini/agents/code-reviewer.md',
       });
 
-      expect(mockAdapter.delete).toHaveBeenCalledWith('.claude/agents/code-reviewer.md');
+      expect(mockAdapter.delete).toHaveBeenCalledWith('.gemini/agents/code-reviewer.md');
     });
 
     it('converts Windows absolute filePath to vault-relative', async () => {
@@ -230,10 +230,10 @@ Be strict.`;
         description: 'Reviews code',
         prompt: 'Review.',
         source: 'vault',
-        filePath: 'C:\\Users\\user\\vault\\.claude\\agents\\custom-filename.md',
+        filePath: 'C:\\Users\\user\\vault\\.gemini\\agents\\custom-filename.md',
       });
 
-      expect(mockAdapter.delete).toHaveBeenCalledWith('.claude/agents/custom-filename.md');
+      expect(mockAdapter.delete).toHaveBeenCalledWith('.gemini/agents/custom-filename.md');
     });
   });
 
@@ -247,10 +247,10 @@ Be strict.`;
         description: 'Reviews code',
         prompt: '',
         source: 'vault',
-        filePath: '.claude/agents/code-reviewer.md',
+        filePath: '.gemini/agents/code-reviewer.md',
       });
 
-      expect(mockAdapter.read).toHaveBeenCalledWith('.claude/agents/code-reviewer.md');
+      expect(mockAdapter.read).toHaveBeenCalledWith('.gemini/agents/code-reviewer.md');
       expect(result).not.toBeNull();
       expect(result!.name).toBe('code-reviewer');
       expect(result!.prompt).toBe('You are a code reviewer.');
@@ -292,7 +292,7 @@ Be strict.`;
         description: '',
         prompt: '',
         source: 'vault',
-        filePath: '.claude/agents/bad.md',
+        filePath: '.gemini/agents/bad.md',
       });
 
       expect(result).toBeNull();
@@ -307,10 +307,10 @@ Be strict.`;
         description: '',
         prompt: '',
         source: 'vault',
-        filePath: '/Users/user/vault/.claude/agents/code-reviewer.md',
+        filePath: '/Users/user/vault/.gemini/agents/code-reviewer.md',
       });
 
-      expect(mockAdapter.read).toHaveBeenCalledWith('.claude/agents/code-reviewer.md');
+      expect(mockAdapter.read).toHaveBeenCalledWith('.gemini/agents/code-reviewer.md');
     });
 
     it('resolves Windows absolute filePath before reading', async () => {
@@ -322,10 +322,10 @@ Be strict.`;
         description: '',
         prompt: '',
         source: 'vault',
-        filePath: 'C:\\Users\\user\\vault\\.claude\\agents\\custom-filename.md',
+        filePath: 'C:\\Users\\user\\vault\\.gemini\\agents\\custom-filename.md',
       });
 
-      expect(mockAdapter.read).toHaveBeenCalledWith('.claude/agents/custom-filename.md');
+      expect(mockAdapter.read).toHaveBeenCalledWith('.gemini/agents/custom-filename.md');
     });
   });
 
@@ -337,11 +337,11 @@ Be strict.`;
         description: 'My agent',
         prompt: 'Do stuff.',
         source: 'vault',
-        filePath: '/Users/user/vault/.claude/agents/my-agent.md',
+        filePath: '/Users/user/vault/.gemini/agents/my-agent.md',
       });
 
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/agents/my-agent.md',
+        '.gemini/agents/my-agent.md',
         expect.any(String)
       );
     });
@@ -353,11 +353,11 @@ Be strict.`;
         description: 'My agent',
         prompt: 'Do stuff.',
         source: 'vault',
-        filePath: '.claude/agents/custom-name.md',
+        filePath: '.gemini/agents/custom-name.md',
       });
 
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/agents/custom-name.md',
+        '.gemini/agents/custom-name.md',
         expect.any(String)
       );
     });
@@ -369,11 +369,11 @@ Be strict.`;
         description: 'My agent',
         prompt: 'Do stuff.',
         source: 'vault',
-        filePath: '.claude\\agents\\custom-name.md',
+        filePath: '.gemini\\agents\\custom-name.md',
       });
 
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/agents/custom-name.md',
+        '.gemini/agents/custom-name.md',
         expect.any(String)
       );
     });
@@ -385,11 +385,11 @@ Be strict.`;
         description: 'My agent',
         prompt: 'Do stuff.',
         source: 'vault',
-        filePath: 'C:\\Users\\user\\vault\\.claude\\agents\\custom-name.md',
+        filePath: 'C:\\Users\\user\\vault\\.gemini\\agents\\custom-name.md',
       });
 
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/agents/custom-name.md',
+        '.gemini/agents/custom-name.md',
         expect.any(String)
       );
     });
@@ -405,7 +405,7 @@ Be strict.`;
       });
 
       expect(mockAdapter.write).toHaveBeenCalledWith(
-        '.claude/agents/my-agent.md',
+        '.gemini/agents/my-agent.md',
         expect.any(String)
       );
     });

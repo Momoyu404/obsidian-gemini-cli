@@ -5,6 +5,11 @@ import { VaultFolderCache } from '@/features/chat/ui/file-context/state/VaultFol
 import { type InlineEditContext, InlineEditModal } from '@/features/inline-edit/ui/InlineEditModal';
 import * as editorUtils from '@/utils/editor';
 
+jest.mock('@/shared/components/SelectionHighlight', () => ({
+  hideSelectionHighlight: jest.fn(),
+  showSelectionHighlight: jest.fn(),
+}));
+
 const mentionDropdownCtor = jest.fn();
 jest.mock('@/shared/mention/MentionDropdownController', () => ({
   MentionDropdownController: function MockMentionDropdownController(...args: any[]) {
